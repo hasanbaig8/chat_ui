@@ -78,5 +78,6 @@ ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
 ALLOWED_DOCUMENT_TYPES = {"application/pdf"}
 ALLOWED_TEXT_EXTENSIONS = {".txt", ".md", ".py", ".js", ".ts", ".json", ".yaml", ".yml", ".html", ".css", ".xml", ".csv"}
 
-# Database path
-DATABASE_PATH = "data/conversations.db"
+# Storage paths
+DATABASE_PATH = "data/conversations.db"  # Legacy SQLite path (for reference)
+CONVERSATIONS_PATH = "data/conversations"  # File-based conversation storage

@@ -411,18 +411,15 @@ html, body {
     border-top: 1px solid var(--color-border-light);
 }
 
-/* Hide action buttons by default, show on hover (but not version badge) */
+/* Action buttons always visible */
 .message-actions .action-btn {
-    opacity: 0;
+    opacity: 0.6 !important;
+    visibility: visible !important;
     transition: opacity var(--transition-fast);
 }
 
-.message:hover .message-actions .action-btn {
-    opacity: 0.7;
-}
-
-.message:hover .message-actions .action-btn:hover {
-    opacity: 1;
+.message-actions .action-btn:hover {
+    opacity: 1 !important;
 }
 
 /* Version badge is always visible when present */

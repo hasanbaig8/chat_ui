@@ -8,14 +8,14 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from services.anthropic_client import AnthropicClient
-from services.conversation_store import ConversationStore
+from services.file_conversation_store import FileConversationStore
 from config import DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_MAX_TOKENS, DEFAULT_THINKING_BUDGET
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 
 # Initialize client and store
 client = AnthropicClient()
-store = ConversationStore()
+store = FileConversationStore()
 
 # Track which conversations are currently streaming
 streaming_conversations: Set[str] = set()
@@ -46,7 +46,7 @@ class ChatRequest(BaseModel):
     """Request body for chat endpoint."""
     messages: List[Message]
     conversation_id: Optional[str] = None  # For saving streaming content to DB
-    parent_message_id: Optional[str] = None  # ID of message this response is to (for branching)
+    branch: Optional[List[int]] = None  # Current branch for saving
     model: str = DEFAULT_MODEL
     system_prompt: Optional[str] = None
     temperature: float = DEFAULT_TEMPERATURE
@@ -75,6 +75,7 @@ async def stream_chat(request: ChatRequest):
         text_content = ""
         thinking_content = ""
         conversation_id = request.conversation_id
+        branch = request.branch or [0]
 
         # Convert messages to API format
         api_messages = []
@@ -100,8 +101,8 @@ async def stream_chat(request: ChatRequest):
                     role="assistant",
                     content="",
                     thinking=None,
-                    streaming=True,
-                    parent_message_id=request.parent_message_id
+                    branch=branch,
+                    streaming=True
                 )
                 message_id = msg_record["id"]
                 # Send message_id to frontend so it knows which message is streaming
@@ -135,18 +136,22 @@ async def stream_chat(request: ChatRequest):
                 update_counter += 1
                 if message_id and update_counter % 10 == 0:
                     await store.update_message_content(
+                        conversation_id=conversation_id,
                         message_id=message_id,
                         content=text_content,
                         thinking=thinking_content if thinking_content else None,
+                        branch=branch,
                         streaming=True
                     )
 
             # Final update to DB with complete content
             if message_id:
                 await store.update_message_content(
+                    conversation_id=conversation_id,
                     message_id=message_id,
                     content=text_content,
                     thinking=thinking_content if thinking_content else None,
+                    branch=branch,
                     streaming=False
                 )
 

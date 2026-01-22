@@ -10,13 +10,13 @@ from fastapi.requests import Request
 from dotenv import load_dotenv
 
 from api import chat_router, conversations_router, files_router
-from services.conversation_store import ConversationStore
+from services.file_conversation_store import FileConversationStore
 
 # Load environment variables
 load_dotenv()
 
 # Initialize store for startup
-store = ConversationStore()
+store = FileConversationStore()
 
 
 @asynccontextmanager

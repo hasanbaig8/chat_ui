@@ -175,6 +175,7 @@ class ConversationStore:
             # Build the active message chain following parent links
             messages = []
             current_parent_id = None
+            previous_selected_version = None
             max_position = max(messages_by_position.keys())
 
             for pos in range(max_position + 1):
@@ -191,15 +192,21 @@ class ConversationStore:
                     # Find messages whose parent is the previously selected message
                     matching = [m for m in candidates if m.get('parent_message_id') == current_parent_id]
 
-                    # Fallback: if no parent match (legacy data), use all candidates
+                    # Fallback for legacy data (no parent_message_id set)
+                    if not matching:
+                        # Try to match by version number - assumes versions correspond
+                        # (user v2 should pair with assistant v2 if they were created together)
+                        if previous_selected_version:
+                            version_match = [m for m in candidates if m['version'] == previous_selected_version]
+                            if version_match:
+                                matching = version_match
+
+                    # Final fallback: use all candidates
                     if not matching:
                         matching = candidates
 
                 if not matching:
                     continue
-
-                # Count versions for this position (all candidates, not just matching)
-                total_versions_at_pos = len(candidates)
 
                 # If multiple matching (retries with same parent), use active_versions
                 active_ver = active_versions.get(str(pos))
@@ -225,11 +232,12 @@ class ConversationStore:
                 # Add version info for UI
                 # For proper branching, count only versions that share the same parent
                 versions_with_same_parent = [m for m in candidates if m.get('parent_message_id') == selected.get('parent_message_id')]
-                selected["total_versions"] = len(versions_with_same_parent) if versions_with_same_parent else total_versions_at_pos
+                selected["total_versions"] = len(versions_with_same_parent) if versions_with_same_parent else len(candidates)
                 selected["current_version"] = selected['version']
 
                 messages.append(selected)
                 current_parent_id = selected['id']
+                previous_selected_version = selected['version']
 
             conversation["messages"] = messages
             return conversation
@@ -587,6 +595,7 @@ class ConversationStore:
             # Build the active message chain following parent links
             messages = []
             current_parent_id = None
+            previous_selected_version = None
             max_pos = max(messages_by_position.keys()) if messages_by_position else -1
 
             for pos in range(max_pos + 1):
@@ -600,8 +609,16 @@ class ConversationStore:
                     matching = candidates
                 else:
                     matching = [m for m in candidates if m.get('parent_message_id') == current_parent_id]
+
+                    # Fallback for legacy data - try to match by version
+                    if not matching and previous_selected_version:
+                        version_match = [m for m in candidates if m['version'] == previous_selected_version]
+                        if version_match:
+                            matching = version_match
+
+                    # Final fallback
                     if not matching:
-                        matching = candidates  # Fallback for legacy data
+                        matching = candidates
 
                 if not matching:
                     continue
@@ -631,6 +648,7 @@ class ConversationStore:
 
                 messages.append(selected)
                 current_parent_id = selected['id']
+                previous_selected_version = selected['version']
 
             return messages
 

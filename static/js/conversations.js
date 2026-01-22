@@ -1,5 +1,5 @@
 /**
- * Conversation management module
+ * Conversation management module with file-based branching support
  */
 
 const ConversationsManager = {
@@ -227,7 +227,7 @@ const ConversationsManager = {
                 <div class="conversation-actions">
                     <button class="conversation-duplicate" title="Duplicate">📋</button>
                     <button class="conversation-rename" title="Rename">✏️</button>
-                    <button class="conversation-delete" title="Delete">&times;</button>
+                    <button class="conversation-delete" title="Delete">🗑️</button>
                 </div>
             `;
 
@@ -300,6 +300,7 @@ const ConversationsManager = {
             if (clearUI && typeof ChatManager !== 'undefined') {
                 ChatManager.clearChat();
                 ChatManager.activeConversationId = conversation.id;
+                ChatManager.currentBranch = [0];
             }
 
             return conversation;
@@ -311,8 +312,10 @@ const ConversationsManager = {
 
     /**
      * Select a conversation and load its messages
+     * @param {string} conversationId - The conversation ID
+     * @param {Array<number>} branch - Optional branch to load (default: uses conversation's current_branch)
      */
-    async selectConversation(conversationId) {
+    async selectConversation(conversationId, branch = null) {
         // Increment request ID to track this specific request
         const requestId = ++this.loadRequestId;
 
@@ -325,7 +328,13 @@ const ConversationsManager = {
         }
 
         try {
-            const response = await fetch(`/api/conversations/${conversationId}`);
+            // Build URL with optional branch parameter
+            let url = `/api/conversations/${conversationId}`;
+            if (branch) {
+                url += `?branch=${branch.join(',')}`;
+            }
+
+            const response = await fetch(url);
 
             // Check if user clicked on a different conversation while we were fetching
             if (this.loadRequestId !== requestId || this.currentConversationId !== conversationId) {
@@ -512,9 +521,9 @@ const ConversationsManager = {
      * @param {string} role - 'user' or 'assistant'
      * @param {any} content - Message content
      * @param {string|null} thinking - Extended thinking content
-     * @param {string|null} parentMessageId - ID of the message this responds to
+     * @param {Array<number>|null} branch - Branch to add message to
      */
-    async addMessage(role, content, thinking = null, parentMessageId = null) {
+    async addMessage(role, content, thinking = null, branch = null) {
         if (!this.currentConversationId) {
             return null;
         }
@@ -527,7 +536,7 @@ const ConversationsManager = {
                     role,
                     content,
                     thinking,
-                    parent_message_id: parentMessageId
+                    branch
                 })
             });
 
