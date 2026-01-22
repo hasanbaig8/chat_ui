@@ -23,8 +23,10 @@ streaming_conversations: Set[str] = set()
 
 @router.on_event("startup")
 async def startup():
-    """Initialize database on startup."""
+    """Initialize database and warm up API connection on startup."""
     await store.initialize()
+    # Warm up Anthropic API connection in background
+    asyncio.create_task(client.warmup())
 
 
 class ContentBlock(BaseModel):

@@ -19,6 +19,22 @@ class AnthropicClient:
             raise ValueError("ANTHROPIC_API_KEY environment variable is required")
         # Use AsyncAnthropic for true async streaming
         self.client = anthropic.AsyncAnthropic(api_key=api_key)
+        self._warmed_up = False
+
+    async def warmup(self):
+        """Warm up the API connection to avoid cold start latency."""
+        if self._warmed_up:
+            return
+        try:
+            # Use count_tokens as a lightweight warmup call
+            await self.client.messages.count_tokens(
+                model=DEFAULT_MODEL,
+                messages=[{"role": "user", "content": "hi"}]
+            )
+            self._warmed_up = True
+        except Exception as e:
+            # Warmup failure is not critical
+            print(f"API warmup failed (non-critical): {e}")
 
     async def stream_message(
         self,

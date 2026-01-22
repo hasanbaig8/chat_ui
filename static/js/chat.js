@@ -19,6 +19,7 @@ const ChatManager = {
     streamingDisplayedText: '',  // Text currently displayed during animated streaming
     streamingAnimationFrame: null,  // Animation frame for smooth text reveal
     userScrolledAway: false,  // Track if user has scrolled away during streaming
+    lastTabRefresh: 0,  // Timestamp of last tab refresh to debounce
 
     // Model context limits (in tokens)
     MODEL_LIMITS: {
@@ -35,6 +36,71 @@ const ChatManager = {
     init() {
         this.bindEvents();
         this.configureMarked();
+        this.bindTabVisibility();
+    },
+
+    /**
+     * Handle tab visibility changes - refresh state when tab becomes visible
+     */
+    bindTabVisibility() {
+        document.addEventListener('visibilitychange', async () => {
+            if (document.visibilityState === 'visible') {
+                await this.refreshOnTabFocus();
+            }
+        });
+
+        // Also handle window focus for cases where visibilitychange doesn't fire
+        window.addEventListener('focus', async () => {
+            await this.refreshOnTabFocus();
+        });
+    },
+
+    /**
+     * Refresh conversation state when returning to tab
+     */
+    async refreshOnTabFocus() {
+        // Debounce: don't refresh more than once per second
+        const now = Date.now();
+        if (now - this.lastTabRefresh < 1000) {
+            return;
+        }
+        this.lastTabRefresh = now;
+
+        // Don't refresh if we're actively streaming locally (would interrupt SSE)
+        if (this.abortController) {
+            return;
+        }
+
+        // Refresh conversation list
+        if (typeof ConversationsManager !== 'undefined') {
+            await ConversationsManager.loadConversations();
+        }
+
+        // Reload current conversation if one is selected
+        const currentId = this.activeConversationId;
+        if (currentId) {
+            try {
+                // Check streaming status on server
+                const streamingResponse = await fetch(`/api/chat/streaming/${currentId}`);
+                const streamingData = await streamingResponse.json();
+
+                // Reload conversation from DB
+                const convResponse = await fetch(`/api/conversations/${currentId}`);
+                if (convResponse.ok) {
+                    const conversation = await convResponse.json();
+
+                    // Update streaming tracker
+                    if (typeof StreamingTracker !== 'undefined') {
+                        StreamingTracker.setStreaming(currentId, streamingData.streaming);
+                    }
+
+                    // Reload the conversation UI
+                    await this.loadConversation(conversation);
+                }
+            } catch (e) {
+                console.error('Error refreshing on tab focus:', e);
+            }
+        }
     },
 
     /**

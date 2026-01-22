@@ -10,6 +10,9 @@ const ConversationsManager = {
     renamingConversationId: null,
     loadRequestId: 0,  // Track conversation load requests to handle race conditions
 
+    refreshInterval: null,  // Interval for periodic refresh
+    lastRefresh: 0,  // Timestamp of last refresh
+
     /**
      * Initialize the conversations manager
      */
@@ -17,6 +20,74 @@ const ConversationsManager = {
         await this.loadConversations();
         this.bindEvents();
         this.bindSearchEvents();
+        this.startPeriodicRefresh();
+    },
+
+    /**
+     * Start periodic refresh of conversations list
+     */
+    startPeriodicRefresh() {
+        // Refresh every 5 seconds
+        this.refreshInterval = setInterval(() => {
+            this.refreshConversationsIfVisible();
+        }, 5000);
+    },
+
+    /**
+     * Refresh conversations list if tab is visible
+     */
+    async refreshConversationsIfVisible() {
+        // Only refresh if tab is visible
+        if (document.visibilityState !== 'visible') {
+            return;
+        }
+
+        // Don't refresh if user is actively searching
+        if (this.searchQuery) {
+            return;
+        }
+
+        // Don't refresh if user is renaming
+        if (this.renamingConversationId !== null) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/conversations');
+            const data = await response.json();
+            const newConversations = data.conversations || [];
+
+            // Only re-render if something changed
+            if (this.hasConversationsChanged(newConversations)) {
+                this.conversations = newConversations;
+                this.renderConversationsList();
+            }
+        } catch (error) {
+            // Silently fail on periodic refresh
+            console.debug('Periodic refresh failed:', error);
+        }
+    },
+
+    /**
+     * Check if conversations list has changed
+     */
+    hasConversationsChanged(newConversations) {
+        if (newConversations.length !== this.conversations.length) {
+            return true;
+        }
+
+        for (let i = 0; i < newConversations.length; i++) {
+            const newConv = newConversations[i];
+            const oldConv = this.conversations[i];
+
+            if (newConv.id !== oldConv.id ||
+                newConv.title !== oldConv.title ||
+                newConv.updated_at !== oldConv.updated_at) {
+                return true;
+            }
+        }
+
+        return false;
     },
 
     /**
