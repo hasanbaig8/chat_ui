@@ -88,6 +88,17 @@ const SettingsManager = {
             document.getElementById('top-k-value').textContent = e.target.value;
         });
 
+        // Prune threshold slider
+        const pruneThresholdSlider = document.getElementById('prune-threshold');
+        if (pruneThresholdSlider) {
+            pruneThresholdSlider.addEventListener('input', (e) => {
+                const valueDisplay = document.getElementById('prune-threshold-value');
+                if (valueDisplay) {
+                    valueDisplay.textContent = e.target.value;
+                }
+            });
+        }
+
         // Theme toggle
         document.getElementById('theme-toggle').addEventListener('click', () => {
             this.toggleTheme();
@@ -276,6 +287,13 @@ const SettingsManager = {
         if (savedSystemPrompt) {
             document.getElementById('system-prompt').value = savedSystemPrompt;
         }
+
+        // Prune threshold
+        const savedPruneThreshold = localStorage.getItem('claude-chat-prune-threshold');
+        if (savedPruneThreshold) {
+            document.getElementById('prune-threshold').value = savedPruneThreshold;
+            document.getElementById('prune-threshold-value').textContent = savedPruneThreshold;
+        }
     },
 
     /**
@@ -293,12 +311,14 @@ const SettingsManager = {
             top_k: parseInt(document.getElementById('top-k').value),
             system_prompt: document.getElementById('system-prompt').value || null,
             thinking_enabled: thinkingEnabled,
-            thinking_budget: parseInt(document.getElementById('thinking-budget').value)
+            thinking_budget: parseInt(document.getElementById('thinking-budget').value),
+            prune_threshold: parseInt(document.getElementById('prune-threshold').value) / 100
         };
 
         // Save to localStorage
         localStorage.setItem('claude-chat-temperature', settings.temperature);
         localStorage.setItem('claude-chat-max-tokens', settings.max_tokens);
+        localStorage.setItem('claude-chat-prune-threshold', settings.prune_threshold * 100);
         if (settings.system_prompt) {
             localStorage.setItem('claude-chat-system-prompt', settings.system_prompt);
         }

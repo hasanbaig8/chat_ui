@@ -5,6 +5,9 @@
 const ConversationsManager = {
     conversations: [],
     currentConversationId: null,
+    searchQuery: '',
+    searchResults: null,
+    renamingConversationId: null,
 
     /**
      * Initialize the conversations manager
@@ -12,6 +15,7 @@ const ConversationsManager = {
     async init() {
         await this.loadConversations();
         this.bindEvents();
+        this.bindSearchEvents();
     },
 
     /**
@@ -21,6 +25,83 @@ const ConversationsManager = {
         document.getElementById('new-chat-btn').addEventListener('click', () => {
             this.createConversation();
         });
+    },
+
+    /**
+     * Bind search events
+     */
+    bindSearchEvents() {
+        const searchInput = document.getElementById('search-input');
+        const clearBtn = document.getElementById('clear-search-btn');
+
+        searchInput.addEventListener('input', (e) => {
+            this.handleSearch(e.target.value);
+        });
+
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            this.handleSearch('');
+            searchInput.focus();
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                searchInput.value = '';
+                this.handleSearch('');
+            }
+        });
+    },
+
+    /**
+     * Handle search input
+     */
+    async handleSearch(query) {
+        this.searchQuery = query.trim();
+        const clearBtn = document.getElementById('clear-search-btn');
+
+        // Show/hide clear button
+        clearBtn.style.display = this.searchQuery ? '' : 'none';
+
+        if (!this.searchQuery) {
+            this.searchResults = null;
+            this.renderConversationsList();
+            return;
+        }
+
+        // Search in conversation titles (client-side) - partial match
+        const titleMatches = this.conversations.filter(conv =>
+            conv.title.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+
+        // Search message content (server-side) - always enabled with partial match
+        try {
+            const response = await fetch(
+                `/api/conversations/search?q=${encodeURIComponent(this.searchQuery)}`
+            );
+            if (response.ok) {
+                const data = await response.json();
+
+                // Create a set of title match IDs for quick lookup
+                const titleMatchIds = new Set(titleMatches.map(c => c.id));
+
+                // Separate content-only matches
+                const contentOnlyMatches = data.conversations.filter(conv =>
+                    !titleMatchIds.has(conv.id)
+                );
+
+                // Prioritize: title matches first, then content matches
+                this.searchResults = [...titleMatches, ...contentOnlyMatches];
+            } else {
+                // Fallback to title-only search if endpoint fails
+                this.searchResults = titleMatches;
+            }
+        } catch (error) {
+            // Fallback to title-only search on error
+            console.error('Search error:', error);
+            this.searchResults = titleMatches;
+        }
+
+        this.renderConversationsList();
     },
 
     /**
@@ -44,27 +125,62 @@ const ConversationsManager = {
         const container = document.getElementById('conversations-list');
         container.innerHTML = '';
 
+        // Use search results if available, otherwise all conversations
+        const conversationsToShow = this.searchResults !== null ? this.searchResults : this.conversations;
+
         if (this.conversations.length === 0) {
             container.innerHTML = '<p style="padding: 12px; color: var(--color-text-secondary); font-size: 13px;">No conversations yet</p>';
             return;
         }
 
-        this.conversations.forEach(conv => {
+        if (conversationsToShow.length === 0 && this.searchQuery) {
+            container.innerHTML = '<p style="padding: 12px; color: var(--color-text-secondary); font-size: 13px;">No matches found</p>';
+            return;
+        }
+
+        conversationsToShow.forEach(conv => {
             const item = document.createElement('div');
             item.className = `conversation-item${conv.id === this.currentConversationId ? ' active' : ''}`;
             item.dataset.id = conv.id;
 
+            // Highlight search matches in title
+            let titleHtml = this.escapeHtml(conv.title);
+            if (this.searchQuery) {
+                const regex = new RegExp(`(${this.escapeRegex(this.searchQuery)})`, 'gi');
+                titleHtml = titleHtml.replace(regex, '<mark>$1</mark>');
+            }
+
             item.innerHTML = `
-                <span class="conversation-title">${this.escapeHtml(conv.title)}</span>
-                <button class="conversation-delete" title="Delete">&times;</button>
+                <span class="conversation-title">${titleHtml}</span>
+                <div class="conversation-actions">
+                    <button class="conversation-rename" title="Rename">✏️</button>
+                    <button class="conversation-delete" title="Delete">&times;</button>
+                </div>
             `;
 
+            const titleEl = item.querySelector('.conversation-title');
+
+            // Click to select conversation
             item.addEventListener('click', (e) => {
-                if (!e.target.classList.contains('conversation-delete')) {
+                if (!e.target.classList.contains('conversation-delete') &&
+                    !e.target.classList.contains('conversation-rename')) {
                     this.selectConversation(conv.id);
                 }
             });
 
+            // Double-click to rename
+            titleEl.addEventListener('dblclick', (e) => {
+                e.stopPropagation();
+                this.startRename(conv.id, titleEl);
+            });
+
+            // Rename button
+            item.querySelector('.conversation-rename').addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.startRename(conv.id, titleEl);
+            });
+
+            // Delete button
             item.querySelector('.conversation-delete').addEventListener('click', (e) => {
                 e.stopPropagation();
                 this.deleteConversation(conv.id);
@@ -154,6 +270,73 @@ const ConversationsManager = {
     },
 
     /**
+     * Start renaming a conversation
+     */
+    startRename(conversationId, titleEl) {
+        if (this.renamingConversationId !== null) return;
+
+        const conv = this.conversations.find(c => c.id === conversationId);
+        if (!conv) return;
+
+        this.renamingConversationId = conversationId;
+
+        // Create input element
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = conv.title;
+        input.className = 'conversation-rename-input';
+        input.style.cssText = `
+            width: 100%;
+            padding: 4px 6px;
+            border: 1px solid var(--color-primary);
+            border-radius: 4px;
+            background: var(--color-surface);
+            color: var(--color-text);
+            font-size: 13px;
+            outline: none;
+        `;
+
+        // Replace title with input
+        const originalHtml = titleEl.innerHTML;
+        titleEl.innerHTML = '';
+        titleEl.appendChild(input);
+
+        input.focus();
+        input.select();
+
+        // Handle save
+        const save = async () => {
+            const newTitle = input.value.trim();
+            if (newTitle && newTitle !== conv.title) {
+                await this.updateConversationTitle(conversationId, newTitle);
+            }
+            this.renamingConversationId = null;
+            this.renderConversationsList();
+        };
+
+        // Handle cancel
+        const cancel = () => {
+            this.renamingConversationId = null;
+            titleEl.innerHTML = originalHtml;
+        };
+
+        // Event listeners
+        input.addEventListener('blur', save);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                save();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                cancel();
+            }
+        });
+
+        // Prevent click from bubbling
+        input.addEventListener('click', (e) => e.stopPropagation());
+    },
+
+    /**
      * Delete a conversation
      */
     async deleteConversation(conversationId) {
@@ -227,6 +410,13 @@ const ConversationsManager = {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    },
+
+    /**
+     * Escape regex special characters
+     */
+    escapeRegex(text) {
+        return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     },
 
     /**

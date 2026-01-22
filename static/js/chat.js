@@ -10,6 +10,15 @@ const ChatManager = {
     originalEditContent: null,  // Original content when editing
     retryPosition: null,  // Position for retry operations
 
+    // Model context limits (in tokens)
+    MODEL_LIMITS: {
+        'claude-3-5-sonnet-20241022': 200000,
+        'claude-3-5-haiku-20241022': 200000,
+        'claude-3-opus-20240229': 200000,
+        'claude-3-sonnet-20240229': 200000,
+        'claude-3-haiku-20240307': 200000
+    },
+
     /**
      * Initialize chat
      */
@@ -77,6 +86,86 @@ const ChatManager = {
         const sendBtn = document.getElementById('send-btn');
         const hasContent = messageInput.value.trim() || FilesManager.hasPendingFiles();
         sendBtn.disabled = !hasContent || this.isStreaming;
+    },
+
+    /**
+     * Estimate token count for content (rough approximation: ~4 chars per token)
+     */
+    estimateTokens(content) {
+        if (typeof content === 'string') {
+            return Math.ceil(content.length / 4);
+        } else if (Array.isArray(content)) {
+            let total = 0;
+            for (const block of content) {
+                if (block.type === 'text') {
+                    total += Math.ceil((block.text || '').length / 4);
+                } else if (block.type === 'image') {
+                    // Images: rough estimate based on size, ~1000 tokens for base64 images
+                    total += 1000;
+                } else if (block.type === 'document') {
+                    // Documents: estimate based on content
+                    total += 500;
+                }
+            }
+            return total;
+        }
+        return 0;
+    },
+
+    /**
+     * Get context limit for current model
+     */
+    getContextLimit() {
+        const settings = SettingsManager?.getSettings() || {};
+        return this.MODEL_LIMITS[settings.model] || 200000;
+    },
+
+    /**
+     * Prune messages to keep context under threshold
+     */
+    pruneMessages(messages) {
+        const settings = SettingsManager?.getSettings() || {};
+        const pruneThreshold = settings.prune_threshold || 0.7;
+        const contextLimit = this.getContextLimit();
+        const maxTokens = Math.floor(contextLimit * pruneThreshold);
+
+        // Calculate total tokens
+        let totalTokens = 0;
+        for (const msg of messages) {
+            totalTokens += this.estimateTokens(msg.content);
+        }
+
+        // If under limit, no pruning needed
+        if (totalTokens <= maxTokens) {
+            return messages;
+        }
+
+        // Prune from the beginning, but keep at least the last 2 messages (user + assistant)
+        const prunedMessages = [];
+        let currentTokens = 0;
+
+        // Start from the end and work backwards
+        for (let i = messages.length - 1; i >= 0; i--) {
+            const msg = messages[i];
+            const msgTokens = this.estimateTokens(msg.content);
+
+            if (currentTokens + msgTokens <= maxTokens || prunedMessages.length < 2) {
+                prunedMessages.unshift(msg);
+                currentTokens += msgTokens;
+            } else {
+                // Stop adding messages - we've hit the limit
+                break;
+            }
+        }
+
+        const prunedCount = messages.length - prunedMessages.length;
+        if (prunedCount > 0) {
+            const settings = SettingsManager?.getSettings() || {};
+            const pruneThreshold = settings.prune_threshold || 0.7;
+            console.log(`Pruned ${prunedCount} message(s) to keep context under ${pruneThreshold * 100}% (${totalTokens} -> ${currentTokens} tokens)`);
+        }
+
+        return prunedMessages;
     },
 
     /**
@@ -498,8 +587,8 @@ const ChatManager = {
         this.isStreaming = true;
         this.updateSendButton();
 
-        const settings = SettingsManager.getSettings();
         const conversationId = ConversationsManager.getCurrentConversationId();
+        const settings = SettingsManager.getSettings();
 
         // Create assistant message element
         const position = this.messages.length;
@@ -518,10 +607,13 @@ const ChatManager = {
             this.abortController = new AbortController();
 
             // Build messages for API
-            const apiMessages = this.messages.map(m => ({
+            const allMessages = this.messages.map(m => ({
                 role: m.role,
                 content: m.content
             }));
+
+            // Prune messages to keep context under threshold
+            const apiMessages = this.pruneMessages(allMessages);
 
             const response = await fetch('/api/chat/stream', {
                 method: 'POST',

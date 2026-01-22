@@ -36,6 +36,15 @@
                 <button id="new-chat-btn" class="new-chat-btn">
                     <span>+</span> New Chat
                 </button>
+                <div class="search-container">
+                    <input
+                        type="text"
+                        id="search-input"
+                        class="search-input"
+                        placeholder="Search chats..."
+                    >
+                    <button id="clear-search-btn" class="clear-search-btn" style="display: none;">&times;</button>
+                </div>
                 <div class="conversations-list" id="conversations-list">
                     <!-- Conversations will be populated here -->
                 </div>
@@ -127,6 +136,13 @@
                     <div class="setting-group" id="top-k-group">
                         <label for="top-k">Top K: <span id="top-k-value">0</span> (0 = disabled)</label>
                         <input type="range" id="top-k" min="0" max="500" value="0" step="10">
+                    </div>
+
+                    <!-- Context Pruning -->
+                    <div class="setting-group">
+                        <label for="prune-threshold">Context Pruning: <span id="prune-threshold-value">70</span>%</label>
+                        <input type="range" id="prune-threshold" min="50" max="95" value="70" step="5">
+                        <span class="setting-description">Automatically remove oldest messages to keep context under this threshold</span>
                     </div>
 
                     <!-- System Prompt -->

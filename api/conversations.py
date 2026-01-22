@@ -1,7 +1,7 @@
 """Conversation management endpoints."""
 
 from typing import Optional, List, Any
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from services.conversation_store import ConversationStore
@@ -74,6 +74,13 @@ async def list_conversations():
     """List all conversations."""
     conversations = await store.list_conversations()
     return {"conversations": conversations}
+
+
+@router.get("/search")
+async def search_conversations(q: str = Query(..., min_length=1)):
+    """Search conversations by title or message content (partial match)."""
+    conversations = await store.search_conversations(q)
+    return {"conversations": conversations, "query": q}
 
 
 @router.get("/{conversation_id}")
