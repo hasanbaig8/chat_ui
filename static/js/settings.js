@@ -268,6 +268,15 @@ const SettingsManager = {
         }
         this.updateHighlightTheme(theme);
 
+        // Model
+        const savedModel = localStorage.getItem('claude-chat-model');
+        if (savedModel) {
+            const modelSelect = document.getElementById('model-select');
+            if (modelSelect) {
+                modelSelect.value = savedModel;
+            }
+        }
+
         // Temperature
         const savedTemp = localStorage.getItem('claude-chat-temperature');
         if (savedTemp) {
@@ -280,6 +289,33 @@ const SettingsManager = {
         if (savedMaxTokens) {
             document.getElementById('max-tokens').value = savedMaxTokens;
             document.getElementById('max-tokens-value').textContent = savedMaxTokens;
+        }
+
+        // Top P
+        const savedTopP = localStorage.getItem('claude-chat-top-p');
+        if (savedTopP) {
+            document.getElementById('top-p').value = savedTopP;
+            document.getElementById('top-p-value').textContent = savedTopP;
+        }
+
+        // Top K
+        const savedTopK = localStorage.getItem('claude-chat-top-k');
+        if (savedTopK) {
+            document.getElementById('top-k').value = savedTopK;
+            document.getElementById('top-k-value').textContent = savedTopK;
+        }
+
+        // Thinking enabled
+        const savedThinkingEnabled = localStorage.getItem('claude-chat-thinking-enabled');
+        if (savedThinkingEnabled !== null) {
+            document.getElementById('thinking-toggle').checked = savedThinkingEnabled === 'true';
+        }
+
+        // Thinking budget
+        const savedThinkingBudget = localStorage.getItem('claude-chat-thinking-budget');
+        if (savedThinkingBudget) {
+            document.getElementById('thinking-budget').value = savedThinkingBudget;
+            document.getElementById('thinking-budget-value').textContent = savedThinkingBudget;
         }
 
         // System prompt
@@ -316,8 +352,13 @@ const SettingsManager = {
         };
 
         // Save to localStorage
+        localStorage.setItem('claude-chat-model', settings.model);
         localStorage.setItem('claude-chat-temperature', settings.temperature);
         localStorage.setItem('claude-chat-max-tokens', settings.max_tokens);
+        localStorage.setItem('claude-chat-top-p', settings.top_p);
+        localStorage.setItem('claude-chat-top-k', settings.top_k);
+        localStorage.setItem('claude-chat-thinking-enabled', settings.thinking_enabled);
+        localStorage.setItem('claude-chat-thinking-budget', settings.thinking_budget);
         localStorage.setItem('claude-chat-prune-threshold', settings.prune_threshold * 100);
         if (settings.system_prompt) {
             localStorage.setItem('claude-chat-system-prompt', settings.system_prompt);

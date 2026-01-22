@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Initialize all modules
         await SettingsManager.init();
         FilesManager.init();
+        PromptLibrary.init();
         ChatManager.init();
         await ConversationsManager.init();
 

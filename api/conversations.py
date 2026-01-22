@@ -83,6 +83,15 @@ async def search_conversations(q: str = Query(..., min_length=1)):
     return {"conversations": conversations, "query": q}
 
 
+@router.post("/{conversation_id}/duplicate")
+async def duplicate_conversation(conversation_id: str):
+    """Duplicate a conversation with all its messages."""
+    new_conversation = await store.duplicate_conversation(conversation_id)
+    if not new_conversation:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    return new_conversation
+
+
 @router.get("/{conversation_id}")
 async def get_conversation(conversation_id: str):
     """Get a specific conversation with all messages."""

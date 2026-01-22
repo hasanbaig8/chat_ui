@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Claude Chat</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
     <link rel="stylesheet" href="/static/css/main.css">
     <!-- Highlight.js for code syntax highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
@@ -60,8 +61,26 @@
                     <!-- Messages will be populated here -->
                 </div>
 
-                <!-- Input Area -->
-                <div class="input-area">
+                <!-- Input Area with Stats -->
+                <div class="input-area-wrapper">
+                    <!-- Context Stats Box -->
+                    <div class="context-stats" id="context-stats">
+                        <div class="context-stat">
+                            <span class="stat-label">Messages</span>
+                            <span class="stat-value" id="stat-messages">0</span>
+                        </div>
+                        <div class="context-stat">
+                            <span class="stat-label">Context</span>
+                            <span class="stat-value" id="stat-context">0 / 200K</span>
+                        </div>
+                        <div class="context-stat" id="stat-pruned-container" style="display: none;">
+                            <span class="stat-label">Pruned</span>
+                            <span class="stat-value stat-warning" id="stat-pruned">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="input-area">
                     <div class="file-previews" id="file-previews">
                         <!-- File previews will appear here -->
                     </div>
@@ -69,6 +88,9 @@
                         <div class="input-wrapper">
                             <button class="file-upload-btn" id="server-file-btn" title="Browse server files">
                                 &#128206;
+                            </button>
+                            <button class="file-upload-btn" id="prompts-btn" title="Insert prompt from library">
+                                📝
                             </button>
                             <textarea
                                 id="message-input"
@@ -81,6 +103,7 @@
                             </button>
                         </div>
                     </div>
+                </div>
                 </div>
             </main>
 
@@ -150,6 +173,17 @@
                         <label for="system-prompt">System Prompt</label>
                         <textarea id="system-prompt" rows="4" placeholder="Optional system prompt..."></textarea>
                     </div>
+
+                    <!-- Prompt Library -->
+                    <div class="setting-group">
+                        <div class="prompt-library-header">
+                            <label>Prompt Library</label>
+                            <button class="btn-small" id="add-prompt-btn">+ Add Prompt</button>
+                        </div>
+                        <div id="prompt-library-list" class="prompt-library-list">
+                            <!-- Prompts will be listed here -->
+                        </div>
+                    </div>
                 </div>
             </aside>
         </div>
@@ -175,6 +209,43 @@
         </div>
     </div>
 
+    <!-- Prompt Library Modal -->
+    <div class="modal-overlay" id="prompt-library-modal">
+        <div class="modal-content prompt-library-modal">
+            <div class="modal-header">
+                <h3>Prompt Library</h3>
+                <button class="icon-btn" id="close-prompt-library">&times;</button>
+            </div>
+            <div class="prompt-library-modal-list" id="prompt-library-modal-list">
+                <!-- Prompts will be listed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Prompt Modal -->
+    <div class="modal-overlay" id="edit-prompt-modal">
+        <div class="modal-content edit-prompt-modal">
+            <div class="modal-header">
+                <h3 id="edit-prompt-title">Add Prompt</h3>
+                <button class="icon-btn" id="close-edit-prompt">&times;</button>
+            </div>
+            <div class="edit-prompt-form">
+                <div class="form-group">
+                    <label for="prompt-name">Prompt Name</label>
+                    <input type="text" id="prompt-name" placeholder="e.g., Summarize Academic Paper">
+                </div>
+                <div class="form-group">
+                    <label for="prompt-content">Prompt Content</label>
+                    <textarea id="prompt-content" rows="10" placeholder="Enter your prompt template..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancel-edit-prompt">Cancel</button>
+                <button class="btn btn-primary" id="save-prompt">Save</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loading-overlay">
         <div class="loading-spinner"></div>
@@ -184,6 +255,7 @@
     <script src="/static/js/conversations.js"></script>
     <script src="/static/js/files.js"></script>
     <script src="/static/js/settings.js"></script>
+    <script src="/static/js/prompts.js"></script>
     <script src="/static/js/chat.js"></script>
     <script src="/static/js/app.js"></script>
 </body>

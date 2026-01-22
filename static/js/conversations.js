@@ -153,6 +153,7 @@ const ConversationsManager = {
             item.innerHTML = `
                 <span class="conversation-title">${titleHtml}</span>
                 <div class="conversation-actions">
+                    <button class="conversation-duplicate" title="Duplicate">📋</button>
                     <button class="conversation-rename" title="Rename">✏️</button>
                     <button class="conversation-delete" title="Delete">&times;</button>
                 </div>
@@ -163,7 +164,8 @@ const ConversationsManager = {
             // Click to select conversation
             item.addEventListener('click', (e) => {
                 if (!e.target.classList.contains('conversation-delete') &&
-                    !e.target.classList.contains('conversation-rename')) {
+                    !e.target.classList.contains('conversation-rename') &&
+                    !e.target.classList.contains('conversation-duplicate')) {
                     this.selectConversation(conv.id);
                 }
             });
@@ -172,6 +174,12 @@ const ConversationsManager = {
             titleEl.addEventListener('dblclick', (e) => {
                 e.stopPropagation();
                 this.startRename(conv.id, titleEl);
+            });
+
+            // Duplicate button
+            item.querySelector('.conversation-duplicate').addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.duplicateConversation(conv.id);
             });
 
             // Rename button
@@ -334,6 +342,34 @@ const ConversationsManager = {
 
         // Prevent click from bubbling
         input.addEventListener('click', (e) => e.stopPropagation());
+    },
+
+    /**
+     * Duplicate a conversation
+     */
+    async duplicateConversation(conversationId) {
+        try {
+            const response = await fetch(`/api/conversations/${conversationId}/duplicate`, {
+                method: 'POST'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to duplicate conversation');
+            }
+
+            const newConversation = await response.json();
+
+            // Add to local state at the top
+            this.conversations.unshift(newConversation);
+
+            // Select the new conversation
+            this.selectConversation(newConversation.id);
+
+            this.renderConversationsList();
+        } catch (error) {
+            console.error('Failed to duplicate conversation:', error);
+            alert('Failed to duplicate conversation');
+        }
     },
 
     /**

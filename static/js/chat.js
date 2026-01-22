@@ -9,6 +9,7 @@ const ChatManager = {
     editingPosition: null,
     originalEditContent: null,  // Original content when editing
     retryPosition: null,  // Position for retry operations
+    lastPrunedCount: 0,  // Track number of pruned messages
 
     // Model context limits (in tokens)
     MODEL_LIMITS: {
@@ -159,6 +160,8 @@ const ChatManager = {
         }
 
         const prunedCount = messages.length - prunedMessages.length;
+        this.lastPrunedCount = prunedCount;
+
         if (prunedCount > 0) {
             const settings = SettingsManager?.getSettings() || {};
             const pruneThreshold = settings.prune_threshold || 0.7;
@@ -201,7 +204,9 @@ const ChatManager = {
                 });
             });
 
-            this.scrollToBottom();
+            // Force scroll to bottom when loading a conversation
+            this.scrollToBottom(true);
+            this.updateContextStats();
         } else {
             document.getElementById('welcome-message').style.display = '';
         }
@@ -269,7 +274,7 @@ const ChatManager = {
             total_versions: 1
         };
         this.messages.push(userMsg);
-        this.renderMessage(userMsg);
+        this.renderMessage(userMsg, true); // Force scroll to bottom for new message
         await ConversationsManager.addMessage('user', content);
 
         await this.streamResponse();
@@ -489,6 +494,50 @@ const ChatManager = {
     },
 
     /**
+     * Copy message content to clipboard
+     */
+    async copyMessage(messageEl) {
+        const contentEl = messageEl.querySelector('.message-content');
+        if (!contentEl) return;
+
+        // Extract text content, skipping thinking blocks
+        let textToCopy = '';
+
+        // Get all text nodes, but skip thinking content
+        const thinkingBlock = contentEl.querySelector('.thinking-block');
+        if (thinkingBlock) {
+            // Clone the content element and remove thinking block from clone
+            const clone = contentEl.cloneNode(true);
+            const thinkingClone = clone.querySelector('.thinking-block');
+            if (thinkingClone) thinkingClone.remove();
+            textToCopy = clone.textContent.trim();
+        } else {
+            textToCopy = contentEl.textContent.trim();
+        }
+
+        if (!textToCopy) return;
+
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+
+            // Show visual feedback
+            const copyBtn = messageEl.querySelector('.copy-btn');
+            if (copyBtn) {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✓';
+                copyBtn.style.color = '#4CAF50';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.color = '';
+                }, 1000);
+            }
+        } catch (error) {
+            console.error('Failed to copy:', error);
+            alert('Failed to copy to clipboard');
+        }
+    },
+
+    /**
      * Retry an assistant message (called from user message with assistant position)
      */
     async retryMessage(assistantPosition) {
@@ -596,6 +645,9 @@ const ChatManager = {
         const container = document.getElementById('messages-container');
         container.appendChild(messageEl);
 
+        // Force scroll to bottom when starting a new response
+        this.scrollToBottom(true);
+
         let thinkingContent = '';
         let textContent = '';
         let thinkingEl = null;
@@ -688,6 +740,7 @@ const ChatManager = {
             this.isStreaming = false;
             this.abortController = null;
             this.updateSendButton();
+            this.updateContextStats();
 
             if (textContent && conversationId) {
                 if (isRetry && this.retryPosition !== null) {
@@ -788,7 +841,7 @@ const ChatManager = {
      * For user messages: edit button, retry button, and version nav for assistant response
      * For assistant messages: no action buttons (controls are on user message above)
      */
-    createMessageElement(role, position = 0, version = 1, totalVersions = 1, nextVersionInfo = null) {
+    createMessageElement(role, position = 0, version = 1, totalVersions = 1, nextVersionInfo = null, timestamp = null) {
         const el = document.createElement('div');
         el.className = `message ${role}`;
         el.dataset.position = position;
@@ -796,12 +849,13 @@ const ChatManager = {
 
         let actionsHtml = '';
         if (role === 'user') {
-            // User messages get edit, retry, and version nav for the assistant response
+            // User messages get copy, edit, retry, and version nav for the assistant response
             const assistantInfo = nextVersionInfo || { version: 1, totalVersions: 1, hasResponse: false };
             const assistantPosition = position + 1;
 
             actionsHtml = `
                 <div class="message-actions">
+                    <button class="action-btn copy-btn" title="Copy">📋</button>
                     <button class="action-btn edit-btn" title="Edit">✏️</button>
                     <button class="action-btn retry-btn" title="Regenerate response" data-assistant-position="${assistantPosition}">🔄</button>
                     <div class="version-nav" data-assistant-position="${assistantPosition}" style="${assistantInfo.totalVersions > 1 ? '' : 'display: none;'}">
@@ -811,20 +865,38 @@ const ChatManager = {
                     </div>
                 </div>
             `;
+        } else {
+            // Assistant messages get a copy button
+            actionsHtml = `
+                <div class="message-actions">
+                    <button class="action-btn copy-btn" title="Copy">📋</button>
+                </div>
+            `;
         }
-        // Assistant messages have no action buttons - controls are on the user message above
+
+        // Format timestamp if provided
+        let timestampHtml = '';
+        if (timestamp) {
+            const time = this.formatTimestamp(timestamp);
+            timestampHtml = `<div class="message-timestamp">${time}</div>`;
+        }
 
         el.innerHTML = `
             <div class="message-content"></div>
+            ${timestampHtml}
             ${actionsHtml}
         `;
 
         // Bind action buttons
+        const copyBtn = el.querySelector('.copy-btn');
         const editBtn = el.querySelector('.edit-btn');
         const retryBtn = el.querySelector('.retry-btn');
         const prevBtn = el.querySelector('.prev-btn');
         const nextBtn = el.querySelector('.next-btn');
 
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => this.copyMessage(el));
+        }
         if (editBtn) {
             editBtn.addEventListener('click', () => this.editMessage(position));
         }
@@ -847,10 +919,35 @@ const ChatManager = {
     },
 
     /**
+     * Format timestamp for display
+     */
+    formatTimestamp(timestamp) {
+        if (!timestamp) return '';
+
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        // Less than 1 minute: "Just now"
+        if (diffMins < 1) return 'Just now';
+        // Less than 1 hour: "X mins ago"
+        if (diffHours < 1) return `${diffMins} ${diffMins === 1 ? 'min' : 'mins'} ago`;
+        // Less than 24 hours: "X hours ago"
+        if (diffDays < 1) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
+        // Less than 7 days: "X days ago"
+        if (diffDays < 7) return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+        // Older: show date
+        return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
+    },
+
+    /**
      * Render a message to the UI
      */
-    renderMessage(msg) {
-        const { role, content, thinking, position = 0, version = 1, total_versions = 1 } = msg;
+    renderMessage(msg, forceScroll = false) {
+        const { role, content, thinking, position = 0, version = 1, total_versions = 1, created_at } = msg;
 
         // For user messages, get the next assistant response version info
         let nextVersionInfo = null;
@@ -858,7 +955,7 @@ const ChatManager = {
             nextVersionInfo = this.getNextAssistantVersionInfo(position);
         }
 
-        const el = this.createMessageElement(role, position, version, total_versions, nextVersionInfo);
+        const el = this.createMessageElement(role, position, version, total_versions, nextVersionInfo, created_at);
         const contentEl = el.querySelector('.message-content');
 
         if (thinking) {
@@ -908,9 +1005,12 @@ const ChatManager = {
             contentEl.innerHTML += this.formatText(content);
         }
 
+        // Add copy buttons to code blocks
+        this.addCodeCopyButtons(contentEl);
+
         const container = document.getElementById('messages-container');
         container.appendChild(el);
-        this.scrollToBottom();
+        this.scrollToBottom(forceScroll);
     },
 
     createThinkingBlock() {
@@ -949,6 +1049,9 @@ const ChatManager = {
             contentEl.insertBefore(thinkingBlock, contentEl.firstChild);
         }
 
+        // Add copy buttons to code blocks
+        this.addCodeCopyButtons(contentEl);
+
         contentEl.appendChild(indicator);
     },
 
@@ -979,15 +1082,106 @@ const ChatManager = {
         return html;
     },
 
+    /**
+     * Add copy buttons to code blocks in a container
+     */
+    addCodeCopyButtons(container) {
+        const codeBlocks = container.querySelectorAll('pre');
+
+        codeBlocks.forEach(pre => {
+            // Skip if already wrapped
+            if (pre.parentElement?.classList.contains('code-block-wrapper')) {
+                return;
+            }
+
+            // Create wrapper
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+
+            // Wrap the pre element
+            pre.parentNode.insertBefore(wrapper, pre);
+            wrapper.appendChild(pre);
+
+            // Create copy button
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'code-copy-btn';
+            copyBtn.textContent = 'Copy';
+            copyBtn.addEventListener('click', async () => {
+                const codeEl = pre.querySelector('code');
+                const code = codeEl ? codeEl.textContent : pre.textContent;
+
+                try {
+                    await navigator.clipboard.writeText(code);
+                    copyBtn.textContent = 'Copied!';
+                    copyBtn.classList.add('copied');
+
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy';
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                } catch (error) {
+                    console.error('Failed to copy code:', error);
+                    copyBtn.textContent = 'Failed';
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy';
+                    }, 2000);
+                }
+            });
+
+            wrapper.appendChild(copyBtn);
+        });
+    },
+
     escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     },
 
-    scrollToBottom() {
+    scrollToBottom(force = false) {
         const container = document.getElementById('messages-container');
-        container.scrollTop = container.scrollHeight;
+
+        if (force) {
+            // Force scroll to bottom (e.g., when sending a new message)
+            container.scrollTop = container.scrollHeight;
+        } else {
+            // Only auto-scroll if user is near the bottom (within 150px)
+            // This prevents fighting the user when they scroll up during streaming
+            const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 150;
+
+            if (isNearBottom) {
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+    },
+
+    updateContextStats() {
+        const settings = SettingsManager?.getSettings() || {};
+        const model = settings.model || 'claude-3-5-sonnet-20241022';
+        const modelLimit = this.MODEL_LIMITS[model] || 200000;
+
+        // Calculate total tokens
+        let totalTokens = 0;
+        this.messages.forEach(msg => {
+            totalTokens += this.estimateTokens(msg.content);
+        });
+
+        // Update UI
+        document.getElementById('stat-messages').textContent = this.messages.length;
+
+        const contextPercentage = ((totalTokens / modelLimit) * 100).toFixed(0);
+        const tokensFormatted = totalTokens >= 1000 ? `${(totalTokens / 1000).toFixed(1)}K` : totalTokens;
+        const limitFormatted = modelLimit >= 1000 ? `${(modelLimit / 1000).toFixed(0)}K` : modelLimit;
+        document.getElementById('stat-context').textContent = `${tokensFormatted} / ${limitFormatted} (${contextPercentage}%)`;
+
+        // Show/hide pruned messages stat
+        const prunedContainer = document.getElementById('stat-pruned-container');
+        if (this.lastPrunedCount > 0) {
+            prunedContainer.style.display = '';
+            document.getElementById('stat-pruned').textContent = `${this.lastPrunedCount}`;
+        } else {
+            prunedContainer.style.display = 'none';
+        }
     },
 
     stopStreaming() {

@@ -539,3 +539,57 @@ class ConversationStore:
                     results.append(conv)
 
             return results
+
+    async def duplicate_conversation(self, conversation_id: str) -> Optional[Dict[str, Any]]:
+        """Duplicate a conversation with all its messages."""
+        async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
+
+            # Get original conversation
+            cursor = await db.execute(
+                "SELECT * FROM conversations WHERE id = ?",
+                (conversation_id,)
+            )
+            original = await cursor.fetchone()
+            if not original:
+                return None
+
+            original_dict = dict(original)
+
+            # Create new conversation with "Copy of" prefix
+            new_id = str(uuid.uuid4())
+            now = datetime.utcnow().isoformat()
+            new_title = f"Copy of {original_dict['title']}"
+
+            await db.execute(
+                """INSERT INTO conversations (id, title, created_at, updated_at, model, system_prompt, active_versions)
+                   VALUES (?, ?, ?, ?, ?, ?, '{}')""",
+                (new_id, new_title, now, now, original_dict.get('model'), original_dict.get('system_prompt'))
+            )
+
+            # Copy all messages
+            cursor = await db.execute(
+                "SELECT * FROM messages WHERE conversation_id = ? ORDER BY position, version",
+                (conversation_id,)
+            )
+            messages = [dict(row) async for row in cursor]
+
+            for msg in messages:
+                new_msg_id = str(uuid.uuid4())
+                await db.execute(
+                    """INSERT INTO messages (id, conversation_id, role, content, thinking, position, version, created_at)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (new_msg_id, new_id, msg['role'], msg['content'], msg.get('thinking'),
+                     msg['position'], msg['version'], now)
+                )
+
+            await db.commit()
+
+            return {
+                "id": new_id,
+                "title": new_title,
+                "created_at": now,
+                "updated_at": now,
+                "model": original_dict.get('model'),
+                "system_prompt": original_dict.get('system_prompt')
+            }
