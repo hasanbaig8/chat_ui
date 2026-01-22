@@ -47,8 +47,10 @@ class ConversationStore:
                         thinking TEXT,
                         position INTEGER NOT NULL,
                         version INTEGER NOT NULL DEFAULT 1,
+                        parent_message_id TEXT,
                         created_at TEXT NOT NULL,
-                        FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
+                        FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
+                        FOREIGN KEY (parent_message_id) REFERENCES messages(id) ON DELETE SET NULL
                     )
                 """)
 
@@ -69,8 +71,8 @@ class ConversationStore:
                         conv_positions[conv_id] += 1
 
                         await db.execute(
-                            """INSERT INTO messages_new (id, conversation_id, role, content, thinking, position, version, created_at)
-                               VALUES (?, ?, ?, ?, ?, ?, 1, ?)""",
+                            """INSERT INTO messages_new (id, conversation_id, role, content, thinking, position, version, parent_message_id, created_at)
+                               VALUES (?, ?, ?, ?, ?, ?, 1, NULL, ?)""",
                             (msg_id, conv_id, role, content, thinking, pos, created_at)
                         )
 
@@ -78,9 +80,18 @@ class ConversationStore:
 
                 await db.execute("ALTER TABLE messages_new RENAME TO messages")
 
+            # Add parent_message_id column if missing (for existing databases)
+            if 'parent_message_id' not in columns and 'position' in columns:
+                await db.execute("ALTER TABLE messages ADD COLUMN parent_message_id TEXT")
+
             await db.execute("""
                 CREATE INDEX IF NOT EXISTS idx_messages_conversation
                 ON messages(conversation_id, position, version)
+            """)
+
+            await db.execute("""
+                CREATE INDEX IF NOT EXISTS idx_messages_parent
+                ON messages(parent_message_id)
             """)
 
             # Add active_versions column if missing
@@ -120,7 +131,13 @@ class ConversationStore:
         }
 
     async def get_conversation(self, conversation_id: str) -> Optional[Dict[str, Any]]:
-        """Get a conversation with active messages only."""
+        """Get a conversation with active messages following the branch chain.
+
+        Messages are selected based on:
+        1. At position 0: use active_versions to select which user message version
+        2. At subsequent positions: select messages whose parent matches the previous selected message
+        3. If multiple messages have the same parent (retries), use active_versions to pick
+        """
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
 
@@ -143,34 +160,76 @@ class ConversationStore:
             )
             all_messages = [dict(row) async for row in cursor]
 
-            # Filter to active versions and add version info
-            messages = []
-            position_versions = {}  # Track available versions at each position
+            if not all_messages:
+                conversation["messages"] = []
+                return conversation
 
+            # Group messages by position for version counting
+            messages_by_position = {}
             for msg in all_messages:
-                pos = str(msg['position'])
-                if pos not in position_versions:
-                    position_versions[pos] = []
-                position_versions[pos].append(msg['version'])
+                pos = msg['position']
+                if pos not in messages_by_position:
+                    messages_by_position[pos] = []
+                messages_by_position[pos].append(msg)
 
-                # Use active version or default to highest version
-                active_ver = active_versions.get(pos, max(position_versions[pos]))
+            # Build the active message chain following parent links
+            messages = []
+            current_parent_id = None
+            max_position = max(messages_by_position.keys())
 
-                if msg['version'] == active_ver:
-                    try:
-                        msg["content"] = json.loads(msg["content"])
-                    except (json.JSONDecodeError, TypeError):
-                        pass
+            for pos in range(max_position + 1):
+                if pos not in messages_by_position:
+                    continue
 
-                    # Add version info for UI
-                    msg["total_versions"] = len(position_versions[pos])
-                    msg["current_version"] = msg['version']
-                    messages.append(msg)
+                candidates = messages_by_position[pos]
 
-            # Update total_versions now that we know all versions
-            for msg in messages:
-                pos = str(msg['position'])
-                msg["total_versions"] = len(position_versions[pos])
+                # Filter candidates by parent_message_id
+                if pos == 0:
+                    # First message has no parent - select by active_versions
+                    matching = candidates
+                else:
+                    # Find messages whose parent is the previously selected message
+                    matching = [m for m in candidates if m.get('parent_message_id') == current_parent_id]
+
+                    # Fallback: if no parent match (legacy data), use all candidates
+                    if not matching:
+                        matching = candidates
+
+                if not matching:
+                    continue
+
+                # Count versions for this position (all candidates, not just matching)
+                total_versions_at_pos = len(candidates)
+
+                # If multiple matching (retries with same parent), use active_versions
+                active_ver = active_versions.get(str(pos))
+                selected = None
+
+                if active_ver:
+                    # Try to find the specifically requested version
+                    for m in matching:
+                        if m['version'] == active_ver:
+                            selected = m
+                            break
+
+                if not selected:
+                    # Default to the latest matching version
+                    selected = max(matching, key=lambda m: m['version'])
+
+                # Parse content
+                try:
+                    selected["content"] = json.loads(selected["content"])
+                except (json.JSONDecodeError, TypeError):
+                    pass
+
+                # Add version info for UI
+                # For proper branching, count only versions that share the same parent
+                versions_with_same_parent = [m for m in candidates if m.get('parent_message_id') == selected.get('parent_message_id')]
+                selected["total_versions"] = len(versions_with_same_parent) if versions_with_same_parent else total_versions_at_pos
+                selected["current_version"] = selected['version']
+
+                messages.append(selected)
+                current_parent_id = selected['id']
 
             conversation["messages"] = messages
             return conversation
@@ -240,9 +299,16 @@ class ConversationStore:
         role: str,
         content: Any,
         thinking: Optional[str] = None,
-        streaming: bool = False
+        streaming: bool = False,
+        parent_message_id: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Add a message to a conversation."""
+        """Add a message to a conversation.
+
+        Args:
+            parent_message_id: ID of the message this is responding to.
+                - For user messages: parent is the previous assistant message (or None for first)
+                - For assistant messages: parent is the user message being responded to
+        """
         message_id = str(uuid.uuid4())
         now = datetime.utcnow().isoformat()
         content_str = json.dumps(content) if not isinstance(content, str) else content
@@ -258,9 +324,9 @@ class ConversationStore:
             position = 0 if row[0] is None else row[0] + 1
 
             await db.execute(
-                """INSERT INTO messages (id, conversation_id, role, content, thinking, position, version, created_at)
-                   VALUES (?, ?, ?, ?, ?, ?, 1, ?)""",
-                (message_id, conversation_id, role, content_str, thinking, position, now)
+                """INSERT INTO messages (id, conversation_id, role, content, thinking, position, version, parent_message_id, created_at)
+                   VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)""",
+                (message_id, conversation_id, role, content_str, thinking, position, parent_message_id, now)
             )
             await db.execute(
                 "UPDATE conversations SET updated_at = ? WHERE id = ?",
@@ -278,6 +344,7 @@ class ConversationStore:
             "version": 1,
             "total_versions": 1,
             "current_version": 1,
+            "parent_message_id": parent_message_id,
             "created_at": now,
             "streaming": streaming
         }
@@ -322,26 +389,30 @@ class ConversationStore:
         position: int,
         new_content: Any
     ) -> Dict[str, Any]:
-        """Edit a message at a position, creating a new version."""
+        """Edit a message at a position, creating a new version (new branch).
+
+        The new version keeps the same parent as the original message.
+        """
         message_id = str(uuid.uuid4())
         now = datetime.utcnow().isoformat()
         content_str = json.dumps(new_content) if not isinstance(new_content, str) else new_content
 
         async with aiosqlite.connect(self.db_path) as db:
-            # Get current max version at this position
+            # Get current max version and info at this position
             cursor = await db.execute(
-                "SELECT MAX(version), role FROM messages WHERE conversation_id = ? AND position = ?",
+                "SELECT MAX(version), role, parent_message_id FROM messages WHERE conversation_id = ? AND position = ?",
                 (conversation_id, position)
             )
             row = await cursor.fetchone()
             new_version = (row[0] or 0) + 1
             role = row[1] or 'user'
+            parent_message_id = row[2]  # Keep same parent as original
 
-            # Insert new version
+            # Insert new version with same parent
             await db.execute(
-                """INSERT INTO messages (id, conversation_id, role, content, thinking, position, version, created_at)
-                   VALUES (?, ?, ?, ?, NULL, ?, ?, ?)""",
-                (message_id, conversation_id, role, content_str, position, new_version, now)
+                """INSERT INTO messages (id, conversation_id, role, content, thinking, position, version, parent_message_id, created_at)
+                   VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?)""",
+                (message_id, conversation_id, role, content_str, position, new_version, parent_message_id, now)
             )
 
             # Update active versions to use this new version
@@ -371,6 +442,7 @@ class ConversationStore:
             "content": new_content,
             "position": position,
             "version": new_version,
+            "parent_message_id": parent_message_id,
             "created_at": now
         }
 
@@ -379,27 +451,33 @@ class ConversationStore:
         conversation_id: str,
         position: int,
         new_content: Any,
-        thinking: Optional[str] = None
+        thinking: Optional[str] = None,
+        parent_message_id: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Create a new version of an assistant message (retry)."""
+        """Create a new version of an assistant message (retry).
+
+        The retry keeps the same parent (the user message it responds to).
+        """
         message_id = str(uuid.uuid4())
         now = datetime.utcnow().isoformat()
         content_str = json.dumps(new_content) if not isinstance(new_content, str) else new_content
 
         async with aiosqlite.connect(self.db_path) as db:
-            # Get current max version at this position
+            # Get current max version and parent at this position
             cursor = await db.execute(
-                "SELECT MAX(version) FROM messages WHERE conversation_id = ? AND position = ?",
+                "SELECT MAX(version), parent_message_id FROM messages WHERE conversation_id = ? AND position = ?",
                 (conversation_id, position)
             )
             row = await cursor.fetchone()
             new_version = (row[0] or 0) + 1
+            # Use provided parent or keep existing parent
+            actual_parent = parent_message_id if parent_message_id else row[1]
 
-            # Insert new version
+            # Insert new version with same parent
             await db.execute(
-                """INSERT INTO messages (id, conversation_id, role, content, thinking, position, version, created_at)
-                   VALUES (?, ?, 'assistant', ?, ?, ?, ?, ?)""",
-                (message_id, conversation_id, content_str, thinking, position, new_version, now)
+                """INSERT INTO messages (id, conversation_id, role, content, thinking, position, version, parent_message_id, created_at)
+                   VALUES (?, ?, 'assistant', ?, ?, ?, ?, ?, ?)""",
+                (message_id, conversation_id, content_str, thinking, position, new_version, actual_parent, now)
             )
 
             # Update active versions
@@ -425,6 +503,7 @@ class ConversationStore:
             "thinking": thinking,
             "position": position,
             "version": new_version,
+            "parent_message_id": actual_parent,
             "created_at": now
         }
 
@@ -434,15 +513,23 @@ class ConversationStore:
         position: int,
         version: int
     ) -> bool:
-        """Switch to a different version at a position."""
+        """Switch to a different version at a position.
+
+        When switching a user message version, also clears downstream active_versions
+        so that the corresponding assistant responses are shown (defaults to matching version
+        or latest available).
+        """
         async with aiosqlite.connect(self.db_path) as db:
-            # Verify the version exists
+            # Verify the version exists and get the role
             cursor = await db.execute(
-                "SELECT 1 FROM messages WHERE conversation_id = ? AND position = ? AND version = ?",
+                "SELECT role FROM messages WHERE conversation_id = ? AND position = ? AND version = ?",
                 (conversation_id, position, version)
             )
-            if not await cursor.fetchone():
+            row = await cursor.fetchone()
+            if not row:
                 return False
+
+            role = row[0]
 
             # Update active versions
             cursor = await db.execute(
@@ -453,6 +540,13 @@ class ConversationStore:
             active_versions = json.loads(row[0] or '{}')
             active_versions[str(position)] = version
 
+            # If switching a user message, clear downstream positions
+            # This ensures the corresponding assistant response is shown
+            if role == 'user':
+                keys_to_remove = [k for k in active_versions.keys() if int(k) > position]
+                for k in keys_to_remove:
+                    del active_versions[k]
+
             await db.execute(
                 "UPDATE conversations SET active_versions = ? WHERE id = ?",
                 (json.dumps(active_versions), conversation_id)
@@ -461,7 +555,7 @@ class ConversationStore:
             return True
 
     async def get_messages_up_to(self, conversation_id: str, position: int) -> List[Dict[str, Any]]:
-        """Get active messages up to (not including) a position."""
+        """Get active messages up to (not including) a position, following the branch chain."""
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
 
@@ -474,31 +568,69 @@ class ConversationStore:
 
             cursor = await db.execute(
                 """SELECT * FROM messages WHERE conversation_id = ? AND position < ?
-                   ORDER BY position""",
+                   ORDER BY position, version""",
                 (conversation_id, position)
             )
             all_messages = [dict(row) async for row in cursor]
 
-            # Group by position and filter to active versions
-            position_messages = {}
+            if not all_messages:
+                return []
+
+            # Group by position
+            messages_by_position = {}
             for msg in all_messages:
                 pos = msg['position']
-                if pos not in position_messages:
-                    position_messages[pos] = []
-                position_messages[pos].append(msg)
+                if pos not in messages_by_position:
+                    messages_by_position[pos] = []
+                messages_by_position[pos].append(msg)
 
+            # Build the active message chain following parent links
             messages = []
-            for pos in sorted(position_messages.keys()):
-                versions = position_messages[pos]
-                active_ver = active_versions.get(str(pos), max(m['version'] for m in versions))
-                for msg in versions:
-                    if msg['version'] == active_ver:
-                        try:
-                            msg["content"] = json.loads(msg["content"])
-                        except (json.JSONDecodeError, TypeError):
-                            pass
-                        messages.append(msg)
-                        break
+            current_parent_id = None
+            max_pos = max(messages_by_position.keys()) if messages_by_position else -1
+
+            for pos in range(max_pos + 1):
+                if pos not in messages_by_position:
+                    continue
+
+                candidates = messages_by_position[pos]
+
+                # Filter by parent
+                if pos == 0:
+                    matching = candidates
+                else:
+                    matching = [m for m in candidates if m.get('parent_message_id') == current_parent_id]
+                    if not matching:
+                        matching = candidates  # Fallback for legacy data
+
+                if not matching:
+                    continue
+
+                # Select based on active_versions
+                active_ver = active_versions.get(str(pos))
+                selected = None
+
+                if active_ver:
+                    for m in matching:
+                        if m['version'] == active_ver:
+                            selected = m
+                            break
+
+                if not selected:
+                    selected = max(matching, key=lambda m: m['version'])
+
+                # Parse content
+                try:
+                    selected["content"] = json.loads(selected["content"])
+                except (json.JSONDecodeError, TypeError):
+                    pass
+
+                # Add version info
+                versions_with_same_parent = [m for m in candidates if m.get('parent_message_id') == selected.get('parent_message_id')]
+                selected["total_versions"] = len(versions_with_same_parent) if versions_with_same_parent else len(candidates)
+
+                messages.append(selected)
+                current_parent_id = selected['id']
 
             return messages
 

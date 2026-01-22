@@ -46,6 +46,7 @@ class ChatRequest(BaseModel):
     """Request body for chat endpoint."""
     messages: List[Message]
     conversation_id: Optional[str] = None  # For saving streaming content to DB
+    parent_message_id: Optional[str] = None  # ID of message this response is to (for branching)
     model: str = DEFAULT_MODEL
     system_prompt: Optional[str] = None
     temperature: float = DEFAULT_TEMPERATURE
@@ -99,7 +100,8 @@ async def stream_chat(request: ChatRequest):
                     role="assistant",
                     content="",
                     thinking=None,
-                    streaming=True
+                    streaming=True,
+                    parent_message_id=request.parent_message_id
                 )
                 message_id = msg_record["id"]
                 # Send message_id to frontend so it knows which message is streaming

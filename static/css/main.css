@@ -366,10 +366,20 @@ html, body {
 }
 
 .message.user {
-    background-color: var(--color-primary);
-    color: white;
+    background-color: transparent;
     margin-left: auto;
     max-width: 600px;
+    padding: 0;
+}
+
+.message.user .message-content {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 16px;
+    width: fit-content;
+    max-width: 100%;
+    margin-left: auto;
 }
 
 .message.assistant {
@@ -386,7 +396,9 @@ html, body {
 }
 
 .message.user .message-timestamp {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-text-secondary);
+    text-align: right;
+    margin-top: 4px;
 }
 
 /* Message Actions */
@@ -397,16 +409,52 @@ html, body {
     margin-top: 8px;
     padding-top: 8px;
     border-top: 1px solid var(--color-border-light);
+}
+
+/* Hide action buttons by default, show on hover (but not version badge) */
+.message-actions .action-btn {
     opacity: 0;
     transition: opacity var(--transition-fast);
 }
 
-.message:hover .message-actions {
+.message:hover .message-actions .action-btn {
+    opacity: 0.7;
+}
+
+.message:hover .message-actions .action-btn:hover {
     opacity: 1;
 }
 
+/* Version badge is always visible when present */
+.message-actions .version-badge {
+    opacity: 1;
+}
+
+/* User message actions styling */
 .message.user .message-actions {
-    border-top-color: rgba(255, 255, 255, 0.2);
+    border-top: none;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 4px 8px;
+    margin-top: 6px;
+    width: fit-content;
+    margin-left: auto;
+}
+
+.message.user .message-actions .action-btn {
+    color: var(--color-text);
+}
+
+/* Edit mode - expand to full width */
+.message.user.editing {
+    max-width: 90%;
+}
+
+.message.user.editing .message-content {
+    background-color: var(--color-surface);
+    border: 2px solid var(--color-primary);
+    width: 100%;
 }
 
 .action-btn {
@@ -421,12 +469,11 @@ html, body {
     font-size: 14px;
     cursor: pointer;
     transition: all var(--transition-fast);
-    opacity: 0.7;
 }
 
 .action-btn:hover {
     background-color: var(--color-border-light);
-    opacity: 1;
+    opacity: 1 !important;
 }
 
 .message.user .action-btn:hover {
@@ -437,37 +484,55 @@ html, body {
     background-color: rgba(76, 175, 80, 0.2) !important;
 }
 
-/* Version Navigation */
-.version-nav {
-    display: flex;
+.retry-btn:hover {
+    background-color: rgba(193, 95, 60, 0.2) !important;
+}
+
+/* Version Badge - Always visible on messages with multiple versions */
+.version-badge {
+    display: inline-flex;
     align-items: center;
     gap: 4px;
+    padding: 4px 8px;
+    background: var(--color-border);
+    border-radius: 12px;
+    font-size: 12px;
     margin-left: auto;
+    opacity: 1 !important; /* Always visible when present */
+}
+
+/* Version badge in user message action bar */
+.message.user .version-badge {
+    background: var(--color-border-light);
 }
 
 .version-indicator {
     font-size: 12px;
-    color: var(--color-text-secondary);
-    min-width: 32px;
+    color: var(--color-text);
+    min-width: 28px;
     text-align: center;
+    font-weight: 500;
 }
 
-.message.user .version-indicator {
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.nav-btn {
-    width: 24px;
-    height: 24px;
+.version-nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-light);
+    border-radius: 4px;
     font-size: 10px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    color: var(--color-text-secondary);
 }
 
-.nav-btn:hover {
-    background-color: var(--color-border);
-}
-
-.message.user .nav-btn:hover {
-    background-color: rgba(255, 255, 255, 0.3);
+.version-nav-btn:hover {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
 }
 
 .message-content {

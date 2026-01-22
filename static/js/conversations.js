@@ -509,8 +509,12 @@ const ConversationsManager = {
 
     /**
      * Add a message to the current conversation
+     * @param {string} role - 'user' or 'assistant'
+     * @param {any} content - Message content
+     * @param {string|null} thinking - Extended thinking content
+     * @param {string|null} parentMessageId - ID of the message this responds to
      */
-    async addMessage(role, content, thinking = null) {
+    async addMessage(role, content, thinking = null, parentMessageId = null) {
         if (!this.currentConversationId) {
             return null;
         }
@@ -519,7 +523,12 @@ const ConversationsManager = {
             const response = await fetch(`/api/conversations/${this.currentConversationId}/messages`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ role, content, thinking })
+                body: JSON.stringify({
+                    role,
+                    content,
+                    thinking,
+                    parent_message_id: parentMessageId
+                })
             });
 
             return await response.json();

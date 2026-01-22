@@ -31,6 +31,7 @@ class AddMessageRequest(BaseModel):
     role: str
     content: Any
     thinking: Optional[str] = None
+    parent_message_id: Optional[str] = None
 
 
 class EditMessageRequest(BaseModel):
@@ -50,6 +51,7 @@ class RetryMessageRequest(BaseModel):
     position: int
     content: Any
     thinking: Optional[str] = None
+    parent_message_id: Optional[str] = None
 
 
 @router.on_event("startup")
@@ -136,7 +138,8 @@ async def add_message(conversation_id: str, request: AddMessageRequest):
         conversation_id=conversation_id,
         role=request.role,
         content=request.content,
-        thinking=request.thinking
+        thinking=request.thinking,
+        parent_message_id=request.parent_message_id
     )
     return message
 
@@ -192,7 +195,8 @@ async def retry_message(conversation_id: str, request: RetryMessageRequest):
         conversation_id=conversation_id,
         position=request.position,
         new_content=request.content,
-        thinking=request.thinking
+        thinking=request.thinking,
+        parent_message_id=request.parent_message_id
     )
     return message
 

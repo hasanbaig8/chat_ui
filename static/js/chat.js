@@ -292,20 +292,23 @@ const ChatManager = {
         if (conversation.messages && conversation.messages.length > 0) {
             document.getElementById('welcome-message').style.display = 'none';
 
-            // First, populate all messages so look-ahead works for version info
+            // First, populate all messages with IDs for parent tracking
             conversation.messages.forEach(msg => {
                 this.messages.push({
+                    id: msg.id,
                     role: msg.role,
                     content: msg.content,
                     position: msg.position,
                     version: msg.current_version || msg.version,
-                    total_versions: msg.total_versions || 1
+                    total_versions: msg.total_versions || 1,
+                    parent_message_id: msg.parent_message_id
                 });
             });
 
-            // Then render all messages (now getNextAssistantVersionInfo can look ahead)
+            // Then render all messages
             conversation.messages.forEach(msg => {
                 this.renderMessage({
+                    id: msg.id,
                     role: msg.role,
                     content: msg.content,
                     thinking: msg.thinking,
@@ -672,6 +675,8 @@ const ChatManager = {
                 false  // Don't clear UI - we're about to add the user's message
             );
             conversationId = conversation.id;
+            // Set activeConversationId since createConversation didn't (clearUI=false)
+            this.activeConversationId = conversationId;
         } else if (this.messages.length === 0) {
             await ConversationsManager.updateConversationTitle(
                 conversationId,
@@ -681,18 +686,25 @@ const ChatManager = {
 
         document.getElementById('welcome-message').style.display = 'none';
 
-        // Add user message
-        const position = this.messages.length;
+        // Get parent message ID (the last assistant message, if any)
+        const lastMsg = this.messages.length > 0 ? this.messages[this.messages.length - 1] : null;
+        const parentMessageId = lastMsg && lastMsg.role === 'assistant' ? lastMsg.id : null;
+
+        // Add user message to backend first to get ID
+        const savedMsg = await ConversationsManager.addMessage('user', content, null, parentMessageId);
+
+        // Add user message to local state with ID
         const userMsg = {
+            id: savedMsg?.id,
             role: 'user',
             content,
-            position,
+            position: savedMsg?.position ?? this.messages.length,
             version: 1,
-            total_versions: 1
+            total_versions: 1,
+            parent_message_id: parentMessageId
         };
         this.messages.push(userMsg);
         this.renderMessage(userMsg, true); // Force scroll to bottom for new message
-        await ConversationsManager.addMessage('user', content);
 
         await this.streamResponse();
     },
@@ -726,18 +738,21 @@ const ChatManager = {
         this.editingPosition = position;
         this.originalEditContent = textContent;
 
+        // Add editing class for expanded styling
+        userMsgEl.classList.add('editing');
+
         // Replace content with editable textarea
         const textarea = document.createElement('textarea');
         textarea.className = 'edit-textarea';
         textarea.value = textContent;
         textarea.style.cssText = `
             width: 100%;
-            min-height: 60px;
-            padding: 8px;
-            border: 2px solid rgba(255,255,255,0.5);
+            min-height: 80px;
+            padding: 12px;
+            border: none;
             border-radius: 6px;
-            background: rgba(255,255,255,0.1);
-            color: inherit;
+            background: transparent;
+            color: var(--color-text);
             font-family: inherit;
             font-size: inherit;
             line-height: 1.5;
@@ -760,8 +775,8 @@ const ChatManager = {
         saveBtn.className = 'edit-save-btn';
         saveBtn.style.cssText = `
             padding: 6px 12px;
-            background: rgba(255,255,255,0.9);
-            color: #333;
+            background: var(--color-primary);
+            color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -774,8 +789,8 @@ const ChatManager = {
         cancelBtn.className = 'edit-cancel-btn';
         cancelBtn.style.cssText = `
             padding: 6px 12px;
-            background: rgba(255,255,255,0.3);
-            color: inherit;
+            background: var(--color-border);
+            color: var(--color-text);
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -851,36 +866,70 @@ const ChatManager = {
         // Remove messages from the position AFTER this one (clear assistant response and beyond)
         this.removeMessagesFromPosition(position + 1);
 
-        // Update the user message in the UI
-        if (userMsgEl) {
-            const contentEl = userMsgEl.querySelector('.message-content');
-            if (contentEl) {
-                contentEl.innerHTML = this.formatText(newContent);
-            }
-            // Show action buttons again
-            const actionsEl = userMsgEl.querySelector('.message-actions');
-            if (actionsEl) actionsEl.style.display = '';
-        }
-
-        // Update internal message
-        const msgIndex = this.messages.findIndex(m => m.position === position);
-        if (msgIndex !== -1) {
-            this.messages[msgIndex].content = newContent;
-        }
-
         // Clear editing state
         this.editingPosition = null;
         this.originalEditContent = null;
 
-        // Force repaint
-        await new Promise(resolve => requestAnimationFrame(resolve));
-
-        // Save edit via API
-        await fetch(`/api/conversations/${conversationId}/edit`, {
+        // Save edit via API and get new version info
+        const editResponse = await fetch(`/api/conversations/${conversationId}/edit`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ position, content: newContent })
         });
+        const editData = await editResponse.json();
+        const newVersion = editData.version;
+
+        // Update internal message with new version info
+        const msgIndex = this.messages.findIndex(m => m.position === position);
+        if (msgIndex !== -1) {
+            this.messages[msgIndex].content = newContent;
+            this.messages[msgIndex].version = newVersion;
+            this.messages[msgIndex].total_versions = newVersion;
+        }
+
+        // Update the user message UI
+        if (userMsgEl) {
+            // Remove editing class
+            userMsgEl.classList.remove('editing');
+
+            const contentEl = userMsgEl.querySelector('.message-content');
+            if (contentEl) {
+                contentEl.innerHTML = this.formatText(newContent);
+            }
+
+            // Show action buttons again
+            const actionsEl = userMsgEl.querySelector('.message-actions');
+            if (actionsEl) actionsEl.style.display = '';
+
+            // Update version badge (creates it if needed, or shows/updates it)
+            userMsgEl.dataset.version = newVersion;
+            userMsgEl.dataset.totalVersions = newVersion;
+
+            let versionBadge = userMsgEl.querySelector('.version-badge');
+            if (!versionBadge && newVersion > 1) {
+                // Need to create the version badge
+                versionBadge = document.createElement('div');
+                versionBadge.className = 'version-badge';
+                versionBadge.innerHTML = `
+                    <button class="version-nav-btn prev-btn" title="Previous version">◀</button>
+                    <span class="version-indicator">${newVersion}/${newVersion}</span>
+                    <button class="version-nav-btn next-btn" title="Next version">▶</button>
+                `;
+                actionsEl.appendChild(versionBadge);
+
+                // Bind events
+                versionBadge.querySelector('.prev-btn').addEventListener('click', () => this.switchVersion(position, -1));
+                versionBadge.querySelector('.next-btn').addEventListener('click', () => this.switchVersion(position, 1));
+            } else if (versionBadge) {
+                // Update existing badge
+                if (newVersion > 1) {
+                    versionBadge.style.display = '';
+                    versionBadge.querySelector('.version-indicator').textContent = `${newVersion}/${newVersion}`;
+                } else {
+                    versionBadge.style.display = 'none';
+                }
+            }
+        }
 
         // Stream new response
         await this.streamResponseFromPosition(position + 1, false);
@@ -896,6 +945,9 @@ const ChatManager = {
         const userMsgEl = container.querySelector(`.message.user[data-position="${position}"]`);
 
         if (userMsgEl) {
+            // Remove editing class
+            userMsgEl.classList.remove('editing');
+
             const contentEl = userMsgEl.querySelector('.message-content');
             if (contentEl) {
                 contentEl.innerHTML = this.formatText(this.originalEditContent || '');
@@ -1083,13 +1135,15 @@ const ChatManager = {
         const response = await fetch(`/api/conversations/${conversationId}/messages-up-to/${position}`);
         const data = await response.json();
 
-        // Update internal messages
+        // Update internal messages with IDs
         this.messages = data.messages.map(m => ({
+            id: m.id,
             role: m.role,
             content: m.content,
             position: m.position,
             version: m.version,
-            total_versions: m.total_versions || 1
+            total_versions: m.total_versions || 1,
+            parent_message_id: m.parent_message_id
         }));
 
         // Store the retry position if this is a retry
@@ -1148,6 +1202,10 @@ const ChatManager = {
             // Prune messages to keep context under threshold
             const apiMessages = this.pruneMessages(allMessages);
 
+            // Get the user message ID (the last message) to pass as parent
+            const lastUserMsg = this.messages.length > 0 ? this.messages[this.messages.length - 1] : null;
+            const parentMessageId = lastUserMsg && lastUserMsg.role === 'user' ? lastUserMsg.id : null;
+
             // Pass conversation_id so backend can save streaming content to DB
             const response = await fetch('/api/chat/stream', {
                 method: 'POST',
@@ -1155,6 +1213,7 @@ const ChatManager = {
                 body: JSON.stringify({
                     messages: apiMessages,
                     conversation_id: isRetry ? null : conversationId,  // Don't auto-save for retries
+                    parent_message_id: isRetry ? null : parentMessageId,  // Link to parent user message
                     model: settings.model,
                     system_prompt: settings.system_prompt,
                     temperature: settings.temperature,
@@ -1253,72 +1312,72 @@ const ChatManager = {
                 this.streamingMessageId = null;
                 this.updateSendButton();
                 this.updateContextStats();
-
-                // Add to local messages array
-                if (textContent) {
-                    this.messages.push({
-                        role: 'assistant',
-                        content: textContent,
-                        position: position,
-                        version: 1,
-                        total_versions: 1
-                    });
-                }
             }
 
-            // Handle retry case - backend doesn't auto-save for retries
-            if (isRetry && textContent && conversationId) {
-                const retryPos = this.retryPosition;
+            // Handle saving and local state update
+            if (textContent && conversationId) {
+                if (isRetry) {
+                    // Retry case - save as new version
+                    const retryPos = this.retryPosition;
 
-                if (retryPos !== null) {
-                    const retryResponse = await fetch(`/api/conversations/${conversationId}/retry`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            position: retryPos,
-                            content: textContent,
-                            thinking: thinkingContent || null
-                        })
-                    });
+                    if (retryPos !== null) {
+                        // Find the user message that this is a response to (one position before)
+                        const parentUserMsg = this.messages.find(m => m.position === retryPos - 1 && m.role === 'user');
+                        const parentMessageId = parentUserMsg?.id || null;
 
-                    if (retryResponse.ok) {
-                        const retryData = await retryResponse.json();
-
-                        // Update UI only if this conversation is active
-                        if (this.activeConversationId === conversationId) {
-                            const assistantMsg = {
-                                role: 'assistant',
-                                content: textContent,
+                        const retryResponse = await fetch(`/api/conversations/${conversationId}/retry`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
                                 position: retryPos,
-                                version: retryData.version,
-                                total_versions: retryData.version
-                            };
-                            this.messages.push(assistantMsg);
+                                content: textContent,
+                                thinking: thinkingContent || null,
+                                parent_message_id: parentMessageId
+                            })
+                        });
 
-                            // Update the user message above to show version nav
-                            this.updateUserMessageVersionNav(retryPos - 1, retryData.version, retryData.version);
+                        if (retryResponse.ok) {
+                            const retryData = await retryResponse.json();
 
-                            // Update the current assistant message element position
-                            messageEl.dataset.position = retryPos;
-                            messageEl.dataset.version = retryData.version;
+                            // Update UI only if this conversation is active
+                            if (this.activeConversationId === conversationId) {
+                                // Update local messages - replace any existing at this position
+                                this.messages = this.messages.filter(m => m.position !== retryPos);
+                                this.messages.push({
+                                    id: retryData.id,
+                                    role: 'assistant',
+                                    content: textContent,
+                                    position: retryPos,
+                                    version: retryData.version,
+                                    total_versions: retryData.version,
+                                    parent_message_id: parentMessageId
+                                });
+
+                                // Update the message element
+                                if (document.contains(messageEl)) {
+                                    messageEl.dataset.position = retryPos;
+                                    messageEl.dataset.version = retryData.version;
+                                    messageEl.dataset.totalVersions = retryData.version;
+                                    messageEl.dataset.messageId = retryData.id;
+                                }
+                            }
                         }
+
+                        this.retryPosition = null;
                     }
-
-                    this.retryPosition = null;
                 } else {
-                    // For new messages, add as usual
-                    await ConversationsManager.addMessage('assistant', textContent, thinkingContent || null);
-
-                    // Update local state only if this conversation is active
+                    // Non-retry: backend already saved during streaming, just update local state with ID from streaming
                     if (this.activeConversationId === conversationId) {
-                        const assistantMsg = {
+                        const lastUserMsg = this.messages.length > 0 ? this.messages[this.messages.length - 1] : null;
+                        this.messages.push({
+                            id: this.streamingMessageId,
                             role: 'assistant',
                             content: textContent,
                             position: position,
                             version: 1,
-                            total_versions: 1
-                        };
-                        this.messages.push(assistantMsg);
+                            total_versions: 1,
+                            parent_message_id: lastUserMsg?.id
+                        });
                     }
                 }
             }
@@ -1336,77 +1395,65 @@ const ChatManager = {
     },
 
     /**
-     * Update the version nav on a user message to reflect new assistant response versions
+     * Update the version nav badge on any message
      */
-    updateUserMessageVersionNav(userPosition, currentVersion, totalVersions) {
+    updateMessageVersionNav(position, currentVersion, totalVersions) {
         const container = document.getElementById('messages-container');
-        const userMsgEl = container.querySelector(`.message.user[data-position="${userPosition}"]`);
+        const msgEl = container.querySelector(`.message[data-position="${position}"]`);
 
-        if (!userMsgEl) return;
+        if (!msgEl) return;
 
-        const versionNav = userMsgEl.querySelector('.version-nav');
-        if (versionNav) {
+        // Update data attributes
+        msgEl.dataset.version = currentVersion;
+        msgEl.dataset.totalVersions = totalVersions;
+
+        const versionBadge = msgEl.querySelector('.version-badge');
+        if (versionBadge) {
             if (totalVersions > 1) {
-                versionNav.style.display = '';
-                const indicator = versionNav.querySelector('.version-indicator');
+                versionBadge.style.display = '';
+                const indicator = versionBadge.querySelector('.version-indicator');
                 if (indicator) {
                     indicator.textContent = `${currentVersion}/${totalVersions}`;
                 }
             } else {
-                versionNav.style.display = 'none';
+                versionBadge.style.display = 'none';
             }
         }
     },
 
     /**
-     * Get version info for the next assistant response after a user message
-     */
-    getNextAssistantVersionInfo(userPosition) {
-        const nextMsg = this.messages.find(m => m.position === userPosition + 1 && m.role === 'assistant');
-        if (nextMsg) {
-            return {
-                version: nextMsg.version,
-                totalVersions: nextMsg.total_versions || 1,
-                hasResponse: true
-            };
-        }
-        return { version: 1, totalVersions: 1, hasResponse: false };
-    },
-
-    /**
      * Create a message element with action buttons
-     * For user messages: edit button, retry button, and version nav for assistant response
-     * For assistant messages: no action buttons (controls are on user message above)
+     * For user messages: Copy + Edit + Version Nav (branches off user messages)
+     * For assistant messages: Copy + Retry
      */
     createMessageElement(role, position = 0, version = 1, totalVersions = 1, nextVersionInfo = null, timestamp = null) {
         const el = document.createElement('div');
         el.className = `message ${role}`;
         el.dataset.position = position;
         el.dataset.version = version;
+        el.dataset.totalVersions = totalVersions;
 
         let actionsHtml = '';
         if (role === 'user') {
-            // User messages get copy, edit, retry, and version nav for the assistant response
-            const assistantInfo = nextVersionInfo || { version: 1, totalVersions: 1, hasResponse: false };
-            const assistantPosition = position + 1;
-
+            // User messages get Copy, Edit, and Version Nav (branching happens at user messages)
+            const showVersionNav = totalVersions > 1;
             actionsHtml = `
                 <div class="message-actions">
                     <button class="action-btn copy-btn" title="Copy">📋</button>
                     <button class="action-btn edit-btn" title="Edit">✏️</button>
-                    <button class="action-btn retry-btn" title="Regenerate response" data-assistant-position="${assistantPosition}">🔄</button>
-                    <div class="version-nav" data-assistant-position="${assistantPosition}" style="${assistantInfo.totalVersions > 1 ? '' : 'display: none;'}">
-                        <button class="action-btn nav-btn prev-btn" title="Previous response">◀</button>
-                        <span class="version-indicator">${assistantInfo.version}/${assistantInfo.totalVersions}</span>
-                        <button class="action-btn nav-btn next-btn" title="Next response">▶</button>
+                    <div class="version-badge" style="${showVersionNav ? '' : 'display: none;'}">
+                        <button class="version-nav-btn prev-btn" title="Previous version">◀</button>
+                        <span class="version-indicator">${version}/${totalVersions}</span>
+                        <button class="version-nav-btn next-btn" title="Next version">▶</button>
                     </div>
                 </div>
             `;
         } else {
-            // Assistant messages get a copy button
+            // Assistant messages get Copy and Retry
             actionsHtml = `
                 <div class="message-actions">
                     <button class="action-btn copy-btn" title="Copy">📋</button>
+                    <button class="action-btn retry-btn" title="Regenerate response">🔄</button>
                 </div>
             `;
         }
@@ -1438,18 +1485,15 @@ const ChatManager = {
             editBtn.addEventListener('click', () => this.editMessage(position));
         }
         if (retryBtn) {
-            const assistantPos = parseInt(retryBtn.dataset.assistantPosition);
-            retryBtn.addEventListener('click', () => this.retryMessage(assistantPos));
+            // Retry regenerates the assistant response at this position
+            retryBtn.addEventListener('click', () => this.retryMessage(position));
         }
         if (prevBtn) {
-            const versionNav = el.querySelector('.version-nav');
-            const assistantPos = parseInt(versionNav.dataset.assistantPosition);
-            prevBtn.addEventListener('click', () => this.switchVersion(assistantPos, -1));
+            // Version nav on user message - switches user message version (and corresponding response)
+            prevBtn.addEventListener('click', () => this.switchVersion(position, -1));
         }
         if (nextBtn) {
-            const versionNav = el.querySelector('.version-nav');
-            const assistantPos = parseInt(versionNav.dataset.assistantPosition);
-            nextBtn.addEventListener('click', () => this.switchVersion(assistantPos, 1));
+            nextBtn.addEventListener('click', () => this.switchVersion(position, 1));
         }
 
         return el;
@@ -1486,13 +1530,8 @@ const ChatManager = {
     renderMessage(msg, forceScroll = false) {
         const { role, content, thinking, position = 0, version = 1, total_versions = 1, created_at } = msg;
 
-        // For user messages, get the next assistant response version info
-        let nextVersionInfo = null;
-        if (role === 'user') {
-            nextVersionInfo = this.getNextAssistantVersionInfo(position);
-        }
-
-        const el = this.createMessageElement(role, position, version, total_versions, nextVersionInfo, created_at);
+        // Version info is now passed directly for assistant messages
+        const el = this.createMessageElement(role, position, version, total_versions, null, created_at);
         const contentEl = el.querySelector('.message-content');
 
         if (thinking) {
