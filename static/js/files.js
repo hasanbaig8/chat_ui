@@ -52,6 +52,44 @@ const FilesManager = {
                 }
             }
         });
+
+        // Drag and drop support
+        const dropZone = document.querySelector('.input-area');
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.add('dragging');
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            // Only remove if leaving the input-area itself, not child elements
+            if (e.target === dropZone) {
+                dropZone.classList.remove('dragging');
+            }
+        });
+
+        dropZone.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.remove('dragging');
+
+            const files = Array.from(e.dataTransfer.files);
+            if (files.length > 0) {
+                await this.handleDroppedFiles(files);
+            }
+        });
+
+        // Prevent default drag behavior on document to avoid browser opening files
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        document.addEventListener('drop', (e) => {
+            e.preventDefault();
+        });
     },
 
     /**
@@ -262,6 +300,37 @@ const FilesManager = {
         } catch (error) {
             console.error('Failed to upload pasted file:', error);
         }
+    },
+
+    /**
+     * Handle dropped files (for drag and drop)
+     */
+    async handleDroppedFiles(files) {
+        for (const file of files) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/api/files/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    console.error(`Failed to upload ${file.name}:`, error.detail || 'Upload failed');
+                    continue;
+                }
+
+                const result = await response.json();
+                this.pendingFiles.push(result);
+            } catch (error) {
+                console.error(`Failed to upload ${file.name}:`, error);
+            }
+        }
+
+        this.renderPreviews();
+        this.updateSendButton();
     },
 
     /**

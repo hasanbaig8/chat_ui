@@ -5,6 +5,7 @@
 const ChatManager = {
     messages: [],  // Array of {role, content, position, version, total_versions}
     isStreaming: false,
+    streamingConversationId: null,  // Track which conversation is streaming
     abortController: null,
     editingPosition: null,
     originalEditContent: null,  // Original content when editing
@@ -83,6 +84,11 @@ const ChatManager = {
      * Load a conversation and its messages
      */
     loadConversation(conversation) {
+        // Don't interrupt if this conversation is currently streaming
+        if (this.isStreaming && this.streamingConversationId === conversation.id) {
+            return;
+        }
+
         this.messages = [];
         this.clearMessagesUI();
 
@@ -496,10 +502,16 @@ const ChatManager = {
      */
     async streamResponse(isRetry = false) {
         this.isStreaming = true;
+        const conversationId = ConversationsManager.getCurrentConversationId();
+        this.streamingConversationId = conversationId;
         this.updateSendButton();
 
+        // Update UI to show this conversation is generating
+        if (typeof ConversationsManager !== 'undefined') {
+            ConversationsManager.setConversationGenerating(conversationId, true);
+        }
+
         const settings = SettingsManager.getSettings();
-        const conversationId = ConversationsManager.getCurrentConversationId();
 
         // Create assistant message element
         const position = this.messages.length;
@@ -593,9 +605,16 @@ const ChatManager = {
         } finally {
             indicator.remove();
 
+            const wasStreaming = this.streamingConversationId;
             this.isStreaming = false;
+            this.streamingConversationId = null;
             this.abortController = null;
             this.updateSendButton();
+
+            // Update UI to show this conversation is done generating
+            if (typeof ConversationsManager !== 'undefined' && wasStreaming) {
+                ConversationsManager.setConversationGenerating(wasStreaming, false);
+            }
 
             if (textContent && conversationId) {
                 if (isRetry && this.retryPosition !== null) {

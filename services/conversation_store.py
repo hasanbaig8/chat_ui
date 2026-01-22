@@ -503,3 +503,39 @@ class ConversationStore:
                 "current_version": current_version,
                 "versions": versions
             }
+
+    async def search_conversations(self, query: str) -> List[Dict[str, Any]]:
+        """Search conversations by title or message content (partial match always enabled)."""
+        async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
+
+            # First, search in titles only
+            cursor = await db.execute(
+                "SELECT id, title, created_at, updated_at, model FROM conversations WHERE title LIKE ? ORDER BY updated_at DESC",
+                (f'%{query}%',)
+            )
+            title_matches = {row['id']: dict(row) async for row in cursor}
+
+            # Then, search in message content
+            # Use INNER JOIN to only get conversations that have messages
+            cursor = await db.execute(
+                """
+                SELECT DISTINCT c.id, c.title, c.created_at, c.updated_at, c.model
+                FROM conversations c
+                INNER JOIN messages m ON c.id = m.conversation_id
+                WHERE m.content LIKE ?
+                ORDER BY c.updated_at DESC
+                """,
+                (f'%{query}%',)
+            )
+
+            # Merge results, keeping title matches first
+            content_matches = [dict(row) async for row in cursor]
+
+            # Add content matches that aren't already in title matches
+            results = list(title_matches.values())
+            for conv in content_matches:
+                if conv['id'] not in title_matches:
+                    results.append(conv)
+
+            return results

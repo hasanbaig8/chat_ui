@@ -182,6 +182,51 @@ html, body {
     font-size: 18px;
 }
 
+.search-container {
+    position: relative;
+    margin: 0 12px 12px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px 32px 8px 12px;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--color-text);
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.search-input:focus {
+    border-color: var(--color-primary);
+}
+
+.search-input::placeholder {
+    color: var(--color-text-secondary);
+}
+
+.clear-search-btn {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 4px 8px;
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+    transition: all var(--transition-fast);
+}
+
+.clear-search-btn:hover {
+    background-color: var(--color-border);
+    color: var(--color-text);
+}
+
 .conversations-list {
     flex: 1;
     overflow-y: auto;
@@ -191,7 +236,7 @@ html, body {
 .conversation-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 8px;
     padding: 10px 12px;
     margin-bottom: 4px;
     border-radius: 8px;
@@ -207,27 +252,67 @@ html, body {
     background-color: var(--color-border);
 }
 
+.conversation-item.generating {
+    border-left: 3px solid var(--color-primary);
+}
+
+.conversation-generating-icon {
+    font-size: 14px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
 .conversation-title {
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 13px;
+    min-width: 0;
 }
 
-.conversation-delete {
+.conversation-title mark {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 1px 2px;
+    border-radius: 2px;
+}
+
+[data-theme="dark"] .conversation-title mark {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+}
+
+.conversation-actions {
+    display: flex;
+    gap: 4px;
     opacity: 0;
-    padding: 4px 8px;
+    transition: opacity var(--transition-fast);
+}
+
+.conversation-item:hover .conversation-actions {
+    opacity: 1;
+}
+
+.conversation-rename,
+.conversation-delete {
+    padding: 4px 6px;
     background: none;
     border: none;
     color: var(--color-text-secondary);
     cursor: pointer;
     border-radius: 4px;
+    font-size: 12px;
     transition: all var(--transition-fast);
 }
 
-.conversation-item:hover .conversation-delete {
-    opacity: 1;
+.conversation-rename:hover {
+    background-color: var(--color-primary);
+    color: white;
 }
 
 .conversation-delete:hover {
@@ -617,6 +702,18 @@ html, body {
     padding: 16px 20px 20px;
     background-color: var(--color-background);
     border-top: 1px solid var(--color-border);
+    transition: all var(--transition-normal);
+}
+
+.input-area.dragging {
+    border: 2px dashed var(--color-primary);
+    background-color: rgba(193, 95, 60, 0.1);
+    box-shadow: inset 0 0 0 2px rgba(193, 95, 60, 0.2);
+}
+
+[data-theme="dark"] .input-area.dragging {
+    background-color: rgba(217, 117, 85, 0.15);
+    box-shadow: inset 0 0 0 2px rgba(217, 117, 85, 0.3);
 }
 
 .file-previews {
