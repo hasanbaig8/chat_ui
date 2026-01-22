@@ -9,6 +9,7 @@ const ChatManager = {
     editingPosition: null,
     originalEditContent: null,  // Original content when editing
     retryPosition: null,  // Position for retry operations
+    lastPrunedCount: 0,  // Track number of pruned messages
 
     // Model context limits (in tokens)
     MODEL_LIMITS: {
@@ -159,6 +160,8 @@ const ChatManager = {
         }
 
         const prunedCount = messages.length - prunedMessages.length;
+        this.lastPrunedCount = prunedCount;
+
         if (prunedCount > 0) {
             const settings = SettingsManager?.getSettings() || {};
             const pruneThreshold = settings.prune_threshold || 0.7;
@@ -201,7 +204,9 @@ const ChatManager = {
                 });
             });
 
-            this.scrollToBottom();
+            // Force scroll to bottom when loading a conversation
+            this.scrollToBottom(true);
+            this.updateContextStats();
         } else {
             document.getElementById('welcome-message').style.display = '';
         }
@@ -269,7 +274,7 @@ const ChatManager = {
             total_versions: 1
         };
         this.messages.push(userMsg);
-        this.renderMessage(userMsg);
+        this.renderMessage(userMsg, true); // Force scroll to bottom for new message
         await ConversationsManager.addMessage('user', content);
 
         await this.streamResponse();
@@ -640,6 +645,9 @@ const ChatManager = {
         const container = document.getElementById('messages-container');
         container.appendChild(messageEl);
 
+        // Force scroll to bottom when starting a new response
+        this.scrollToBottom(true);
+
         let thinkingContent = '';
         let textContent = '';
         let thinkingEl = null;
@@ -732,6 +740,7 @@ const ChatManager = {
             this.isStreaming = false;
             this.abortController = null;
             this.updateSendButton();
+            this.updateContextStats();
 
             if (textContent && conversationId) {
                 if (isRetry && this.retryPosition !== null) {
@@ -937,7 +946,7 @@ const ChatManager = {
     /**
      * Render a message to the UI
      */
-    renderMessage(msg) {
+    renderMessage(msg, forceScroll = false) {
         const { role, content, thinking, position = 0, version = 1, total_versions = 1, created_at } = msg;
 
         // For user messages, get the next assistant response version info
@@ -1001,7 +1010,7 @@ const ChatManager = {
 
         const container = document.getElementById('messages-container');
         container.appendChild(el);
-        this.scrollToBottom();
+        this.scrollToBottom(forceScroll);
     },
 
     createThinkingBlock() {
@@ -1129,9 +1138,50 @@ const ChatManager = {
         return div.innerHTML;
     },
 
-    scrollToBottom() {
+    scrollToBottom(force = false) {
         const container = document.getElementById('messages-container');
-        container.scrollTop = container.scrollHeight;
+
+        if (force) {
+            // Force scroll to bottom (e.g., when sending a new message)
+            container.scrollTop = container.scrollHeight;
+        } else {
+            // Only auto-scroll if user is near the bottom (within 150px)
+            // This prevents fighting the user when they scroll up during streaming
+            const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 150;
+
+            if (isNearBottom) {
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+    },
+
+    updateContextStats() {
+        const settings = SettingsManager?.getSettings() || {};
+        const model = settings.model || 'claude-3-5-sonnet-20241022';
+        const modelLimit = this.MODEL_LIMITS[model] || 200000;
+
+        // Calculate total tokens
+        let totalTokens = 0;
+        this.messages.forEach(msg => {
+            totalTokens += this.estimateTokens(msg.content);
+        });
+
+        // Update UI
+        document.getElementById('stat-messages').textContent = this.messages.length;
+
+        const contextPercentage = ((totalTokens / modelLimit) * 100).toFixed(0);
+        const tokensFormatted = totalTokens >= 1000 ? `${(totalTokens / 1000).toFixed(1)}K` : totalTokens;
+        const limitFormatted = modelLimit >= 1000 ? `${(modelLimit / 1000).toFixed(0)}K` : modelLimit;
+        document.getElementById('stat-context').textContent = `${tokensFormatted} / ${limitFormatted} (${contextPercentage}%)`;
+
+        // Show/hide pruned messages stat
+        const prunedContainer = document.getElementById('stat-pruned-container');
+        if (this.lastPrunedCount > 0) {
+            prunedContainer.style.display = '';
+            document.getElementById('stat-pruned').textContent = `${this.lastPrunedCount}`;
+        } else {
+            prunedContainer.style.display = 'none';
+        }
     },
 
     stopStreaming() {
