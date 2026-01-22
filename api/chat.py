@@ -1,18 +1,30 @@
 """Chat streaming endpoint using Server-Sent Events."""
 
 import json
-from typing import List, Dict, Any, Optional
+import asyncio
+from typing import List, Dict, Any, Optional, Set
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from services.anthropic_client import AnthropicClient
+from services.conversation_store import ConversationStore
 from config import DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_MAX_TOKENS, DEFAULT_THINKING_BUDGET
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 
-# Initialize client
+# Initialize client and store
 client = AnthropicClient()
+store = ConversationStore()
+
+# Track which conversations are currently streaming
+streaming_conversations: Set[str] = set()
+
+
+@router.on_event("startup")
+async def startup():
+    """Initialize database on startup."""
+    await store.initialize()
 
 
 class ContentBlock(BaseModel):
@@ -31,6 +43,7 @@ class Message(BaseModel):
 class ChatRequest(BaseModel):
     """Request body for chat endpoint."""
     messages: List[Message]
+    conversation_id: Optional[str] = None  # For saving streaming content to DB
     model: str = DEFAULT_MODEL
     system_prompt: Optional[str] = None
     temperature: float = DEFAULT_TEMPERATURE
@@ -51,9 +64,15 @@ async def stream_chat(request: ChatRequest):
     - type: 'text' - Response text
     - type: 'error' - Error message
     - type: 'done' - Stream complete
+    - type: 'message_id' - ID of the message being streamed (for DB updates)
     """
 
     async def event_generator():
+        message_id = None
+        text_content = ""
+        thinking_content = ""
+        conversation_id = request.conversation_id
+
         # Convert messages to API format
         api_messages = []
         for msg in request.messages:
@@ -69,18 +88,67 @@ async def stream_chat(request: ChatRequest):
                         content_blocks.append(block.model_dump(exclude_none=True))
                 api_messages.append({"role": msg.role, "content": content_blocks})
 
-        async for event in client.stream_message(
-            messages=api_messages,
-            model=request.model,
-            system_prompt=request.system_prompt,
-            temperature=request.temperature,
-            max_tokens=request.max_tokens,
-            top_p=request.top_p,
-            top_k=request.top_k,
-            thinking_enabled=request.thinking_enabled,
-            thinking_budget=request.thinking_budget,
-        ):
-            yield f"data: {json.dumps(event)}\n\n"
+        # If we have a conversation_id, create the message record first
+        if conversation_id:
+            streaming_conversations.add(conversation_id)
+            try:
+                msg_record = await store.add_message(
+                    conversation_id=conversation_id,
+                    role="assistant",
+                    content="",
+                    thinking=None,
+                    streaming=True
+                )
+                message_id = msg_record["id"]
+                # Send message_id to frontend so it knows which message is streaming
+                yield f"data: {json.dumps({'type': 'message_id', 'id': message_id, 'position': msg_record['position']})}\n\n"
+            except Exception as e:
+                yield f"data: {json.dumps({'type': 'error', 'content': str(e)})}\n\n"
+                return
+
+        update_counter = 0
+        try:
+            async for event in client.stream_message(
+                messages=api_messages,
+                model=request.model,
+                system_prompt=request.system_prompt,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens,
+                top_p=request.top_p,
+                top_k=request.top_k,
+                thinking_enabled=request.thinking_enabled,
+                thinking_budget=request.thinking_budget,
+            ):
+                yield f"data: {json.dumps(event)}\n\n"
+
+                # Accumulate content
+                if event.get("type") == "thinking":
+                    thinking_content += event.get("content", "")
+                elif event.get("type") == "text":
+                    text_content += event.get("content", "")
+
+                # Update DB periodically (every 10 chunks) to avoid too many writes
+                update_counter += 1
+                if message_id and update_counter % 10 == 0:
+                    await store.update_message_content(
+                        message_id=message_id,
+                        content=text_content,
+                        thinking=thinking_content if thinking_content else None,
+                        streaming=True
+                    )
+
+            # Final update to DB with complete content
+            if message_id:
+                await store.update_message_content(
+                    message_id=message_id,
+                    content=text_content,
+                    thinking=thinking_content if thinking_content else None,
+                    streaming=False
+                )
+
+        finally:
+            if conversation_id:
+                streaming_conversations.discard(conversation_id)
 
     return StreamingResponse(
         event_generator(),
@@ -91,6 +159,12 @@ async def stream_chat(request: ChatRequest):
             "X-Accel-Buffering": "no",
         }
     )
+
+
+@router.get("/streaming/{conversation_id}")
+async def is_conversation_streaming(conversation_id: str):
+    """Check if a conversation is currently streaming."""
+    return {"streaming": conversation_id in streaming_conversations}
 
 
 @router.get("/models")

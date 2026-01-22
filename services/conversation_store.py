@@ -239,7 +239,8 @@ class ConversationStore:
         conversation_id: str,
         role: str,
         content: Any,
-        thinking: Optional[str] = None
+        thinking: Optional[str] = None,
+        streaming: bool = False
     ) -> Dict[str, Any]:
         """Add a message to a conversation."""
         message_id = str(uuid.uuid4())
@@ -277,8 +278,43 @@ class ConversationStore:
             "version": 1,
             "total_versions": 1,
             "current_version": 1,
-            "created_at": now
+            "created_at": now,
+            "streaming": streaming
         }
+
+    async def update_message_content(
+        self,
+        message_id: str,
+        content: str,
+        thinking: Optional[str] = None,
+        streaming: bool = True
+    ) -> bool:
+        """Update message content (used for streaming updates)."""
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute(
+                "UPDATE messages SET content = ?, thinking = ? WHERE id = ?",
+                (content, thinking, message_id)
+            )
+            await db.commit()
+            return db.total_changes > 0
+
+    async def get_message_by_id(self, message_id: str) -> Optional[Dict[str, Any]]:
+        """Get a single message by ID."""
+        async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
+            cursor = await db.execute(
+                "SELECT * FROM messages WHERE id = ?",
+                (message_id,)
+            )
+            row = await cursor.fetchone()
+            if not row:
+                return None
+            msg = dict(row)
+            try:
+                msg["content"] = json.loads(msg["content"])
+            except (json.JSONDecodeError, TypeError):
+                pass
+            return msg
 
     async def edit_message(
         self,

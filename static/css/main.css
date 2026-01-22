@@ -1595,3 +1595,51 @@ html, body {
     background: #4CAF50 !important;
     opacity: 1 !important;
 }
+
+/* Streaming indicator dot for conversation list */
+.streaming-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-primary);
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse 1s infinite;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+/* Message text container for smooth streaming */
+.message-text {
+    /* Smooth font rendering for streaming text */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Streaming text cursor effect */
+.streaming-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-primary);
+    border-radius: 50%;
+    margin-left: 4px;
+    animation: pulse 1s infinite;
+    vertical-align: middle;
+}
+
+/* Conversation item with streaming indicator */
+.conversation-item.streaming {
+    position: relative;
+}
+
+.conversation-item.streaming::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: var(--color-primary);
+    border-radius: 0 2px 2px 0;
+}

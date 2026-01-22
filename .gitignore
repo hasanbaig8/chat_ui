@@ -35,9 +35,6 @@ screenshots/*
 *.sqlite
 *.sqlite3
 
-# Test files
-test_*.py
-
 # IDE
 .idea/
 .vscode/

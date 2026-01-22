@@ -8,6 +8,7 @@ const ConversationsManager = {
     searchQuery: '',
     searchResults: null,
     renamingConversationId: null,
+    loadRequestId: 0,  // Track conversation load requests to handle race conditions
 
     /**
      * Initialize the conversations manager
@@ -196,12 +197,19 @@ const ConversationsManager = {
 
             container.appendChild(item);
         });
+
+        // Update streaming indicators after rendering
+        if (typeof BackgroundStreams !== 'undefined') {
+            BackgroundStreams.updateStreamingIndicators();
+        }
     },
 
     /**
      * Create a new conversation
+     * @param {string} title - The conversation title
+     * @param {boolean} clearUI - Whether to clear the chat UI (true when clicking New Chat button)
      */
-    async createConversation(title = 'New Conversation') {
+    async createConversation(title = 'New Conversation', clearUI = true) {
         try {
             const response = await fetch('/api/conversations', {
                 method: 'POST',
@@ -214,9 +222,14 @@ const ConversationsManager = {
 
             const conversation = await response.json();
             this.conversations.unshift(conversation);
-            // Just set the ID - don't call selectConversation which would clear ChatManager.messages
             this.currentConversationId = conversation.id;
             this.renderConversationsList();
+
+            // Clear the chat UI to show the new empty conversation
+            if (clearUI && typeof ChatManager !== 'undefined') {
+                ChatManager.clearChat();
+                ChatManager.activeConversationId = conversation.id;
+            }
 
             return conversation;
         } catch (error) {
@@ -229,12 +242,33 @@ const ConversationsManager = {
      * Select a conversation and load its messages
      */
     async selectConversation(conversationId) {
+        // Increment request ID to track this specific request
+        const requestId = ++this.loadRequestId;
+
         this.currentConversationId = conversationId;
         this.renderConversationsList();
 
+        // Immediately prepare ChatManager for the switch - clears UI and sets active ID
+        if (typeof ChatManager !== 'undefined') {
+            ChatManager.prepareForConversationSwitch(conversationId);
+        }
+
         try {
             const response = await fetch(`/api/conversations/${conversationId}`);
+
+            // Check if user clicked on a different conversation while we were fetching
+            if (this.loadRequestId !== requestId || this.currentConversationId !== conversationId) {
+                console.log('Conversation load abandoned - user switched to different conversation');
+                return;
+            }
+
             const conversation = await response.json();
+
+            // Double-check again after parsing JSON
+            if (this.loadRequestId !== requestId || this.currentConversationId !== conversationId) {
+                console.log('Conversation load abandoned - user switched to different conversation');
+                return;
+            }
 
             // Load messages into chat
             if (typeof ChatManager !== 'undefined') {

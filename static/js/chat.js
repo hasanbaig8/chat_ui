@@ -10,6 +10,15 @@ const ChatManager = {
     originalEditContent: null,  // Original content when editing
     retryPosition: null,  // Position for retry operations
     lastPrunedCount: 0,  // Track number of pruned messages
+    activeConversationId: null,  // Track which conversation is currently displayed
+    streamingMessageEl: null,  // Reference to current streaming message element
+    streamingMessageId: null,  // ID of message being streamed (for DB updates)
+    pollInterval: null,  // Interval for polling streaming updates
+    lastStreamingText: '',  // Track last known streaming text for smooth updates
+    streamingTextQueue: '',  // Queue of text waiting to be revealed
+    streamingDisplayedText: '',  // Text currently displayed during animated streaming
+    streamingAnimationFrame: null,  // Animation frame for smooth text reveal
+    userScrolledAway: false,  // Track if user has scrolled away during streaming
 
     // Model context limits (in tokens)
     MODEL_LIMITS: {
@@ -83,6 +92,23 @@ const ChatManager = {
                 this.copyEntireConversation();
             });
         }
+
+        // Track user scroll behavior during streaming
+        const messagesContainer = document.getElementById('messages-container');
+        messagesContainer.addEventListener('scroll', () => {
+            if (!this.isStreaming) return;
+
+            const container = messagesContainer;
+            const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+
+            // If user scrolled more than 50px from bottom, they've scrolled away
+            if (distanceFromBottom > 50) {
+                this.userScrolledAway = true;
+            } else {
+                // User scrolled back to bottom
+                this.userScrolledAway = false;
+            }
+        });
     },
 
     autoResizeTextarea(textarea) {
@@ -182,9 +208,20 @@ const ChatManager = {
     /**
      * Load a conversation and its messages
      */
-    loadConversation(conversation) {
+    async loadConversation(conversation) {
+        // Verify this is still the conversation we want to load
+        if (this.activeConversationId !== conversation.id) {
+            console.log('loadConversation skipped - activeConversationId changed');
+            return;
+        }
+
+        // Stop any existing polling
+        this.stopPolling();
+
         this.messages = [];
         this.clearMessagesUI();
+        this.streamingMessageEl = null;
+        this.streamingMessageId = null;
 
         if (conversation.messages && conversation.messages.length > 0) {
             document.getElementById('welcome-message').style.display = 'none';
@@ -218,12 +255,317 @@ const ChatManager = {
         } else {
             document.getElementById('welcome-message').style.display = '';
         }
+
+        // Check if this conversation is streaming on the server
+        if (typeof StreamingTracker !== 'undefined') {
+            const isStreaming = await StreamingTracker.checkServerStatus(conversation.id);
+            if (isStreaming) {
+                // Initialize streaming state with current content for smooth animation
+                if (conversation.messages && conversation.messages.length > 0) {
+                    const lastMsg = conversation.messages[conversation.messages.length - 1];
+                    if (lastMsg.role === 'assistant') {
+                        this.lastStreamingText = lastMsg.content || '';
+                        this.streamingDisplayedText = lastMsg.content || '';
+                        this.streamingTextQueue = '';
+                    }
+                }
+                this.startPolling(conversation.id);
+            } else {
+                this.lastStreamingText = '';
+                this.stopStreamingAnimation();
+            }
+            this.isStreaming = isStreaming;
+        } else {
+            this.isStreaming = false;
+            this.lastStreamingText = '';
+        }
+
+        this.updateSendButton();
+    },
+
+    /**
+     * Start polling for streaming updates
+     */
+    startPolling(conversationId) {
+        this.stopPolling();  // Clear any existing interval
+
+        this.isStreaming = true;
+        this.updateSendButton();
+
+        // Poll every 500ms for updates
+        this.pollInterval = setInterval(async () => {
+            if (this.activeConversationId !== conversationId) {
+                this.stopPolling();
+                return;
+            }
+
+            try {
+                // Check if still streaming
+                const streamingResponse = await fetch(`/api/chat/streaming/${conversationId}`);
+                const streamingData = await streamingResponse.json();
+
+                if (!streamingData.streaming) {
+                    // Streaming finished, reload conversation to get final content
+                    this.stopPolling();
+                    if (typeof StreamingTracker !== 'undefined') {
+                        StreamingTracker.setStreaming(conversationId, false);
+                    }
+
+                    // Reload the conversation from DB
+                    const convResponse = await fetch(`/api/conversations/${conversationId}`);
+                    const conversation = await convResponse.json();
+
+                    if (this.activeConversationId === conversationId) {
+                        this.loadConversation(conversation);
+                    }
+                    return;
+                }
+
+                // Still streaming - reload to get latest content
+                const convResponse = await fetch(`/api/conversations/${conversationId}`);
+                const conversation = await convResponse.json();
+
+                if (this.activeConversationId === conversationId) {
+                    this.updateFromConversation(conversation);
+                }
+            } catch (e) {
+                console.error('Polling error:', e);
+            }
+        }, 500);
+    },
+
+    /**
+     * Stop polling for updates
+     */
+    stopPolling() {
+        if (this.pollInterval) {
+            clearInterval(this.pollInterval);
+            this.pollInterval = null;
+        }
+    },
+
+    /**
+     * Update UI from conversation data (used during polling)
+     */
+    updateFromConversation(conversation) {
+        if (!conversation.messages || conversation.messages.length === 0) return;
+
+        const container = document.getElementById('messages-container');
+        const lastMsg = conversation.messages[conversation.messages.length - 1];
+
+        // Find or create the message element
+        let messageEl = container.querySelector(`.message[data-position="${lastMsg.position}"]`);
+
+        if (!messageEl && lastMsg.role === 'assistant') {
+            // Create new message element
+            messageEl = this.createMessageElement('assistant', lastMsg.position, 1, 1);
+            container.appendChild(messageEl);
+            document.getElementById('welcome-message').style.display = 'none';
+        }
+
+        if (messageEl && lastMsg.role === 'assistant') {
+            const contentEl = messageEl.querySelector('.message-content');
+
+            // Add streaming indicator if streaming
+            let indicator = contentEl.querySelector('.streaming-indicator');
+            if (!indicator && this.isStreaming) {
+                indicator = document.createElement('span');
+                indicator.className = 'streaming-indicator';
+            }
+
+            // Update thinking block if present
+            if (lastMsg.thinking) {
+                let thinkingEl = contentEl.querySelector('.thinking-block');
+                if (!thinkingEl) {
+                    thinkingEl = this.createThinkingBlock();
+                    contentEl.insertBefore(thinkingEl, contentEl.firstChild);
+                }
+                this.updateThinkingBlock(thinkingEl, lastMsg.thinking);
+            }
+
+            // Update text content with smooth streaming
+            if (lastMsg.content) {
+                // For streaming, use incremental updates
+                if (this.isStreaming) {
+                    this.updateStreamingContent(contentEl, lastMsg.content, indicator);
+                } else {
+                    this.updateMessageContent(contentEl, lastMsg.content, indicator);
+                }
+            }
+
+            this.scrollToBottom();
+        }
+
+        // Update messages array
+        this.messages = conversation.messages.map(msg => ({
+            role: msg.role,
+            content: msg.content,
+            position: msg.position,
+            version: msg.current_version || msg.version,
+            total_versions: msg.total_versions || 1
+        }));
+
+        this.updateContextStats();
+    },
+
+    /**
+     * Update streaming content smoothly with animated character reveal
+     * When polling returns chunks of text, we animate them character by character
+     */
+    updateStreamingContent(contentEl, newText, indicator) {
+        // If new text is an extension of what we know about, queue the new chars
+        const oldText = this.lastStreamingText || '';
+
+        if (newText.length > oldText.length && newText.startsWith(oldText)) {
+            // Queue the new characters for animated reveal
+            const newChars = newText.slice(oldText.length);
+            this.streamingTextQueue += newChars;
+            this.lastStreamingText = newText;
+        } else if (newText !== oldText) {
+            // Text changed differently - reset and show immediately
+            this.streamingTextQueue = '';
+            this.streamingDisplayedText = newText;
+            this.lastStreamingText = newText;
+            this.renderStreamingText(contentEl, newText, indicator);
+            return;
+        }
+
+        // Start animation if not already running
+        if (!this.streamingAnimationFrame && this.streamingTextQueue.length > 0) {
+            this.animateStreamingText(contentEl, indicator);
+        }
+    },
+
+    /**
+     * Animate revealing queued text character by character
+     */
+    animateStreamingText(contentEl, indicator) {
+        const charsPerFrame = 3;  // Reveal multiple chars per frame for speed
+        const frameDelay = 16;    // ~60fps
+
+        const animate = () => {
+            if (this.streamingTextQueue.length === 0) {
+                this.streamingAnimationFrame = null;
+                return;
+            }
+
+            // Take chars from queue
+            const chars = this.streamingTextQueue.slice(0, charsPerFrame);
+            this.streamingTextQueue = this.streamingTextQueue.slice(charsPerFrame);
+            this.streamingDisplayedText += chars;
+
+            // Render current displayed text
+            this.renderStreamingText(contentEl, this.streamingDisplayedText, indicator);
+
+            // Continue animation
+            this.streamingAnimationFrame = setTimeout(() => {
+                requestAnimationFrame(() => animate());
+            }, frameDelay);
+        };
+
+        this.streamingAnimationFrame = requestAnimationFrame(() => animate());
+    },
+
+    /**
+     * Render the streaming text to the DOM
+     */
+    renderStreamingText(contentEl, text, indicator) {
+        const thinkingBlock = contentEl.querySelector('.thinking-block');
+        const wasExpanded = thinkingBlock?.classList.contains('expanded');
+
+        // Get or create text container
+        let textContainer = contentEl.querySelector('.message-text');
+        if (!textContainer) {
+            // Clear existing content (from renderMessage) but preserve thinking block
+            // Remove all children except thinking block
+            Array.from(contentEl.children).forEach(child => {
+                if (!child.classList.contains('thinking-block') &&
+                    !child.classList.contains('streaming-indicator')) {
+                    child.remove();
+                }
+            });
+
+            textContainer = document.createElement('div');
+            textContainer.className = 'message-text';
+            contentEl.appendChild(textContainer);
+        }
+
+        textContainer.innerHTML = this.formatText(text);
+        this.addCodeCopyButtons(textContainer);
+        textContainer.dataset.rawText = text;
+
+        // Re-add thinking block at the beginning
+        if (thinkingBlock) {
+            contentEl.insertBefore(thinkingBlock, contentEl.firstChild);
+            if (wasExpanded) {
+                thinkingBlock.classList.add('expanded');
+            }
+        }
+
+        // Ensure indicator is at end
+        if (indicator && indicator.parentNode !== contentEl) {
+            contentEl.appendChild(indicator);
+        }
+
+        // Note: Don't call scrollToBottom here - it's called too frequently
+        // Let updateFromConversation handle scrolling at a reasonable rate
+    },
+
+    /**
+     * Stop streaming text animation
+     */
+    stopStreamingAnimation() {
+        if (this.streamingAnimationFrame) {
+            cancelAnimationFrame(this.streamingAnimationFrame);
+            clearTimeout(this.streamingAnimationFrame);
+            this.streamingAnimationFrame = null;
+        }
+        this.streamingTextQueue = '';
+        this.streamingDisplayedText = '';
     },
 
     clearChat() {
+        this.stopPolling();
+        this.stopStreamingAnimation();
         this.messages = [];
         this.clearMessagesUI();
+        this.streamingMessageEl = null;
+        this.streamingMessageId = null;
+        this.isStreaming = false;
+        this.userScrolledAway = false;
+        this.abortController = null;
+        this.lastStreamingText = '';
         document.getElementById('welcome-message').style.display = '';
+        this.updateContextStats();
+        this.updateSendButton();
+    },
+
+    /**
+     * Prepare UI for a conversation switch - call this immediately when switching
+     */
+    prepareForConversationSwitch(newConversationId) {
+        // Stop polling and animation for the old conversation
+        this.stopPolling();
+        this.stopStreamingAnimation();
+
+        // Update active conversation ID immediately
+        this.activeConversationId = newConversationId;
+
+        // Clear UI immediately to prevent showing stale messages
+        this.messages = [];
+        this.clearMessagesUI();
+        this.streamingMessageEl = null;
+        this.streamingMessageId = null;
+        this.lastStreamingText = '';
+
+        // Show loading state or welcome message
+        document.getElementById('welcome-message').style.display = '';
+
+        // Reset streaming state - will be updated when conversation loads
+        this.isStreaming = false;
+        this.userScrolledAway = false;
+        this.updateSendButton();
+        this.updateContextStats();
     },
 
     clearMessagesUI() {
@@ -260,7 +602,8 @@ const ChatManager = {
         let conversationId = ConversationsManager.getCurrentConversationId();
         if (!conversationId) {
             const conversation = await ConversationsManager.createConversation(
-                ConversationsManager.generateTitle(content)
+                ConversationsManager.generateTitle(content),
+                false  // Don't clear UI - we're about to add the user's message
             );
             conversationId = conversation.id;
         } else if (this.messages.length === 0) {
@@ -691,19 +1034,29 @@ const ChatManager = {
 
     /**
      * Stream response from API
+     * Backend now saves streaming content directly to DB
      */
     async streamResponse(isRetry = false) {
         this.isStreaming = true;
+        this.lastStreamingText = '';  // Reset for fresh stream
+        this.stopStreamingAnimation();  // Clear any pending animation
+        this.userScrolledAway = false;  // Reset scroll tracking for new response
         this.updateSendButton();
 
         const conversationId = ConversationsManager.getCurrentConversationId();
         const settings = SettingsManager.getSettings();
+
+        // Mark conversation as streaming
+        if (typeof StreamingTracker !== 'undefined') {
+            StreamingTracker.setStreaming(conversationId, true);
+        }
 
         // Create assistant message element
         const position = this.messages.length;
         const messageEl = this.createMessageElement('assistant', position, 1, 1);
         const container = document.getElementById('messages-container');
         container.appendChild(messageEl);
+        this.streamingMessageEl = messageEl;
 
         // Force scroll to bottom when starting a new response
         this.scrollToBottom(true);
@@ -715,9 +1068,11 @@ const ChatManager = {
         const indicator = document.createElement('span');
         indicator.className = 'streaming-indicator';
 
-        try {
-            this.abortController = new AbortController();
+        // Create abort controller for this stream
+        const abortController = new AbortController();
+        this.abortController = abortController;
 
+        try {
             // Build messages for API
             const allMessages = this.messages.map(m => ({
                 role: m.role,
@@ -727,11 +1082,13 @@ const ChatManager = {
             // Prune messages to keep context under threshold
             const apiMessages = this.pruneMessages(allMessages);
 
+            // Pass conversation_id so backend can save streaming content to DB
             const response = await fetch('/api/chat/stream', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     messages: apiMessages,
+                    conversation_id: isRetry ? null : conversationId,  // Don't auto-save for retries
                     model: settings.model,
                     system_prompt: settings.system_prompt,
                     temperature: settings.temperature,
@@ -741,7 +1098,7 @@ const ChatManager = {
                     thinking_enabled: settings.thinking_enabled,
                     thinking_budget: settings.thinking_budget
                 }),
-                signal: this.abortController.signal
+                signal: abortController.signal
             });
 
             if (!response.ok) {
@@ -768,48 +1125,91 @@ const ChatManager = {
                         try {
                             const event = JSON.parse(line.slice(6));
 
-                            if (event.type === 'thinking') {
+                            if (event.type === 'message_id') {
+                                // Backend created the message, store the ID
+                                this.streamingMessageId = event.id;
+                                messageEl.dataset.messageId = event.id;
+                            } else if (event.type === 'thinking') {
                                 thinkingContent += event.content;
-                                if (!thinkingEl) {
-                                    thinkingEl = this.createThinkingBlock();
-                                    contentEl.insertBefore(thinkingEl, contentEl.firstChild);
+
+                                // Only update UI if this conversation is still active and element is in DOM
+                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                    if (!thinkingEl) {
+                                        thinkingEl = this.createThinkingBlock();
+                                        contentEl.insertBefore(thinkingEl, contentEl.firstChild);
+                                    }
+                                    this.updateThinkingBlock(thinkingEl, thinkingContent);
                                 }
-                                this.updateThinkingBlock(thinkingEl, thinkingContent);
                             } else if (event.type === 'text') {
                                 textContent += event.content;
-                                this.updateMessageContent(contentEl, textContent, indicator);
+
+                                // Only update UI if this conversation is still active and element is in DOM
+                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                    this.updateMessageContent(contentEl, textContent, indicator);
+                                }
                             } else if (event.type === 'error') {
-                                this.showError(contentEl, event.content);
+                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                    this.showError(contentEl, event.content);
+                                }
                             }
                         } catch (e) {}
                     }
                 }
 
-                this.scrollToBottom();
+                // Only scroll if this conversation is still active and element is in DOM
+                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                    this.scrollToBottom();
+                }
             }
 
         } catch (error) {
             if (error.name !== 'AbortError') {
                 console.error('Streaming error:', error);
-                const contentEl = messageEl.querySelector('.message-content');
-                this.showError(contentEl, error.message);
+                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                    const contentEl = messageEl.querySelector('.message-content');
+                    this.showError(contentEl, error.message);
+                }
             }
         } finally {
-            indicator.remove();
+            // Mark streaming as complete
+            if (typeof StreamingTracker !== 'undefined') {
+                StreamingTracker.setStreaming(conversationId, false);
+            }
 
-            this.isStreaming = false;
-            this.abortController = null;
-            this.updateSendButton();
-            this.updateContextStats();
+            // Only update UI state if this conversation is still active
+            if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                const indicatorEl = messageEl.querySelector('.streaming-indicator');
+                if (indicatorEl) indicatorEl.remove();
 
-            if (textContent && conversationId) {
-                if (isRetry && this.retryPosition !== null) {
-                    // For retry, use the retry endpoint to create a new version
+                this.isStreaming = false;
+                this.abortController = null;
+                this.streamingMessageEl = null;
+                this.streamingMessageId = null;
+                this.updateSendButton();
+                this.updateContextStats();
+
+                // Add to local messages array
+                if (textContent) {
+                    this.messages.push({
+                        role: 'assistant',
+                        content: textContent,
+                        position: position,
+                        version: 1,
+                        total_versions: 1
+                    });
+                }
+            }
+
+            // Handle retry case - backend doesn't auto-save for retries
+            if (isRetry && textContent && conversationId) {
+                const retryPos = this.retryPosition;
+
+                if (retryPos !== null) {
                     const retryResponse = await fetch(`/api/conversations/${conversationId}/retry`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            position: this.retryPosition,
+                            position: retryPos,
                             content: textContent,
                             thinking: thinkingContent || null
                         })
@@ -817,44 +1217,55 @@ const ChatManager = {
 
                     if (retryResponse.ok) {
                         const retryData = await retryResponse.json();
-                        // Add assistant message with correct version info
-                        const assistantMsg = {
-                            role: 'assistant',
-                            content: textContent,
-                            position: this.retryPosition,
-                            version: retryData.version,
-                            total_versions: retryData.version  // New version means total is at least this
-                        };
-                        this.messages.push(assistantMsg);
 
-                        // Update the user message above to show version nav
-                        this.updateUserMessageVersionNav(this.retryPosition - 1, retryData.version, retryData.version);
+                        // Update UI only if this conversation is active
+                        if (this.activeConversationId === conversationId) {
+                            const assistantMsg = {
+                                role: 'assistant',
+                                content: textContent,
+                                position: retryPos,
+                                version: retryData.version,
+                                total_versions: retryData.version
+                            };
+                            this.messages.push(assistantMsg);
 
-                        // Update the current assistant message element position
-                        messageEl.dataset.position = this.retryPosition;
-                        messageEl.dataset.version = retryData.version;
+                            // Update the user message above to show version nav
+                            this.updateUserMessageVersionNav(retryPos - 1, retryData.version, retryData.version);
+
+                            // Update the current assistant message element position
+                            messageEl.dataset.position = retryPos;
+                            messageEl.dataset.version = retryData.version;
+                        }
                     }
 
                     this.retryPosition = null;
                 } else {
                     // For new messages, add as usual
-                    const assistantMsg = {
-                        role: 'assistant',
-                        content: textContent,
-                        position: position,
-                        version: 1,
-                        total_versions: 1
-                    };
-                    this.messages.push(assistantMsg);
-
                     await ConversationsManager.addMessage('assistant', textContent, thinkingContent || null);
-                }
 
-                // Don't reload - we've updated the state locally
-                // This prevents visual flashing
+                    // Update local state only if this conversation is active
+                    if (this.activeConversationId === conversationId) {
+                        const assistantMsg = {
+                            role: 'assistant',
+                            content: textContent,
+                            position: position,
+                            version: 1,
+                            total_versions: 1
+                        };
+                        this.messages.push(assistantMsg);
+                    }
+                }
             }
 
-            this.scrollToBottom();
+            // Clean up from BackgroundStreams
+            if (typeof BackgroundStreams !== 'undefined') {
+                BackgroundStreams.removeStream(conversationId);
+            }
+
+            // Scroll if still on same conversation
+            if (this.activeConversationId === conversationId) {
+                this.scrollToBottom();
+            }
         }
     },
 
@@ -1077,16 +1488,12 @@ const ChatManager = {
         const el = document.createElement('div');
         el.className = 'thinking-block';
         el.innerHTML = `
-            <div class="thinking-header">
+            <div class="thinking-header" onclick="this.parentElement.classList.toggle('expanded')">
                 <span class="thinking-toggle">▶</span>
                 <span class="thinking-label">Thinking...</span>
             </div>
             <div class="thinking-content"></div>
         `;
-
-        el.querySelector('.thinking-header').addEventListener('click', () => {
-            el.classList.toggle('expanded');
-        });
 
         return el;
     },
@@ -1100,19 +1507,92 @@ const ChatManager = {
         label.textContent = `Thinking (${lines} lines)`;
     },
 
+    /**
+     * Update message content with smooth streaming appearance
+     * Instead of replacing all HTML at once, we try to preserve existing content
+     * and only update what changed for smoother visual feedback
+     */
     updateMessageContent(contentEl, text, indicator) {
         const thinkingBlock = contentEl.querySelector('.thinking-block');
+        const wasExpanded = thinkingBlock?.classList.contains('expanded');
 
-        contentEl.innerHTML = this.formatText(text);
+        // Get the current text container or create one
+        let textContainer = contentEl.querySelector('.message-text');
+        if (!textContainer) {
+            // Clear existing content but preserve thinking block and indicator
+            Array.from(contentEl.children).forEach(child => {
+                if (!child.classList.contains('thinking-block') &&
+                    !child.classList.contains('streaming-indicator')) {
+                    child.remove();
+                }
+            });
 
-        if (thinkingBlock) {
-            contentEl.insertBefore(thinkingBlock, contentEl.firstChild);
+            textContainer = document.createElement('div');
+            textContainer.className = 'message-text';
+            contentEl.appendChild(textContainer);
         }
 
-        // Add copy buttons to code blocks
-        this.addCodeCopyButtons(contentEl);
+        // For streaming, we want smooth character-by-character appearance
+        // Check if this is an incremental update (new text starts with old text)
+        const currentText = textContainer.dataset.rawText || '';
 
-        contentEl.appendChild(indicator);
+        if (text.startsWith(currentText) && currentText.length > 0) {
+            // Incremental update - only add new characters
+            const newChars = text.slice(currentText.length);
+            if (newChars) {
+                // Append new content smoothly
+                this.appendFormattedText(textContainer, currentText, text);
+            }
+        } else {
+            // Full replacement (initial render or content changed significantly)
+            textContainer.innerHTML = this.formatText(text);
+            this.addCodeCopyButtons(textContainer);
+        }
+
+        // Store raw text for comparison
+        textContainer.dataset.rawText = text;
+
+        // Re-add thinking block at the beginning if it existed
+        if (thinkingBlock) {
+            contentEl.insertBefore(thinkingBlock, contentEl.firstChild);
+            if (wasExpanded) {
+                thinkingBlock.classList.add('expanded');
+            }
+        }
+
+        // Ensure indicator is at the end
+        if (indicator && indicator.parentNode !== contentEl) {
+            contentEl.appendChild(indicator);
+        }
+    },
+
+    /**
+     * Append new text to existing content smoothly
+     * Re-renders if markdown structure might have changed, otherwise just appends
+     */
+    appendFormattedText(container, oldText, newText) {
+        // Check if we're in the middle of a markdown structure that needs re-rendering
+        const needsRerender =
+            // In the middle of a code block
+            (newText.match(/```/g) || []).length % 2 !== 0 ||
+            // In the middle of bold/italic
+            (newText.match(/\*\*/g) || []).length % 2 !== 0 ||
+            // In the middle of a list or heading (last line starts with special char)
+            /\n[#\-\*\d]/.test(newText.slice(-50));
+
+        if (needsRerender || !container.lastChild) {
+            // Full re-render needed
+            container.innerHTML = this.formatText(newText);
+            this.addCodeCopyButtons(container);
+        } else {
+            // Try to append smoothly - re-render last paragraph/element
+            // This is a simplified approach: just re-render but browser will diff efficiently
+            const html = this.formatText(newText);
+            if (container.innerHTML !== html) {
+                container.innerHTML = html;
+                this.addCodeCopyButtons(container);
+            }
+        }
     },
 
     showError(contentEl, message) {
@@ -1204,12 +1684,16 @@ const ChatManager = {
         if (force) {
             // Force scroll to bottom (e.g., when sending a new message)
             container.scrollTop = container.scrollHeight;
+            this.userScrolledAway = false;
         } else {
-            // Only auto-scroll if user is near the bottom (within 150px)
-            // This prevents fighting the user when they scroll up during streaming
-            const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 150;
+            // Respect user's scroll intent - if they scrolled away, don't auto-scroll
+            if (this.userScrolledAway) {
+                return;
+            }
 
-            if (isNearBottom) {
+            // Only auto-scroll if user is at the bottom (within 30px)
+            const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+            if (distanceFromBottom < 30) {
                 container.scrollTop = container.scrollHeight;
             }
         }
