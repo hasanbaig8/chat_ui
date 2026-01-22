@@ -75,6 +75,14 @@ const ChatManager = {
                 this.sendMessage();
             }
         });
+
+        // Copy entire conversation button
+        const copyConversationBtn = document.getElementById('copy-conversation-btn');
+        if (copyConversationBtn) {
+            copyConversationBtn.addEventListener('click', () => {
+                this.copyEntireConversation();
+            });
+        }
     },
 
     autoResizeTextarea(textarea) {
@@ -534,6 +542,58 @@ const ChatManager = {
         } catch (error) {
             console.error('Failed to copy:', error);
             alert('Failed to copy to clipboard');
+        }
+    },
+
+    /**
+     * Copy entire conversation to clipboard
+     */
+    async copyEntireConversation() {
+        if (this.messages.length === 0) {
+            return;
+        }
+
+        // Format all messages as text
+        const formatted = this.messages.map(msg => {
+            const role = msg.role === 'user' ? 'User' : 'Assistant';
+
+            // Extract text content from message
+            let content = '';
+            if (typeof msg.content === 'string') {
+                content = msg.content;
+            } else if (Array.isArray(msg.content)) {
+                // Get text blocks, excluding file metadata
+                const textBlocks = msg.content.filter(b => b.type === 'text' && !b.text?.startsWith('File: '));
+                content = textBlocks.map(b => b.text).join('\n');
+
+                // If there are files, add a note
+                const fileBlocks = msg.content.filter(b => b.type === 'image' || b.type === 'document');
+                if (fileBlocks.length > 0) {
+                    const fileNote = `[${fileBlocks.length} file${fileBlocks.length > 1 ? 's' : ''} attached]`;
+                    content = fileNote + (content ? '\n' + content : '');
+                }
+            }
+
+            return `${role}: ${content}`;
+        }).join('\n\n');
+
+        try {
+            await navigator.clipboard.writeText(formatted);
+
+            // Show visual feedback
+            const copyBtn = document.getElementById('copy-conversation-btn');
+            if (copyBtn) {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✓';
+                copyBtn.style.color = '#4CAF50';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.color = '';
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('Failed to copy conversation:', error);
+            alert('Failed to copy conversation to clipboard');
         }
     },
 
