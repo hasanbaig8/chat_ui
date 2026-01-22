@@ -8,7 +8,6 @@ const ConversationsManager = {
     searchQuery: '',
     searchResults: null,
     renamingConversationId: null,
-    generatingConversations: new Set(),  // Track conversations that are generating
 
     /**
      * Initialize the conversations manager
@@ -141,8 +140,7 @@ const ConversationsManager = {
 
         conversationsToShow.forEach(conv => {
             const item = document.createElement('div');
-            const isGenerating = this.generatingConversations.has(conv.id);
-            item.className = `conversation-item${conv.id === this.currentConversationId ? ' active' : ''}${isGenerating ? ' generating' : ''}`;
+            item.className = `conversation-item${conv.id === this.currentConversationId ? ' active' : ''}`;
             item.dataset.id = conv.id;
 
             // Highlight search matches in title
@@ -153,7 +151,6 @@ const ConversationsManager = {
             }
 
             item.innerHTML = `
-                ${isGenerating ? '<span class="conversation-generating-icon" title="Generating...">⏳</span>' : ''}
                 <span class="conversation-title">${titleHtml}</span>
                 <div class="conversation-actions">
                     <button class="conversation-rename" title="Rename">✏️</button>
@@ -224,11 +221,6 @@ const ConversationsManager = {
      * Select a conversation and load its messages
      */
     async selectConversation(conversationId) {
-        // Check if we're switching away from a generating conversation
-        const switchingFromGenerating = this.currentConversationId &&
-                                        this.generatingConversations.has(this.currentConversationId) &&
-                                        this.currentConversationId !== conversationId;
-
         this.currentConversationId = conversationId;
         this.renderConversationsList();
 
@@ -425,23 +417,6 @@ const ConversationsManager = {
      */
     escapeRegex(text) {
         return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    },
-
-    /**
-     * Set whether a conversation is generating
-     */
-    setConversationGenerating(conversationId, isGenerating) {
-        if (isGenerating) {
-            this.generatingConversations.add(conversationId);
-        } else {
-            this.generatingConversations.delete(conversationId);
-
-            // If we're viewing this conversation, reload it to show the completed message
-            if (conversationId === this.currentConversationId) {
-                this.selectConversation(conversationId);
-            }
-        }
-        this.renderConversationsList();
     },
 
     /**

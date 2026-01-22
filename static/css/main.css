@@ -252,20 +252,6 @@ html, body {
     background-color: var(--color-border);
 }
 
-.conversation-item.generating {
-    border-left: 3px solid var(--color-primary);
-}
-
-.conversation-generating-icon {
-    font-size: 14px;
-    animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-}
-
 .conversation-title {
     flex: 1;
     overflow: hidden;
