@@ -34,12 +34,23 @@ async def stream_agent_chat(request: AgentChatRequest):
         conversation_id = request.conversation_id
         branch = request.branch or [0]
 
-        # Get workspace path for this conversation
+        # Get workspace path and session_id for this conversation
         workspace_path = None
+        existing_session_id = None
+        msg_record = None
+
         if conversation_id:
             workspace_path = store.get_workspace_path(conversation_id)
             # Create workspace if needed
             os.makedirs(workspace_path, exist_ok=True)
+
+            # Get existing session_id from conversation metadata for resumption
+            try:
+                conv = await store.get_conversation(conversation_id)
+                if conv:
+                    existing_session_id = conv.get("session_id")
+            except Exception:
+                pass  # Continue without session_id if we can't get it
 
             # Create assistant message record in DB first
             try:
@@ -59,19 +70,35 @@ async def stream_agent_chat(request: AgentChatRequest):
         accumulated_content = []
         tool_results = []
         current_text = ""
+        new_session_id = None
 
         try:
             async for event in agent_client.stream_agent_response(
                 messages=request.messages,
                 workspace_path=workspace_path or os.getcwd(),
                 system_prompt=request.system_prompt,
-                model=request.model
+                model=request.model,
+                session_id=existing_session_id  # Pass session_id for resumption
             ):
                 # Send event to client
                 yield f"data: {json.dumps(event)}\n\n"
 
+                # Capture session_id from init message
+                if event["type"] == "session_id":
+                    new_session_id = event["session_id"]
+                    # Save session_id to conversation metadata
+                    if conversation_id and new_session_id:
+                        try:
+                            await store.update_conversation_session_id(
+                                conversation_id=conversation_id,
+                                session_id=new_session_id
+                            )
+                        except Exception as e:
+                            # Log but don't fail the stream
+                            print(f"Failed to save session_id: {e}")
+
                 # Accumulate content for DB save
-                if event["type"] == "text":
+                elif event["type"] == "text":
                     current_text += event["content"]
                 elif event["type"] == "tool_use":
                     # If we have accumulated text, save it first

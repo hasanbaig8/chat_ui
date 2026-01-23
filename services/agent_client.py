@@ -24,6 +24,11 @@ except ImportError as e:
 except Exception as e:
     SDK_IMPORT_ERROR = f"Unexpected error: {e}"
 
+# Path to GIF MCP server script
+import pathlib
+GIF_MCP_SERVER_PATH = pathlib.Path(__file__).parent.parent / "tools" / "gif_mcp_server.py"
+GIF_TOOL_AVAILABLE = GIF_MCP_SERVER_PATH.exists()
+
 
 class AgentClient:
     """Wrapper for Claude Agent SDK with streaming support."""
@@ -39,7 +44,8 @@ class AgentClient:
         messages: List[Dict[str, Any]],
         workspace_path: str,
         system_prompt: Optional[str] = None,
-        model: Optional[str] = None
+        model: Optional[str] = None,
+        session_id: Optional[str] = None
     ) -> AsyncIterator[Dict[str, Any]]:
         """
         Stream agent responses as SSE-compatible events.
@@ -49,9 +55,10 @@ class AgentClient:
             workspace_path: Working directory for agent file operations
             system_prompt: Optional system prompt
             model: Optional model override
+            session_id: Optional session ID to resume a previous conversation
 
         Yields:
-            Events with types: 'text', 'tool_use', 'tool_result', 'done', 'error'
+            Events with types: 'session_id', 'text', 'tool_use', 'tool_result', 'done', 'error'
         """
         if not SDK_AVAILABLE:
             yield {
@@ -78,15 +85,28 @@ class AgentClient:
             # Configure agent options
             options = ClaudeCodeOptions(
                 cwd=workspace_path,
-                allowed_tools=["Read", "Write", "Bash"],
+                allowed_tools=["Read", "Write", "Bash", "mcp__gif-search__search_gif"],
                 permission_mode="acceptEdits",
             )
+
+            # Add GIF MCP server if available
+            if GIF_TOOL_AVAILABLE:
+                options.mcp_servers = {
+                    "gif-search": {
+                        "command": "python3",
+                        "args": [str(GIF_MCP_SERVER_PATH)]
+                    }
+                }
 
             if system_prompt:
                 options.system_prompt = system_prompt
 
             if model:
                 options.model = model
+
+            # Resume previous session if session_id is provided
+            if session_id:
+                options.resume = session_id
 
             # Stream responses from agent using the query function
             async for message in query(prompt=user_message, options=options):
@@ -155,7 +175,19 @@ class AgentClient:
                     "total_cost_usd": getattr(message, 'total_cost_usd', None)
                 })
 
-        # SystemMessage is ignored (init message)
+        # Handle SystemMessage - capture session ID from init message
+        elif msg_type == 'SystemMessage':
+            subtype = getattr(message, 'subtype', '')
+            if subtype == 'init':
+                # Session ID can be in session_id attribute or in data dict
+                sid = getattr(message, 'session_id', None)
+                if not sid and hasattr(message, 'data'):
+                    sid = message.data.get('session_id')
+                if sid:
+                    events.append({
+                        "type": "session_id",
+                        "session_id": sid
+                    })
 
         return events
 

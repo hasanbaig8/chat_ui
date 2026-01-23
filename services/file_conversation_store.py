@@ -233,6 +233,7 @@ class FileConversationStore:
             "model": metadata.get("model"),
             "system_prompt": metadata.get("system_prompt"),
             "is_agent": metadata.get("is_agent", False),
+            "session_id": metadata.get("session_id"),  # For agent conversation resumption
             "messages": messages_with_versions,
             "current_branch": branch
         }
@@ -297,6 +298,26 @@ class FileConversationStore:
         if system_prompt is not None:
             metadata["system_prompt"] = system_prompt
 
+        metadata["updated_at"] = datetime.utcnow().isoformat()
+        await self._write_json(metadata_path, metadata)
+        return True
+
+    async def update_conversation_session_id(
+        self,
+        conversation_id: str,
+        session_id: str
+    ) -> bool:
+        """Update the session_id for an agent conversation.
+
+        This is used to store the Claude Agent SDK session ID for resuming
+        conversations when the user switches tabs or returns later.
+        """
+        metadata_path = self._get_metadata_path(conversation_id)
+        metadata = await self._read_json(metadata_path)
+        if not metadata:
+            return False
+
+        metadata["session_id"] = session_id
         metadata["updated_at"] = datetime.utcnow().isoformat()
         await self._write_json(metadata_path, metadata)
         return True

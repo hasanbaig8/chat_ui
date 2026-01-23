@@ -7,6 +7,7 @@ const ChatManager = {
     currentBranch: [0],  // Current branch array
     isStreaming: false,
     isAgentConversation: false,  // Whether current conversation uses agent SDK
+    agentSessionId: null,  // Session ID for agent SDK conversation resumption
     abortController: null,
     editingPosition: null,
     originalEditContent: null,  // Original content when editing
@@ -291,6 +292,7 @@ const ChatManager = {
         this.messages = [];
         this.currentBranch = conversation.current_branch || [0];
         this.isAgentConversation = conversation.is_agent || false;
+        this.agentSessionId = conversation.session_id || null;  // For agent SDK resumption
         this.toolBlocks = {};
         this.clearMessagesUI();
         this.streamingMessageEl = null;
@@ -617,6 +619,7 @@ const ChatManager = {
         this.streamingMessageId = null;
         this.isStreaming = false;
         this.isAgentConversation = false;
+        this.agentSessionId = null;
         this.userScrolledAway = false;
         this.abortController = null;
         this.lastStreamingText = '';
@@ -652,6 +655,7 @@ const ChatManager = {
         // Reset streaming state - will be updated when conversation loads
         this.isStreaming = false;
         this.isAgentConversation = false;
+        this.agentSessionId = null;
         this.userScrolledAway = false;
         this.updateSendButton();
         this.updateContextStats();
@@ -1472,6 +1476,10 @@ const ChatManager = {
                             if (event.type === 'message_id') {
                                 this.streamingMessageId = event.id;
                                 messageEl.dataset.messageId = event.id;
+                            } else if (event.type === 'session_id') {
+                                // Store session ID for conversation resumption
+                                this.agentSessionId = event.session_id;
+                                console.log('Agent session ID:', event.session_id);
                             } else if (event.type === 'text') {
                                 textContent += event.content;
 
@@ -1590,13 +1598,14 @@ const ChatManager = {
         el.dataset.toolUseId = toolUseId;
 
         const icon = this.getToolIcon(toolName);
+        const displayName = this.getToolDisplayName(toolName);
         const inputPreview = typeof input === 'object' ? JSON.stringify(input, null, 2) : String(input);
 
         el.innerHTML = `
             <div class="tool-header">
                 <span class="tool-icon">${icon}</span>
-                <span class="tool-name">${this.escapeHtml(toolName)}</span>
-                <span class="tool-status">Running...</span>
+                <span class="tool-name">${this.escapeHtml(displayName)}</span>
+                <span class="tool-status running">Running...</span>
             </div>
             <div class="tool-input">
                 <pre>${this.escapeHtml(inputPreview)}</pre>
@@ -1694,8 +1703,25 @@ const ChatManager = {
             'Bash': '&#128187;',    // Computer
             'Glob': '&#128269;',    // Magnifying glass
             'Grep': '&#128270;',    // Magnifying glass right
+            'mcp__gif-tools__search_gif': '&#127912;',  // Film frames (GIF)
+            'search_gif': '&#127912;',  // Film frames (GIF)
         };
         return icons[toolName] || '&#128295;';  // Wrench as default
+    },
+
+    /**
+     * Get display name for a tool (handles MCP tool name format)
+     */
+    getToolDisplayName(toolName) {
+        // Handle MCP tool format: mcp__server-name__tool_name
+        if (toolName.startsWith('mcp__')) {
+            const parts = toolName.split('__');
+            if (parts.length >= 3) {
+                // Return just the tool name part, formatted nicely
+                return parts[2].replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            }
+        }
+        return toolName;
     },
 
     /**
