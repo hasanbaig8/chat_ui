@@ -309,9 +309,17 @@ const ChatManager = {
         if (typeof StreamingTracker !== 'undefined') {
             isStreamingActive = await StreamingTracker.checkServerStatus(conversation.id);
             this.isStreaming = isStreamingActive;
+            console.log('[loadConversation] Streaming active:', isStreamingActive, 'Messages count:', conversation.messages?.length);
         }
 
         if (conversation.messages && conversation.messages.length > 0) {
+            console.log('[loadConversation] Rendering messages:', conversation.messages.map(m => ({
+                role: m.role,
+                position: m.position,
+                contentLength: typeof m.content === 'string' ? m.content.length : 'array',
+                content: typeof m.content === 'string' ? m.content.substring(0, 100) : m.content,
+                id: m.id
+            })));
             document.getElementById('welcome-message').style.display = 'none';
 
             // First, populate all messages with IDs for parent tracking
@@ -441,6 +449,7 @@ const ChatManager = {
      * Update UI from conversation data (used during polling)
      */
     updateFromConversation(conversation) {
+        console.log('[updateFromConversation] Messages:', conversation.messages?.length, 'Last message content length:', conversation.messages?.[conversation.messages.length - 1]?.content?.length);
         if (!conversation.messages || conversation.messages.length === 0) return;
 
         const container = document.getElementById('messages-container');
@@ -1995,6 +2004,7 @@ const ChatManager = {
      */
     renderMessage(msg, forceScroll = false) {
         const { role, content, thinking, tool_results, position = 0, version = 1, total_versions = 1, created_at } = msg;
+        console.log('[renderMessage]', {role, position, contentLength: typeof content === 'string' ? content.length : 'array', content: typeof content === 'string' ? content.substring(0, 100) : content});
 
         // Version info is now passed directly for user messages
         const el = this.createMessageElement(role, position, version, total_versions, null, created_at);

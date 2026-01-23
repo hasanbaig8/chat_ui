@@ -106,9 +106,14 @@ class ConversationStore:
         self,
         title: str = "New Conversation",
         model: Optional[str] = None,
-        system_prompt: Optional[str] = None
+        system_prompt: Optional[str] = None,
+        is_agent: bool = False
     ) -> Dict[str, Any]:
-        """Create a new conversation."""
+        """Create a new conversation.
+
+        Args:
+            is_agent: Whether this is an agent conversation (ignored for SQLite store, kept for compatibility)
+        """
         conversation_id = str(uuid.uuid4())
         now = datetime.utcnow().isoformat()
 
@@ -130,8 +135,12 @@ class ConversationStore:
             "messages": []
         }
 
-    async def get_conversation(self, conversation_id: str) -> Optional[Dict[str, Any]]:
+    async def get_conversation(self, conversation_id: str, branch: Optional[List[int]] = None) -> Optional[Dict[str, Any]]:
         """Get a conversation with active messages following the branch chain.
+
+        Args:
+            conversation_id: ID of the conversation
+            branch: Optional branch array (ignored for SQLite store, kept for compatibility with FileConversationStore)
 
         Messages are selected based on:
         1. At position 0: use active_versions to select which user message version
@@ -159,6 +168,10 @@ class ConversationStore:
                 (conversation_id,)
             )
             all_messages = [dict(row) async for row in cursor]
+
+            print(f"[GET_CONV SQLite] Found {len(all_messages)} messages for {conversation_id}")
+            for msg in all_messages:
+                print(f"  - Position {msg['position']}, Role {msg['role']}, Version {msg['version']}, Content length: {len(msg['content'])}")
 
             if not all_messages:
                 conversation["messages"] = []
@@ -239,6 +252,10 @@ class ConversationStore:
                 current_parent_id = selected['id']
                 previous_selected_version = selected['version']
 
+            print(f"[GET_CONV SQLite] Returning {len(messages)} messages after filtering")
+            for msg in messages:
+                print(f"  - Position {msg['position']}, Role {msg['role']}, Content length: {len(str(msg['content']))}")
+
             conversation["messages"] = messages
             return conversation
 
@@ -308,7 +325,9 @@ class ConversationStore:
         content: Any,
         thinking: Optional[str] = None,
         streaming: bool = False,
-        parent_message_id: Optional[str] = None
+        parent_message_id: Optional[str] = None,
+        branch: Optional[List[int]] = None,
+        tool_results: Optional[List[Dict]] = None
     ) -> Dict[str, Any]:
         """Add a message to a conversation.
 
@@ -316,6 +335,8 @@ class ConversationStore:
             parent_message_id: ID of the message this is responding to.
                 - For user messages: parent is the previous assistant message (or None for first)
                 - For assistant messages: parent is the user message being responded to
+            branch: Optional branch array (ignored for SQLite store, kept for compatibility)
+            tool_results: Optional tool results (ignored for SQLite store, kept for compatibility)
         """
         message_id = str(uuid.uuid4())
         now = datetime.utcnow().isoformat()
@@ -331,6 +352,7 @@ class ConversationStore:
             # Note: can't use `row[0] or -1` because 0 is falsy in Python
             position = 0 if row[0] is None else row[0] + 1
 
+            print(f"[ADD_MESSAGE SQLite] Adding {role} message at position {position}, parent: {parent_message_id}, content length: {len(content_str)}")
             await db.execute(
                 """INSERT INTO messages (id, conversation_id, role, content, thinking, position, version, parent_message_id, created_at)
                    VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)""",
@@ -341,6 +363,7 @@ class ConversationStore:
                 (now, conversation_id)
             )
             await db.commit()
+            print(f"[ADD_MESSAGE SQLite] Created message {message_id}")
 
         return {
             "id": message_id,
@@ -359,19 +382,35 @@ class ConversationStore:
 
     async def update_message_content(
         self,
+        conversation_id: str,
         message_id: str,
         content: str,
         thinking: Optional[str] = None,
+        tool_results: Optional[List[Dict]] = None,
+        branch: Optional[List[int]] = None,
         streaming: bool = True
     ) -> bool:
-        """Update message content (used for streaming updates)."""
+        """Update message content (used for streaming updates).
+
+        Args:
+            conversation_id: Conversation ID (kept for compatibility with FileConversationStore)
+            message_id: Message ID to update
+            content: New content
+            thinking: Optional thinking content
+            tool_results: Optional tool results (ignored for SQLite store)
+            branch: Optional branch array (ignored for SQLite store)
+            streaming: Whether message is still streaming
+        """
+        print(f"[UPDATE_MESSAGE SQLite] Updating message {message_id} with content length: {len(content)}")
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute(
                 "UPDATE messages SET content = ?, thinking = ? WHERE id = ?",
                 (content, thinking, message_id)
             )
             await db.commit()
-            return db.total_changes > 0
+            updated = db.total_changes > 0
+            print(f"[UPDATE_MESSAGE SQLite] Updated: {updated}")
+            return updated
 
     async def get_message_by_id(self, message_id: str) -> Optional[Dict[str, Any]]:
         """Get a single message by ID."""

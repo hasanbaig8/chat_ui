@@ -33,9 +33,11 @@ const StreamingTracker = {
         try {
             const response = await fetch(`/api/chat/streaming/${conversationId}`);
             const data = await response.json();
+            console.log('[StreamingTracker] Server status for', conversationId, ':', data);
             this.setStreaming(conversationId, data.streaming);
-            return data.streaming;
+            return Boolean(data.streaming);
         } catch (e) {
+            console.error('[StreamingTracker] Error checking status:', e);
             return false;
         }
     },

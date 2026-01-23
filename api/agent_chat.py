@@ -3,7 +3,7 @@
 import json
 import os
 from typing import Optional, List, Any
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
@@ -212,3 +212,40 @@ async def delete_workspace_file(conversation_id: str, filename: str):
         return {"success": True, "message": f"Deleted {filename}"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete file: {str(e)}")
+
+
+@router.post("/workspace/{conversation_id}/upload")
+async def upload_workspace_file(conversation_id: str, file: UploadFile = File(...)):
+    """Upload a file to conversation workspace."""
+    workspace_path = store.get_workspace_path(conversation_id)
+
+    # Create workspace directory if it doesn't exist
+    os.makedirs(workspace_path, exist_ok=True)
+
+    # Sanitize filename to prevent directory traversal
+    filename = os.path.basename(file.filename)
+    if not filename or filename.startswith('.'):
+        raise HTTPException(status_code=400, detail="Invalid filename")
+
+    file_path = os.path.join(workspace_path, filename)
+
+    # Security check - ensure file is within workspace
+    real_workspace = os.path.realpath(workspace_path)
+    real_file = os.path.realpath(file_path)
+    if not real_file.startswith(real_workspace):
+        raise HTTPException(status_code=400, detail="Invalid file path")
+
+    try:
+        # Write file
+        with open(file_path, "wb") as f:
+            content = await file.read()
+            f.write(content)
+
+        return {
+            "success": True,
+            "message": f"Uploaded {filename}",
+            "filename": filename,
+            "size": len(content)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")

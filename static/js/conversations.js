@@ -232,7 +232,7 @@ const ConversationsManager = {
             }
 
             // Add agent indicator if this is an agent conversation
-            const agentIcon = conv.is_agent ? '<span class="agent-icon" title="Agent Chat">&#129302;</span>' : '';
+            const agentIcon = conv.is_agent ? '<img src="/static/favicon.png" alt="Agent" class="agent-icon" title="Agent Chat">' : '';
 
             item.innerHTML = `
                 ${agentIcon}

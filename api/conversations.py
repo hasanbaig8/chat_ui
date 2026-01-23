@@ -155,12 +155,14 @@ async def get_conversation(
     conversation = await store.get_conversation(conversation_id, branch_array)
     if not conversation:
         raise HTTPException(status_code=404, detail="Conversation not found")
+    print(f"[GET_CONV] Loaded conversation {conversation_id} with {len(conversation.get('messages', []))} messages using {type(store).__name__}")
     return conversation
 
 
 @router.put("/{conversation_id}")
 async def update_conversation(conversation_id: str, request: UpdateConversationRequest):
     """Update conversation metadata."""
+    store = await get_store_for_conversation(conversation_id)
     success = await store.update_conversation(
         conversation_id=conversation_id,
         title=request.title,
@@ -175,6 +177,7 @@ async def update_conversation(conversation_id: str, request: UpdateConversationR
 @router.delete("/{conversation_id}")
 async def delete_conversation(conversation_id: str):
     """Delete a conversation."""
+    store = await get_store_for_conversation(conversation_id)
     success = await store.delete_conversation(conversation_id)
     if not success:
         raise HTTPException(status_code=404, detail="Conversation not found")
@@ -185,6 +188,7 @@ async def delete_conversation(conversation_id: str):
 async def add_message(conversation_id: str, request: AddMessageRequest):
     """Add a message to a conversation branch."""
     try:
+        store = await get_store_for_conversation(conversation_id)
         message = await store.add_message(
             conversation_id=conversation_id,
             role=request.role,
@@ -210,6 +214,7 @@ async def get_messages(
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid branch format")
 
+    store = await get_store_for_conversation(conversation_id)
     messages = await store.get_messages(conversation_id, branch_array)
     return {"messages": messages}
 
@@ -218,6 +223,7 @@ async def get_messages(
 async def edit_message(conversation_id: str, request: EditMessageRequest):
     """Edit a user message, creating a new branch."""
     try:
+        store = await get_store_for_conversation(conversation_id)
         result = await store.create_branch(
             conversation_id=conversation_id,
             current_branch=request.branch or [0],
@@ -232,6 +238,7 @@ async def edit_message(conversation_id: str, request: EditMessageRequest):
 @router.post("/{conversation_id}/switch-branch")
 async def switch_branch(conversation_id: str, request: SwitchBranchRequest):
     """Switch to an adjacent branch at a user message position."""
+    store = await get_store_for_conversation(conversation_id)
     new_branch = await store.switch_branch(
         conversation_id=conversation_id,
         current_branch=request.branch or [0],
@@ -252,6 +259,7 @@ async def switch_branch(conversation_id: str, request: SwitchBranchRequest):
 @router.post("/{conversation_id}/set-branch")
 async def set_branch(conversation_id: str, request: SetBranchRequest):
     """Set the current branch for a conversation."""
+    store = await get_store_for_conversation(conversation_id)
     success = await store.set_current_branch(conversation_id, request.branch)
     if not success:
         raise HTTPException(status_code=404, detail="Conversation not found")
