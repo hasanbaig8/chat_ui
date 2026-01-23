@@ -779,3 +779,44 @@ class ConversationStore:
                 "model": original_dict.get('model'),
                 "system_prompt": original_dict.get('system_prompt')
             }
+
+    async def delete_messages_from(
+        self,
+        conversation_id: str,
+        position: int,
+        branch: Optional[List[int]] = None
+    ) -> bool:
+        """Delete messages from a position onwards (inclusive).
+
+        For SQLite store, this deletes all messages with position >= specified position.
+        The branch parameter is ignored as SQLite uses a different branching model.
+        """
+        print(f"[DELETE SQLite] Deleting messages from position {position} in conversation {conversation_id}")
+
+        async with aiosqlite.connect(self.db_path) as db:
+            # Check if conversation exists
+            cursor = await db.execute(
+                "SELECT id FROM conversations WHERE id = ?",
+                (conversation_id,)
+            )
+            if not await cursor.fetchone():
+                print(f"[DELETE SQLite] Conversation {conversation_id} not found")
+                return False
+
+            # Delete messages at or after position
+            await db.execute(
+                "DELETE FROM messages WHERE conversation_id = ? AND position >= ?",
+                (conversation_id, position)
+            )
+
+            # Update conversation timestamp
+            now = datetime.utcnow().isoformat()
+            await db.execute(
+                "UPDATE conversations SET updated_at = ? WHERE id = ?",
+                (now, conversation_id)
+            )
+
+            await db.commit()
+            deleted_count = db.total_changes
+            print(f"[DELETE SQLite] Deleted {deleted_count} row(s)")
+            return deleted_count > 0

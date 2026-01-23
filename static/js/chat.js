@@ -1504,8 +1504,8 @@ const ChatManager = {
             }
 
             // Clean up from BackgroundStreams
-            if (typeof BackgroundStreams !== 'undefined') {
-                BackgroundStreams.removeStream(conversationId);
+            if (typeof StreamingTracker !== 'undefined') {
+                StreamingTracker.setStreaming(conversationId, false);
             }
 
             // Scroll if still on same conversation
@@ -1709,8 +1709,8 @@ const ChatManager = {
             }
 
             // Clean up from BackgroundStreams
-            if (typeof BackgroundStreams !== 'undefined') {
-                BackgroundStreams.removeStream(conversationId);
+            if (typeof StreamingTracker !== 'undefined') {
+                StreamingTracker.setStreaming(conversationId, false);
             }
 
             if (this.activeConversationId === conversationId) {
