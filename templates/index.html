@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Claude Chat</title>
     <link rel="icon" type="image/png" href="/static/favicon.png">
-    <link rel="stylesheet" href="/static/css/main.css?v=3">
+    <link rel="stylesheet" href="/static/css/main.css?v=4">
     <!-- Highlight.js for code syntax highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
@@ -31,7 +31,7 @@
                     <span class="theme-icon-light">&#9728;</span>
                     <span class="theme-icon-dark">&#9790;</span>
                 </button>
-                <button id="settings-toggle" class="icon-btn" title="Settings">
+                <button id="default-settings-toggle" class="icon-btn" title="Default Settings">
                     &#9881;
                 </button>
             </div>
@@ -121,12 +121,18 @@
             <!-- Settings Panel -->
             <aside class="settings-panel" id="settings-panel">
                 <div class="settings-header">
-                    <h3>Settings</h3>
+                    <h3>Conversation Settings</h3>
                     <button id="close-settings" class="icon-btn">&times;</button>
                 </div>
 
                 <div class="settings-content">
-                    <!-- Model Selection -->
+                    <!-- Mode indicator -->
+                    <div class="setting-group settings-mode-indicator" id="settings-mode-indicator">
+                        <span class="mode-badge normal-mode">Normal Chat</span>
+                        <span class="mode-badge agent-mode">Agent Chat</span>
+                    </div>
+
+                    <!-- Model Selection (both modes) -->
                     <div class="setting-group">
                         <label for="model-select">Model</label>
                         <select id="model-select">
@@ -135,64 +141,76 @@
                         <span class="setting-description" id="model-description"></span>
                     </div>
 
-                    <!-- Extended Thinking -->
-                    <div class="setting-group" id="thinking-group">
-                        <label class="toggle-label">
-                            <span>Extended Thinking</span>
-                            <input type="checkbox" id="thinking-toggle">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <div class="thinking-budget-container" id="thinking-budget-container">
-                            <label for="thinking-budget">Budget: <span id="thinking-budget-value">10000</span> tokens</label>
-                            <input type="range" id="thinking-budget" min="1024" max="128000" value="10000" step="1024">
-                        </div>
-                    </div>
-
-                    <!-- Temperature -->
-                    <div class="setting-group" id="temperature-group">
-                        <label for="temperature">Temperature: <span id="temperature-value">1.0</span></label>
-                        <input type="range" id="temperature" min="0" max="1" value="1" step="0.1">
-                    </div>
-
-                    <!-- Max Tokens -->
-                    <div class="setting-group">
-                        <label for="max-tokens">Max Tokens: <span id="max-tokens-value">4096</span></label>
-                        <input type="range" id="max-tokens" min="1" max="128000" value="4096" step="1000">
-                    </div>
-
-                    <!-- Top P -->
-                    <div class="setting-group" id="top-p-group">
-                        <label for="top-p">Top P: <span id="top-p-value">1.0</span></label>
-                        <input type="range" id="top-p" min="0" max="1" value="1" step="0.05">
-                    </div>
-
-                    <!-- Top K -->
-                    <div class="setting-group" id="top-k-group">
-                        <label for="top-k">Top K: <span id="top-k-value">0</span> (0 = disabled)</label>
-                        <input type="range" id="top-k" min="0" max="500" value="0" step="10">
-                    </div>
-
-                    <!-- Context Pruning -->
-                    <div class="setting-group">
-                        <label for="prune-threshold">Context Pruning: <span id="prune-threshold-value">70</span>%</label>
-                        <input type="range" id="prune-threshold" min="50" max="95" value="70" step="5">
-                        <span class="setting-description">Automatically remove oldest messages to keep context under this threshold</span>
-                    </div>
-
-                    <!-- System Prompt -->
+                    <!-- System Prompt (both modes) -->
                     <div class="setting-group">
                         <label for="system-prompt">System Prompt</label>
                         <textarea id="system-prompt" rows="4" placeholder="Optional system prompt..."></textarea>
                     </div>
 
-                    <!-- Prompt Library -->
-                    <div class="setting-group">
-                        <div class="prompt-library-header">
-                            <label>Prompt Library</label>
-                            <button class="btn-small" id="add-prompt-btn">+ Add Prompt</button>
+                    <!-- Normal chat only settings -->
+                    <div class="normal-chat-settings">
+                        <!-- Extended Thinking -->
+                        <div class="setting-group" id="thinking-group">
+                            <label class="toggle-label">
+                                <span>Extended Thinking</span>
+                                <input type="checkbox" id="thinking-toggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="thinking-budget-container visible" id="thinking-budget-container">
+                                <label for="thinking-budget">Budget: <span id="thinking-budget-value">60000</span> tokens</label>
+                                <input type="range" id="thinking-budget" min="1024" max="63000" value="60000" step="1024">
+                            </div>
                         </div>
-                        <div id="prompt-library-list" class="prompt-library-list">
-                            <!-- Prompts will be listed here -->
+
+                        <!-- Temperature (hidden when thinking enabled) -->
+                        <div class="setting-group hidden" id="temperature-group">
+                            <label for="temperature">Temperature: <span id="temperature-value">1.0</span></label>
+                            <input type="range" id="temperature" min="0" max="1" value="1" step="0.1">
+                        </div>
+
+                        <!-- Max Tokens -->
+                        <div class="setting-group" id="max-tokens-group">
+                            <label for="max-tokens">Max Tokens: <span id="max-tokens-value">64000</span></label>
+                            <input type="range" id="max-tokens" min="1" max="64000" value="64000" step="1000">
+                        </div>
+
+                        <!-- Top P (hidden when thinking enabled) -->
+                        <div class="setting-group hidden" id="top-p-group">
+                            <label for="top-p">Top P: <span id="top-p-value">1.0</span></label>
+                            <input type="range" id="top-p" min="0" max="1" value="1" step="0.05">
+                        </div>
+
+                        <!-- Top K (hidden when thinking enabled) -->
+                        <div class="setting-group hidden" id="top-k-group">
+                            <label for="top-k">Top K: <span id="top-k-value">0</span> (0 = disabled)</label>
+                            <input type="range" id="top-k" min="0" max="500" value="0" step="10">
+                        </div>
+
+                        <!-- Context Pruning -->
+                        <div class="setting-group" id="prune-threshold-group">
+                            <label for="prune-threshold">Context Pruning: <span id="prune-threshold-value">70</span>%</label>
+                            <input type="range" id="prune-threshold" min="50" max="95" value="70" step="5">
+                            <span class="setting-description">Automatically remove oldest messages to keep context under this threshold</span>
+                        </div>
+
+                        <!-- Prompt Library -->
+                        <div class="setting-group" id="prompt-library-group">
+                            <div class="prompt-library-header">
+                                <label>Prompt Library</label>
+                                <button class="btn-small" id="add-prompt-btn">+ Add Prompt</button>
+                            </div>
+                            <div id="prompt-library-list" class="prompt-library-list">
+                                <!-- Prompts will be listed here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Agent chat only settings -->
+                    <div class="agent-chat-settings">
+                        <div class="setting-group">
+                            <span class="setting-description agent-info">
+                                Agent mode uses the Claude Code SDK with automatic tool access (Read, Write, Edit, Bash, Glob, Grep, WebSearch, WebFetch).
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -274,6 +292,100 @@
         </div>
     </div>
 
+    <!-- Default Settings Modal -->
+    <div class="modal-overlay" id="default-settings-modal">
+        <div class="modal-content default-settings-modal">
+            <div class="modal-header">
+                <h3>Default Settings</h3>
+                <button class="icon-btn" id="close-default-settings">&times;</button>
+            </div>
+            <div class="default-settings-content">
+                <div class="default-settings-tabs">
+                    <button class="tab-btn active" data-tab="normal">Normal Chat</button>
+                    <button class="tab-btn" data-tab="agent">Agent Chat</button>
+                </div>
+
+                <!-- Normal Chat Defaults -->
+                <div class="default-settings-tab-content" id="default-tab-normal">
+                    <div class="setting-group">
+                        <label for="default-normal-model">Default Model</label>
+                        <select id="default-normal-model">
+                            <!-- Models will be populated here -->
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="default-normal-system-prompt">Default System Prompt</label>
+                        <textarea id="default-normal-system-prompt" rows="4" placeholder="Optional default system prompt..."></textarea>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="toggle-label">
+                            <span>Extended Thinking</span>
+                            <input type="checkbox" id="default-normal-thinking-toggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <div class="thinking-budget-container visible" id="default-normal-thinking-budget-container">
+                            <label for="default-normal-thinking-budget">Budget: <span id="default-normal-thinking-budget-value">60000</span> tokens</label>
+                            <input type="range" id="default-normal-thinking-budget" min="1024" max="63000" value="60000" step="1024">
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="default-normal-max-tokens">Max Tokens: <span id="default-normal-max-tokens-value">64000</span></label>
+                        <input type="range" id="default-normal-max-tokens" min="1" max="64000" value="64000" step="1000">
+                    </div>
+
+                    <div class="setting-group" id="default-normal-temperature-group">
+                        <label for="default-normal-temperature">Temperature: <span id="default-normal-temperature-value">1.0</span></label>
+                        <input type="range" id="default-normal-temperature" min="0" max="1" value="1" step="0.1">
+                    </div>
+
+                    <div class="setting-group" id="default-normal-top-p-group">
+                        <label for="default-normal-top-p">Top P: <span id="default-normal-top-p-value">1.0</span></label>
+                        <input type="range" id="default-normal-top-p" min="0" max="1" value="1" step="0.05">
+                    </div>
+
+                    <div class="setting-group" id="default-normal-top-k-group">
+                        <label for="default-normal-top-k">Top K: <span id="default-normal-top-k-value">0</span> (0 = disabled)</label>
+                        <input type="range" id="default-normal-top-k" min="0" max="500" value="0" step="10">
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="default-normal-prune-threshold">Context Pruning: <span id="default-normal-prune-threshold-value">70</span>%</label>
+                        <input type="range" id="default-normal-prune-threshold" min="50" max="95" value="70" step="5">
+                        <span class="setting-description">Automatically remove oldest messages to keep context under this threshold</span>
+                    </div>
+                </div>
+
+                <!-- Agent Chat Defaults -->
+                <div class="default-settings-tab-content" id="default-tab-agent" style="display: none;">
+                    <div class="setting-group">
+                        <label for="default-agent-model">Default Model</label>
+                        <select id="default-agent-model">
+                            <!-- Models will be populated here -->
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="default-agent-system-prompt">Default System Prompt</label>
+                        <textarea id="default-agent-system-prompt" rows="4" placeholder="Optional default system prompt for agent chats..."></textarea>
+                    </div>
+
+                    <div class="setting-group">
+                        <span class="setting-description agent-info">
+                            Agent mode uses the Claude Code SDK with automatic tool access (Read, Write, Edit, Bash, Glob, Grep, WebSearch, WebFetch).
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancel-default-settings">Cancel</button>
+                <button class="btn btn-primary" id="save-default-settings">Save Defaults</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loading-overlay">
         <div class="loading-spinner"></div>
@@ -284,6 +396,7 @@
     <script src="/static/js/conversations.js"></script>
     <script src="/static/js/files.js"></script>
     <script src="/static/js/settings.js"></script>
+    <script src="/static/js/default-settings.js"></script>
     <script src="/static/js/prompts.js"></script>
     <script src="/static/js/workspace.js"></script>
     <script src="/static/js/chat.js?v=7"></script>

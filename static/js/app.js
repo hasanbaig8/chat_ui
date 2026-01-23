@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         // Initialize all modules
         await SettingsManager.init();
+        SettingsManager.setMode('normal');  // Default to normal mode
+        await DefaultSettingsManager.init();
         FilesManager.init();
         PromptLibrary.init();
         WorkspaceManager.init();

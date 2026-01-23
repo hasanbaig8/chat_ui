@@ -5,6 +5,7 @@
 const SettingsManager = {
     models: [],
     isOpen: false,
+    saveTimeout: null,  // For debounced saving
 
     /**
      * Initialize settings
@@ -17,14 +18,27 @@ const SettingsManager = {
     },
 
     /**
+     * Debounced save to current conversation
+     */
+    scheduleSave() {
+        if (this.saveTimeout) {
+            clearTimeout(this.saveTimeout);
+        }
+        this.saveTimeout = setTimeout(() => {
+            const conversationId = typeof ConversationsManager !== 'undefined'
+                ? ConversationsManager.currentConversationId
+                : null;
+            if (conversationId) {
+                this.saveToConversation(conversationId);
+            }
+        }, 500);  // Save 500ms after last change
+    },
+
+    /**
      * Bind DOM events
      */
     bindEvents() {
-        // Settings toggle
-        document.getElementById('settings-toggle').addEventListener('click', () => {
-            this.togglePanel();
-        });
-
+        // Close settings panel button
         document.getElementById('close-settings').addEventListener('click', () => {
             this.togglePanel();
         });
@@ -32,11 +46,13 @@ const SettingsManager = {
         // Model selection
         document.getElementById('model-select').addEventListener('change', (e) => {
             this.onModelChange(e.target.value);
+            this.scheduleSave();
         });
 
         // Extended thinking toggle
         document.getElementById('thinking-toggle').addEventListener('change', (e) => {
             this.onThinkingToggle(e.target.checked);
+            this.scheduleSave();
         });
 
         // Thinking budget slider - enforce max_tokens >= thinking_budget
@@ -55,11 +71,13 @@ const SettingsManager = {
             if (document.getElementById('thinking-toggle').checked) {
                 maxTokensInput.min = thinkingBudget;
             }
+            this.scheduleSave();
         });
 
         // Temperature slider
         document.getElementById('temperature').addEventListener('input', (e) => {
             document.getElementById('temperature-value').textContent = e.target.value;
+            this.scheduleSave();
         });
 
         // Max tokens slider - respect thinking budget minimum
@@ -76,16 +94,19 @@ const SettingsManager = {
                 }
             }
             document.getElementById('max-tokens-value').textContent = value;
+            this.scheduleSave();
         });
 
         // Top P slider
         document.getElementById('top-p').addEventListener('input', (e) => {
             document.getElementById('top-p-value').textContent = e.target.value;
+            this.scheduleSave();
         });
 
         // Top K slider
         document.getElementById('top-k').addEventListener('input', (e) => {
             document.getElementById('top-k-value').textContent = e.target.value;
+            this.scheduleSave();
         });
 
         // Prune threshold slider
@@ -96,8 +117,14 @@ const SettingsManager = {
                 if (valueDisplay) {
                     valueDisplay.textContent = e.target.value;
                 }
+                this.scheduleSave();
             });
         }
+
+        // System prompt
+        document.getElementById('system-prompt').addEventListener('input', () => {
+            this.scheduleSave();
+        });
 
         // Theme toggle
         document.getElementById('theme-toggle').addEventListener('click', () => {
@@ -284,12 +311,11 @@ const SettingsManager = {
             document.getElementById('temperature-value').textContent = savedTemp;
         }
 
-        // Max tokens
+        // Max tokens (default: 64000 - Opus 4.5 max output limit)
         const savedMaxTokens = localStorage.getItem('claude-chat-max-tokens');
-        if (savedMaxTokens) {
-            document.getElementById('max-tokens').value = savedMaxTokens;
-            document.getElementById('max-tokens-value').textContent = savedMaxTokens;
-        }
+        const maxTokens = savedMaxTokens ? parseInt(savedMaxTokens) : 64000;
+        document.getElementById('max-tokens').value = Math.min(maxTokens, 64000);
+        document.getElementById('max-tokens-value').textContent = Math.min(maxTokens, 64000);
 
         // Top P
         const savedTopP = localStorage.getItem('claude-chat-top-p');
@@ -305,17 +331,29 @@ const SettingsManager = {
             document.getElementById('top-k-value').textContent = savedTopK;
         }
 
-        // Thinking enabled
+        // Thinking enabled (default: true)
         const savedThinkingEnabled = localStorage.getItem('claude-chat-thinking-enabled');
-        if (savedThinkingEnabled !== null) {
-            document.getElementById('thinking-toggle').checked = savedThinkingEnabled === 'true';
-        }
+        const thinkingEnabled = savedThinkingEnabled === null ? true : savedThinkingEnabled === 'true';
+        document.getElementById('thinking-toggle').checked = thinkingEnabled;
 
-        // Thinking budget
+        // Thinking budget (default: 60000, max: 63000 to leave room for output within 64K limit)
         const savedThinkingBudget = localStorage.getItem('claude-chat-thinking-budget');
-        if (savedThinkingBudget) {
-            document.getElementById('thinking-budget').value = savedThinkingBudget;
-            document.getElementById('thinking-budget-value').textContent = savedThinkingBudget;
+        const thinkingBudget = savedThinkingBudget ? Math.min(parseInt(savedThinkingBudget), 63000) : 60000;
+        document.getElementById('thinking-budget').value = thinkingBudget;
+        document.getElementById('thinking-budget-value').textContent = thinkingBudget;
+
+        // Apply thinking toggle UI state
+        this.onThinkingToggle(thinkingEnabled);
+
+        // Ensure max_tokens >= thinking_budget when thinking is enabled
+        if (thinkingEnabled) {
+            const maxTokensInput = document.getElementById('max-tokens');
+            const currentMaxTokens = parseInt(maxTokensInput.value);
+            if (currentMaxTokens < thinkingBudget) {
+                maxTokensInput.value = Math.min(thinkingBudget, 64000);
+                document.getElementById('max-tokens-value').textContent = Math.min(thinkingBudget, 64000);
+            }
+            maxTokensInput.min = thinkingBudget;
         }
 
         // System prompt
@@ -375,6 +413,111 @@ const SettingsManager = {
         if (this.models.find(m => m.id === modelId)) {
             select.value = modelId;
             this.onModelChange(modelId);
+        }
+    },
+
+    /**
+     * Set the settings mode (normal or agent chat)
+     * This shows/hides relevant settings for each mode
+     */
+    setMode(mode) {
+        const panel = document.getElementById('settings-panel');
+        panel.dataset.mode = mode;  // 'normal' or 'agent'
+    },
+
+    /**
+     * Load settings from a conversation object
+     */
+    loadConversationSettings(conversation) {
+        if (!conversation) return;
+
+        const settings = conversation.settings || {};
+
+        // Model
+        if (conversation.model) {
+            this.setModel(conversation.model);
+        }
+
+        // System prompt
+        if (conversation.system_prompt !== undefined) {
+            document.getElementById('system-prompt').value = conversation.system_prompt || '';
+        }
+
+        // Thinking enabled
+        const thinkingEnabled = settings.thinking_enabled !== undefined ? settings.thinking_enabled : true;
+        document.getElementById('thinking-toggle').checked = thinkingEnabled;
+
+        // Thinking budget
+        const thinkingBudget = settings.thinking_budget || 60000;
+        document.getElementById('thinking-budget').value = thinkingBudget;
+        document.getElementById('thinking-budget-value').textContent = thinkingBudget;
+
+        // Max tokens
+        const maxTokens = settings.max_tokens || 64000;
+        document.getElementById('max-tokens').value = maxTokens;
+        document.getElementById('max-tokens-value').textContent = maxTokens;
+
+        // Temperature
+        const temperature = settings.temperature !== undefined ? settings.temperature : 1.0;
+        document.getElementById('temperature').value = temperature;
+        document.getElementById('temperature-value').textContent = temperature;
+
+        // Top P
+        const topP = settings.top_p !== undefined ? settings.top_p : 1.0;
+        document.getElementById('top-p').value = topP;
+        document.getElementById('top-p-value').textContent = topP;
+
+        // Top K
+        const topK = settings.top_k !== undefined ? settings.top_k : 0;
+        document.getElementById('top-k').value = topK;
+        document.getElementById('top-k-value').textContent = topK;
+
+        // Prune threshold
+        const pruneThreshold = settings.prune_threshold !== undefined ? settings.prune_threshold * 100 : 70;
+        document.getElementById('prune-threshold').value = pruneThreshold;
+        document.getElementById('prune-threshold-value').textContent = pruneThreshold;
+
+        // Apply thinking toggle UI state
+        this.onThinkingToggle(thinkingEnabled);
+    },
+
+    /**
+     * Get current settings as object for saving to conversation
+     */
+    getConversationSettings() {
+        return {
+            thinking_enabled: document.getElementById('thinking-toggle').checked,
+            thinking_budget: parseInt(document.getElementById('thinking-budget').value),
+            max_tokens: parseInt(document.getElementById('max-tokens').value),
+            temperature: parseFloat(document.getElementById('temperature').value),
+            top_p: parseFloat(document.getElementById('top-p').value),
+            top_k: parseInt(document.getElementById('top-k').value),
+            prune_threshold: parseInt(document.getElementById('prune-threshold').value) / 100
+        };
+    },
+
+    /**
+     * Save current settings to the active conversation
+     */
+    async saveToConversation(conversationId) {
+        if (!conversationId) return;
+
+        const settings = this.getConversationSettings();
+        const model = document.getElementById('model-select').value;
+        const systemPrompt = document.getElementById('system-prompt').value || null;
+
+        try {
+            await fetch(`/api/conversations/${conversationId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: model,
+                    system_prompt: systemPrompt,
+                    settings: settings
+                })
+            });
+        } catch (error) {
+            console.error('Failed to save settings:', error);
         }
     }
 };

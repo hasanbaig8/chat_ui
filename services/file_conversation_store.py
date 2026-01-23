@@ -88,6 +88,10 @@ class FileConversationStore:
         """Get path to metadata.json."""
         return self._get_conversation_path(conversation_id) / "metadata.json"
 
+    def _get_settings_path(self, conversation_id: str) -> Path:
+        """Get path to settings.json."""
+        return self._get_conversation_path(conversation_id) / "settings.json"
+
     def _get_branch_path(self, conversation_id: str, branch: List[int]) -> Path:
         """Get path to a branch file."""
         filename = self.branch_array_to_filename(branch)
@@ -114,7 +118,8 @@ class FileConversationStore:
             return []
 
         return [f.name for f in conv_path.iterdir()
-                if f.is_file() and f.suffix == '.json' and f.name != 'metadata.json']
+                if f.is_file() and f.suffix == '.json'
+                and f.name not in ('metadata.json', 'settings.json')]
 
     # =========================================================================
     # Conversation CRUD
@@ -129,13 +134,28 @@ class FileConversationStore:
         title: str = "New Conversation",
         model: Optional[str] = None,
         system_prompt: Optional[str] = None,
-        is_agent: bool = False
+        is_agent: bool = False,
+        settings: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """Create a new conversation."""
         conversation_id = str(uuid.uuid4())
         now = datetime.utcnow().isoformat()
 
-        # Create metadata
+        # Default settings for normal chats (thinking enabled)
+        default_settings = {
+            "thinking_enabled": True,
+            "thinking_budget": 60000,
+            "max_tokens": 64000,
+            "temperature": 1.0,
+            "top_p": 1.0,
+            "top_k": 0,
+            "prune_threshold": 0.7
+        }
+
+        # Merge provided settings with defaults
+        conv_settings = {**default_settings, **(settings or {})}
+
+        # Create metadata (no settings - stored separately)
         metadata = {
             "id": conversation_id,
             "title": title,
@@ -159,6 +179,9 @@ class FileConversationStore:
         # Write metadata
         await self._write_json(self._get_metadata_path(conversation_id), metadata)
 
+        # Write settings to separate file
+        await self._write_json(self._get_settings_path(conversation_id), conv_settings)
+
         # Create default branch file
         await self._write_json(
             self._get_branch_path(conversation_id, [0]),
@@ -174,7 +197,8 @@ class FileConversationStore:
             "system_prompt": system_prompt,
             "is_agent": is_agent,
             "messages": [],
-            "current_branch": [0]
+            "current_branch": [0],
+            "settings": conv_settings
         }
 
     async def list_conversations(self) -> List[Dict[str, Any]]:
@@ -225,6 +249,19 @@ class FileConversationStore:
         # Add version info to messages
         messages_with_versions = await self._add_version_info(conversation_id, branch, messages)
 
+        # Read settings from separate file (with defaults for backwards compatibility)
+        default_settings = {
+            "thinking_enabled": True,
+            "thinking_budget": 60000,
+            "max_tokens": 64000,
+            "temperature": 1.0,
+            "top_p": 1.0,
+            "top_k": 0,
+            "prune_threshold": 0.7
+        }
+        saved_settings = await self._read_json(self._get_settings_path(conversation_id)) or {}
+        conv_settings = {**default_settings, **saved_settings}
+
         return {
             "id": metadata["id"],
             "title": metadata["title"],
@@ -235,7 +272,8 @@ class FileConversationStore:
             "is_agent": metadata.get("is_agent", False),
             "session_id": metadata.get("session_id"),  # For agent conversation resumption
             "messages": messages_with_versions,
-            "current_branch": branch
+            "current_branch": branch,
+            "settings": conv_settings
         }
 
     async def _add_version_info(
@@ -283,7 +321,8 @@ class FileConversationStore:
         conversation_id: str,
         title: Optional[str] = None,
         model: Optional[str] = None,
-        system_prompt: Optional[str] = None
+        system_prompt: Optional[str] = None,
+        settings: Optional[Dict[str, Any]] = None
     ) -> bool:
         """Update conversation metadata."""
         metadata_path = self._get_metadata_path(conversation_id)
@@ -300,6 +339,26 @@ class FileConversationStore:
 
         metadata["updated_at"] = datetime.utcnow().isoformat()
         await self._write_json(metadata_path, metadata)
+
+        # Save settings to separate file if provided
+        if settings is not None:
+            settings_path = self._get_settings_path(conversation_id)
+            existing_settings = await self._read_json(settings_path) or {}
+            merged_settings = {**existing_settings, **settings}
+            await self._write_json(settings_path, merged_settings)
+
+        return True
+
+    async def update_conversation_settings(
+        self,
+        conversation_id: str,
+        settings: Dict[str, Any]
+    ) -> bool:
+        """Update just the settings for a conversation."""
+        settings_path = self._get_settings_path(conversation_id)
+        existing_settings = await self._read_json(settings_path) or {}
+        merged_settings = {**existing_settings, **settings}
+        await self._write_json(settings_path, merged_settings)
         return True
 
     async def update_conversation_session_id(
@@ -729,7 +788,7 @@ class FileConversationStore:
             # Check messages in all branches
             found = False
             for branch_file in conv_dir.iterdir():
-                if branch_file.name == "metadata.json" or not branch_file.suffix == ".json":
+                if branch_file.name in ("metadata.json", "settings.json") or not branch_file.suffix == ".json":
                     continue
 
                 branch_data = await self._read_json(branch_file)

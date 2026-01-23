@@ -82,10 +82,24 @@ class AgentClient:
                     ]
                     user_message = "\n".join(text_blocks)
 
-            # Configure agent options
+            # Configure agent options with explicit tool list
+            allowed_tools = [
+                "Read",
+                "Write",
+                "Edit",
+                "Bash",
+                "Glob",
+                "Grep",
+                "WebSearch",
+                "WebFetch",
+                "Task",
+            ]
+            if GIF_TOOL_AVAILABLE:
+                allowed_tools.append("mcp__gif-search__search_gif")
+
             options = ClaudeCodeOptions(
                 cwd=workspace_path,
-                allowed_tools=["Read", "Write", "Bash", "mcp__gif-search__search_gif"],
+                allowed_tools=allowed_tools,
                 permission_mode="acceptEdits",
             )
 
@@ -152,7 +166,32 @@ class AgentClient:
                             "is_error": getattr(block, 'is_error', False)
                         })
 
-        # Handle ToolResultMessage - result of tool execution
+        # Handle UserMessage - contains tool results
+        elif msg_type == 'UserMessage':
+            if hasattr(message, 'content') and message.content:
+                for block in message.content:
+                    block_type = type(block).__name__
+                    if block_type == 'ToolResultBlock':
+                        tool_use_id = getattr(block, 'tool_use_id', '')
+                        content = getattr(block, 'content', '')
+                        is_error = getattr(block, 'is_error', False)
+                        # Content might be a list of content blocks
+                        if isinstance(content, list):
+                            text_parts = []
+                            for c in content:
+                                if hasattr(c, 'text'):
+                                    text_parts.append(c.text)
+                                elif isinstance(c, dict) and 'text' in c:
+                                    text_parts.append(c['text'])
+                            content = '\n'.join(text_parts)
+                        events.append({
+                            "type": "tool_result",
+                            "tool_use_id": tool_use_id,
+                            "content": str(content) if content else '',
+                            "is_error": bool(is_error)  # Convert None to False
+                        })
+
+        # Handle ToolResultMessage - result of tool execution (legacy)
         elif msg_type == 'ToolResultMessage':
             tool_use_id = getattr(message, 'tool_use_id', '')
             content = getattr(message, 'content', '')

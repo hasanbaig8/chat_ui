@@ -280,9 +280,11 @@ const ChatManager = {
      * Load a conversation and its messages
      */
     async loadConversation(conversation) {
+        console.log('[loadConversation] Starting load for:', conversation.id, 'Active ID:', this.activeConversationId);
+
         // Verify this is still the conversation we want to load
         if (this.activeConversationId !== conversation.id) {
-            console.log('loadConversation skipped - activeConversationId changed');
+            console.log('[loadConversation] SKIPPED - activeConversationId changed from', conversation.id, 'to', this.activeConversationId);
             return;
         }
 
@@ -295,6 +297,11 @@ const ChatManager = {
         this.agentSessionId = conversation.session_id || null;  // For agent SDK resumption
         this.toolBlocks = {};
         this.clearMessagesUI();
+
+        // Update settings mode based on conversation type
+        if (typeof SettingsManager !== 'undefined') {
+            SettingsManager.setMode(this.isAgentConversation ? 'agent' : 'normal');
+        }
 
         // Update workspace visibility
         if (typeof WorkspaceManager !== 'undefined') {
@@ -1558,12 +1565,15 @@ const ChatManager = {
         // Force scroll to bottom when starting a new response
         this.scrollToBottom(true);
 
-        let textContent = '';
-        const accumulatedContent = [];
+        const accumulatedContent = [];  // Content blocks in chronological order
         const toolResults = [];
 
         const indicator = document.createElement('span');
         indicator.className = 'streaming-indicator';
+
+        // Track current text block for chronological rendering
+        let currentTextBlock = null;
+        let currentTextContent = '';  // Text for current block (reset when tool arrives)
 
         // Create abort controller for this stream
         const abortController = new AbortController();
@@ -1604,6 +1614,24 @@ const ChatManager = {
             const contentEl = messageEl.querySelector('.message-content');
             contentEl.appendChild(indicator);
 
+            // Helper to finalize current text block
+            const finalizeTextBlock = () => {
+                if (currentTextBlock && currentTextContent.trim()) {
+                    this.renderMarkdownContent(currentTextBlock, currentTextContent);
+                }
+                currentTextBlock = null;
+                currentTextContent = '';
+            };
+
+            // Helper to ensure we have a text block for text content
+            const ensureTextBlock = () => {
+                if (!currentTextBlock) {
+                    currentTextBlock = document.createElement('div');
+                    currentTextBlock.className = 'agent-text-block';
+                    contentEl.insertBefore(currentTextBlock, indicator);
+                }
+            };
+
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
@@ -1625,19 +1653,30 @@ const ChatManager = {
                                 this.agentSessionId = event.session_id;
                                 console.log('Agent session ID:', event.session_id);
                             } else if (event.type === 'text') {
-                                textContent += event.content;
+                                currentTextContent += event.content;
 
                                 if (this.activeConversationId === conversationId && document.contains(messageEl)) {
-                                    this.updateMessageContent(contentEl, textContent, indicator);
+                                    ensureTextBlock();
+                                    // Update current text block with streaming content
+                                    currentTextBlock.innerHTML = this.renderMarkdownToHtml(currentTextContent);
                                 }
                             } else if (event.type === 'tool_use') {
-                                // Create tool use block
+                                // Push any pending text to accumulated content before the tool
+                                if (currentTextContent.trim()) {
+                                    accumulatedContent.push({ type: 'text', text: currentTextContent });
+                                }
+                                // Finalize text block for display
                                 if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                    finalizeTextBlock();
                                     const toolBlock = this.createToolUseBlock(event.name, event.input, event.id);
                                     // Insert before the indicator
                                     contentEl.insertBefore(toolBlock, indicator);
                                     this.toolBlocks[event.id] = toolBlock;
                                 }
+                                // Reset text tracking for next text block
+                                currentTextContent = '';
+                                currentTextBlock = null;
+
                                 accumulatedContent.push({
                                     type: 'tool_use',
                                     id: event.id,
@@ -1656,6 +1695,7 @@ const ChatManager = {
                                 });
                             } else if (event.type === 'error') {
                                 if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                    finalizeTextBlock();
                                     this.showError(contentEl, event.content);
                                 }
                             }
@@ -1696,17 +1736,20 @@ const ChatManager = {
                 this.updateContextStats();
             }
 
+            // Push any remaining text to accumulated content
+            if (currentTextContent.trim()) {
+                accumulatedContent.push({ type: 'text', text: currentTextContent });
+            }
+
             // Update local messages array
-            if (textContent || accumulatedContent.length > 0) {
-                // Build final content
+            if (accumulatedContent.length > 0) {
+                // Build final content - could be just text or mixed
                 let finalContent;
-                if (accumulatedContent.length > 0) {
-                    if (textContent) {
-                        accumulatedContent.push({ type: 'text', text: textContent });
-                    }
-                    finalContent = accumulatedContent;
+                // Check if it's only a single text block
+                if (accumulatedContent.length === 1 && accumulatedContent[0].type === 'text') {
+                    finalContent = accumulatedContent[0].text;
                 } else {
-                    finalContent = textContent;
+                    finalContent = accumulatedContent;
                 }
 
                 if (this.activeConversationId === conversationId) {
@@ -1738,24 +1781,64 @@ const ChatManager = {
      */
     createToolUseBlock(toolName, input, toolUseId) {
         const el = document.createElement('div');
-        el.className = 'tool-use-block';
+        el.className = 'tool-use-block collapsed';
         el.dataset.toolUseId = toolUseId;
+
+        // Check if this is a subagent (Task) tool
+        const isSubagent = toolName === 'Task' || toolName.toLowerCase().includes('task');
 
         const icon = this.getToolIcon(toolName);
         const displayName = this.getToolDisplayName(toolName);
         const inputPreview = typeof input === 'object' ? JSON.stringify(input, null, 2) : String(input);
 
+        // Get a brief description for the collapsed state
+        let briefDesc = '';
+        if (typeof input === 'object') {
+            if (input.command) briefDesc = input.command.substring(0, 50) + (input.command.length > 50 ? '...' : '');
+            else if (input.file_path) briefDesc = input.file_path;
+            else if (input.pattern) briefDesc = input.pattern;
+            else if (input.query) briefDesc = input.query.substring(0, 50) + (input.query.length > 50 ? '...' : '');
+            else if (input.prompt) briefDesc = input.prompt.substring(0, 50) + (input.prompt.length > 50 ? '...' : '');
+            else if (input.description) briefDesc = input.description;
+        }
+
         el.innerHTML = `
-            <div class="tool-header">
+            <div class="tool-header" role="button" tabindex="0" aria-expanded="false">
+                <span class="tool-expand-icon">▶</span>
                 <span class="tool-icon">${icon}</span>
                 <span class="tool-name">${this.escapeHtml(displayName)}</span>
+                ${briefDesc ? `<span class="tool-brief">${this.escapeHtml(briefDesc)}</span>` : ''}
                 <span class="tool-status running">Running...</span>
             </div>
-            <div class="tool-input">
-                <pre>${this.escapeHtml(inputPreview)}</pre>
+            <div class="tool-details" style="display: none;">
+                <div class="tool-input">
+                    <div class="tool-section-label">Input</div>
+                    <pre>${this.escapeHtml(inputPreview)}</pre>
+                </div>
+                ${isSubagent ? '<div class="subagent-transcript" style="display: none;"><div class="tool-section-label">Subagent Transcript</div><div class="subagent-content"></div></div>' : ''}
+                <div class="tool-result" style="display: none;"></div>
             </div>
-            <div class="tool-result" style="display: none;"></div>
         `;
+
+        // Add click handler to toggle collapsed state
+        const header = el.querySelector('.tool-header');
+        header.addEventListener('click', () => {
+            const isCollapsed = el.classList.contains('collapsed');
+            el.classList.toggle('collapsed');
+            header.setAttribute('aria-expanded', isCollapsed);
+            const expandIcon = el.querySelector('.tool-expand-icon');
+            expandIcon.textContent = isCollapsed ? '▼' : '▶';
+            const details = el.querySelector('.tool-details');
+            details.style.display = isCollapsed ? 'block' : 'none';
+        });
+
+        // Keyboard accessibility
+        header.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                header.click();
+            }
+        });
 
         return el;
     },
@@ -1782,7 +1865,7 @@ const ChatManager = {
             const gifResult = this.parseGifResult(content);
             if (gifResult && gifResult.url) {
                 // Render as GIF image
-                resultEl.innerHTML = '';
+                resultEl.innerHTML = '<div class="tool-section-label">Result</div>';
                 const gifContainer = document.createElement('div');
                 gifContainer.className = 'gif-result';
                 gifContainer.innerHTML = `
@@ -1800,17 +1883,36 @@ const ChatManager = {
 
             // Only show result section if there's content or an error
             if (content || isError) {
-                // Truncate long results
-                const displayContent = content && content.length > 500
-                    ? content.substring(0, 500) + '...'
+                // Truncate long results for display
+                const displayContent = content && content.length > 1000
+                    ? content.substring(0, 1000) + '... (truncated)'
                     : content;
-                resultEl.textContent = displayContent || (isError ? 'Tool execution failed' : 'Success');
+                resultEl.innerHTML = `<div class="tool-section-label">Result</div><pre>${this.escapeHtml(displayContent || (isError ? 'Tool execution failed' : 'Success'))}</pre>`;
                 resultEl.style.display = 'block';
                 if (isError) {
                     resultEl.classList.add('error');
                 }
             }
             // If no content and no error, hide the result section (tool completed silently)
+        }
+    },
+
+    /**
+     * Add a child tool call to a subagent's transcript
+     */
+    addSubagentToolCall(parentToolUseId, childToolBlock) {
+        const parentBlock = this.toolBlocks[parentToolUseId] ||
+            document.querySelector(`[data-tool-use-id="${parentToolUseId}"]`);
+
+        if (!parentBlock) return;
+
+        const transcriptEl = parentBlock.querySelector('.subagent-transcript');
+        if (transcriptEl) {
+            transcriptEl.style.display = 'block';
+            const contentEl = transcriptEl.querySelector('.subagent-content');
+            if (contentEl) {
+                contentEl.appendChild(childToolBlock);
+            }
         }
     },
 
@@ -2022,10 +2124,13 @@ const ChatManager = {
         }
 
         if (Array.isArray(content)) {
+            // Separate files from other content (files always go first)
             const files = content.filter(b => b.type === 'image' || b.type === 'document');
             const textFiles = content.filter(b => b.type === 'text' && b.text?.startsWith('File: '));
-            const userMessages = content.filter(b => b.type === 'text' && !b.text?.startsWith('File: '));
-            const toolUseBlocks = content.filter(b => b.type === 'tool_use');
+            const otherContent = content.filter(b =>
+                b.type !== 'image' && b.type !== 'document' &&
+                !(b.type === 'text' && b.text?.startsWith('File: '))
+            );
 
             if (files.length > 0 || textFiles.length > 0) {
                 const filesEl = document.createElement('div');
@@ -2054,38 +2159,37 @@ const ChatManager = {
                 contentEl.appendChild(filesEl);
             }
 
-            // Render tool use blocks (for agent messages)
-            if (toolUseBlocks.length > 0) {
-                // Build a map of tool results by tool_use_id
-                const toolResultsMap = {};
-                if (tool_results) {
-                    tool_results.forEach(tr => {
-                        toolResultsMap[tr.tool_use_id] = tr;
-                    });
-                }
-
-                toolUseBlocks.forEach(toolBlock => {
-                    const toolEl = this.createToolUseBlock(toolBlock.name, toolBlock.input, toolBlock.id);
-                    contentEl.appendChild(toolEl);
-                    // Store reference for later status update
-                    this.toolBlocks[toolBlock.id] = toolEl;
-
-                    // Update tool status - mark as done for loaded messages
-                    const result = toolResultsMap[toolBlock.id];
-                    if (result) {
-                        this.updateToolResult(toolBlock.id, result.content, result.is_error);
-                    } else {
-                        // No explicit result - assume success for loaded messages
-                        this.updateToolResult(toolBlock.id, null, false);
-                    }
+            // Build a map of tool results by tool_use_id
+            const toolResultsMap = {};
+            if (tool_results) {
+                tool_results.forEach(tr => {
+                    toolResultsMap[tr.tool_use_id] = tr;
                 });
             }
 
-            if (userMessages.length > 0) {
-                const textEl = document.createElement('div');
-                textEl.innerHTML = this.formatText(userMessages.map(m => m.text).join('\n\n'));
-                contentEl.appendChild(textEl);
-            }
+            // Render content blocks in order (chronologically)
+            otherContent.forEach(block => {
+                if (block.type === 'tool_use') {
+                    const toolEl = this.createToolUseBlock(block.name, block.input, block.id);
+                    contentEl.appendChild(toolEl);
+                    // Store reference for later status update
+                    this.toolBlocks[block.id] = toolEl;
+
+                    // Update tool status - mark as done for loaded messages
+                    const result = toolResultsMap[block.id];
+                    if (result) {
+                        this.updateToolResult(block.id, result.content, result.is_error);
+                    } else {
+                        // No explicit result - assume success for loaded messages
+                        this.updateToolResult(block.id, null, false);
+                    }
+                } else if (block.type === 'text' && block.text) {
+                    const textEl = document.createElement('div');
+                    textEl.className = 'agent-text-block';
+                    textEl.innerHTML = this.formatText(block.text);
+                    contentEl.appendChild(textEl);
+                }
+            });
         } else {
             contentEl.innerHTML += this.formatText(content);
         }
@@ -2239,6 +2343,28 @@ const ChatManager = {
         // Auto-embed Giphy URLs as images
         html = this.embedGiphyUrls(html);
         return html;
+    },
+
+    /**
+     * Render markdown text to HTML string
+     */
+    renderMarkdownToHtml(text) {
+        return this.formatText(text);
+    },
+
+    /**
+     * Render markdown content into an element
+     */
+    renderMarkdownContent(element, text) {
+        if (element && text) {
+            element.innerHTML = this.formatText(text);
+            // Highlight code blocks if available
+            if (typeof hljs !== 'undefined') {
+                element.querySelectorAll('pre code').forEach(block => {
+                    hljs.highlightElement(block);
+                });
+            }
+        }
     },
 
     /**

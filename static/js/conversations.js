@@ -238,6 +238,7 @@ const ConversationsManager = {
                 ${agentIcon}
                 <span class="conversation-title">${titleHtml}</span>
                 <div class="conversation-actions">
+                    <button class="conversation-settings" title="Settings">⚙️</button>
                     <button class="conversation-duplicate" title="Duplicate">📋</button>
                     <button class="conversation-rename" title="Rename">✏️</button>
                     <button class="conversation-delete" title="Delete">🗑️</button>
@@ -250,8 +251,20 @@ const ConversationsManager = {
             item.addEventListener('click', (e) => {
                 if (!e.target.classList.contains('conversation-delete') &&
                     !e.target.classList.contains('conversation-rename') &&
-                    !e.target.classList.contains('conversation-duplicate')) {
+                    !e.target.classList.contains('conversation-duplicate') &&
+                    !e.target.classList.contains('conversation-settings')) {
                     this.selectConversation(conv.id);
+                }
+            });
+
+            // Settings button - open settings panel for this conversation
+            item.querySelector('.conversation-settings').addEventListener('click', async (e) => {
+                e.stopPropagation();
+                // Select the conversation first
+                await this.selectConversation(conv.id);
+                // Open settings panel
+                if (typeof SettingsManager !== 'undefined' && !SettingsManager.isOpen) {
+                    SettingsManager.togglePanel();
                 }
             });
 
@@ -296,14 +309,28 @@ const ConversationsManager = {
      */
     async createConversation(title = 'New Conversation', clearUI = true, isAgent = false) {
         try {
+            // Get default settings for this mode
+            const mode = isAgent ? 'agent' : 'normal';
+            const defaults = typeof DefaultSettingsManager !== 'undefined'
+                ? DefaultSettingsManager.getDefaultsForMode(mode)
+                : {};
+
+            const requestBody = {
+                title,
+                model: defaults.model || SettingsManager.getSettings().model,
+                system_prompt: defaults.system_prompt || null,
+                is_agent: isAgent
+            };
+
+            // Add settings for normal chat (not agent)
+            if (!isAgent && defaults.settings) {
+                requestBody.settings = defaults.settings;
+            }
+
             const response = await fetch('/api/conversations', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    title,
-                    model: SettingsManager.getSettings().model,
-                    is_agent: isAgent
-                })
+                body: JSON.stringify(requestBody)
             });
 
             const conversation = await response.json();
@@ -317,6 +344,13 @@ const ConversationsManager = {
                 ChatManager.clearChat();
                 ChatManager.activeConversationId = conversation.id;
                 ChatManager.currentBranch = [0];
+
+                // Update settings mode
+                if (typeof SettingsManager !== 'undefined') {
+                    SettingsManager.setMode(isAgent ? 'agent' : 'normal');
+                    // Load the conversation settings (from defaults)
+                    SettingsManager.loadConversationSettings(conversation);
+                }
             }
 
             return conversation;
@@ -332,6 +366,8 @@ const ConversationsManager = {
      * @param {Array<number>} branch - Optional branch to load (default: uses conversation's current_branch)
      */
     async selectConversation(conversationId, branch = null) {
+        console.log('[selectConversation] Starting for:', conversationId);
+
         // Increment request ID to track this specific request
         const requestId = ++this.loadRequestId;
 
@@ -346,6 +382,11 @@ const ConversationsManager = {
         if (typeof ChatManager !== 'undefined') {
             ChatManager.isAgentConversation = isAgent;  // Set this before preparing so welcome message is correct
             ChatManager.prepareForConversationSwitch(conversationId);
+
+            // Update settings mode
+            if (typeof SettingsManager !== 'undefined') {
+                SettingsManager.setMode(isAgent ? 'agent' : 'normal');
+            }
         }
 
         try {
@@ -384,13 +425,9 @@ const ConversationsManager = {
                 WorkspaceManager.setConversation(conversation.id);
             }
 
-            // Update settings if conversation has model preference
-            if (conversation.model && typeof SettingsManager !== 'undefined') {
-                SettingsManager.setModel(conversation.model);
-            }
-
-            if (conversation.system_prompt && typeof SettingsManager !== 'undefined') {
-                document.getElementById('system-prompt').value = conversation.system_prompt;
+            // Load conversation-specific settings
+            if (typeof SettingsManager !== 'undefined') {
+                SettingsManager.loadConversationSettings(conversation);
             }
 
         } catch (error) {

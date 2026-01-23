@@ -12,12 +12,24 @@ router = APIRouter(prefix="/api/conversations", tags=["conversations"])
 store = FileConversationStore()
 
 
+class ConversationSettings(BaseModel):
+    """Settings for a conversation."""
+    thinking_enabled: Optional[bool] = None
+    thinking_budget: Optional[int] = None
+    max_tokens: Optional[int] = None
+    temperature: Optional[float] = None
+    top_p: Optional[float] = None
+    top_k: Optional[int] = None
+    prune_threshold: Optional[float] = None
+
+
 class CreateConversationRequest(BaseModel):
     """Request to create a new conversation."""
     title: str = "New Conversation"
     model: Optional[str] = None
     system_prompt: Optional[str] = None
     is_agent: bool = False
+    settings: Optional[ConversationSettings] = None
 
 
 class UpdateConversationRequest(BaseModel):
@@ -25,6 +37,7 @@ class UpdateConversationRequest(BaseModel):
     title: Optional[str] = None
     model: Optional[str] = None
     system_prompt: Optional[str] = None
+    settings: Optional[ConversationSettings] = None
 
 
 class AddMessageRequest(BaseModel):
@@ -76,11 +89,17 @@ async def startup():
 @router.post("")
 async def create_conversation(request: CreateConversationRequest):
     """Create a new conversation."""
+    # Convert settings to dict if provided
+    settings_dict = None
+    if request.settings:
+        settings_dict = {k: v for k, v in request.settings.model_dump().items() if v is not None}
+
     conversation = await store.create_conversation(
         title=request.title,
         model=request.model,
         system_prompt=request.system_prompt,
-        is_agent=request.is_agent
+        is_agent=request.is_agent,
+        settings=settings_dict
     )
     return conversation
 
@@ -131,11 +150,17 @@ async def get_conversation(
 @router.put("/{conversation_id}")
 async def update_conversation(conversation_id: str, request: UpdateConversationRequest):
     """Update conversation metadata."""
+    # Convert settings to dict if provided
+    settings_dict = None
+    if request.settings:
+        settings_dict = {k: v for k, v in request.settings.model_dump().items() if v is not None}
+
     success = await store.update_conversation(
         conversation_id=conversation_id,
         title=request.title,
         model=request.model,
-        system_prompt=request.system_prompt
+        system_prompt=request.system_prompt,
+        settings=settings_dict
     )
     if not success:
         raise HTTPException(status_code=404, detail="Conversation not found")
