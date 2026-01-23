@@ -1682,3 +1682,178 @@ html, body {
     background-color: var(--color-primary);
     border-radius: 0 2px 2px 0;
 }
+
+/* Agent Chat Button */
+.sidebar-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 12px;
+}
+
+.sidebar-buttons .new-chat-btn {
+    margin: 0;
+}
+
+.new-chat-btn.agent-btn {
+    background-color: #5B6EAE;
+}
+
+.new-chat-btn.agent-btn:hover {
+    background-color: #4A5C96;
+}
+
+/* Agent conversation indicator in sidebar */
+.conversation-item.agent {
+    border-left: 3px solid #5B6EAE;
+}
+
+.agent-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+/* Tool Use Blocks for Agent Messages */
+.tool-use-block {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin: 12px 0;
+    overflow: hidden;
+    font-size: 13px;
+}
+
+.tool-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--color-border-light);
+    font-weight: 500;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.tool-icon {
+    font-size: 16px;
+}
+
+.tool-name {
+    flex: 1;
+    color: var(--color-text);
+}
+
+.tool-status {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--color-secondary);
+    color: var(--color-text);
+}
+
+.tool-status.running {
+    background: var(--color-warning);
+    color: white;
+}
+
+.tool-status.success {
+    background: var(--color-success);
+    color: white;
+}
+
+.tool-status.error {
+    background: var(--color-error);
+    color: white;
+}
+
+.tool-input {
+    padding: 10px 12px;
+    background: var(--color-background);
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.tool-input pre {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--color-text-secondary);
+}
+
+.tool-result {
+    padding: 10px 12px;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+    max-height: 200px;
+    overflow-y: auto;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--color-text);
+}
+
+.tool-result.error {
+    background: rgba(193, 95, 60, 0.1);
+    color: var(--color-error);
+}
+
+/* Dark mode tool block adjustments */
+[data-theme="dark"] .tool-use-block {
+    background: var(--color-surface);
+}
+
+[data-theme="dark"] .tool-header {
+    background: var(--color-border);
+}
+
+[data-theme="dark"] .tool-input {
+    background: #1a1a1a;
+}
+
+[data-theme="dark"] .tool-result.error {
+    background: rgba(217, 117, 85, 0.15);
+}
+
+/* GIF Result Styling */
+.tool-result.gif-result-container {
+    padding: 8px;
+    max-height: none;
+    overflow: visible;
+    background: var(--color-background);
+}
+
+.gif-result {
+    text-align: center;
+}
+
+.gif-result .gif-image {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+}
+
+.gif-result .gif-title {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    font-family: var(--font-family);
+}
+
+/* Embedded GIF in text content */
+.embedded-gif {
+    margin: 12px 0;
+    text-align: center;
+}
+
+.embedded-gif .gif-image {
+    max-width: 100%;
+    max-height: 350px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+}

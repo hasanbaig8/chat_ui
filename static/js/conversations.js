@@ -97,6 +97,14 @@ const ConversationsManager = {
         document.getElementById('new-chat-btn').addEventListener('click', () => {
             this.createConversation();
         });
+
+        // New Agent Chat button
+        const agentBtn = document.getElementById('new-agent-chat-btn');
+        if (agentBtn) {
+            agentBtn.addEventListener('click', () => {
+                this.createConversation('New Agent Chat', true, true);  // clearUI=true, isAgent=true
+            });
+        }
     },
 
     /**
@@ -212,8 +220,9 @@ const ConversationsManager = {
 
         conversationsToShow.forEach(conv => {
             const item = document.createElement('div');
-            item.className = `conversation-item${conv.id === this.currentConversationId ? ' active' : ''}`;
+            item.className = `conversation-item${conv.id === this.currentConversationId ? ' active' : ''}${conv.is_agent ? ' agent' : ''}`;
             item.dataset.id = conv.id;
+            item.dataset.isAgent = conv.is_agent || false;
 
             // Highlight search matches in title
             let titleHtml = this.escapeHtml(conv.title);
@@ -222,7 +231,11 @@ const ConversationsManager = {
                 titleHtml = titleHtml.replace(regex, '<mark>$1</mark>');
             }
 
+            // Add agent indicator if this is an agent conversation
+            const agentIcon = conv.is_agent ? '<span class="agent-icon" title="Agent Chat">&#129302;</span>' : '';
+
             item.innerHTML = `
+                ${agentIcon}
                 <span class="conversation-title">${titleHtml}</span>
                 <div class="conversation-actions">
                     <button class="conversation-duplicate" title="Duplicate">📋</button>
@@ -279,15 +292,17 @@ const ConversationsManager = {
      * Create a new conversation
      * @param {string} title - The conversation title
      * @param {boolean} clearUI - Whether to clear the chat UI (true when clicking New Chat button)
+     * @param {boolean} isAgent - Whether this is an agent conversation
      */
-    async createConversation(title = 'New Conversation', clearUI = true) {
+    async createConversation(title = 'New Conversation', clearUI = true, isAgent = false) {
         try {
             const response = await fetch('/api/conversations', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     title,
-                    model: SettingsManager.getSettings().model
+                    model: SettingsManager.getSettings().model,
+                    is_agent: isAgent
                 })
             });
 
@@ -301,6 +316,7 @@ const ConversationsManager = {
                 ChatManager.clearChat();
                 ChatManager.activeConversationId = conversation.id;
                 ChatManager.currentBranch = [0];
+                ChatManager.isAgentConversation = isAgent;
             }
 
             return conversation;
@@ -352,6 +368,7 @@ const ConversationsManager = {
 
             // Load messages into chat
             if (typeof ChatManager !== 'undefined') {
+                ChatManager.isAgentConversation = conversation.is_agent || false;
                 ChatManager.loadConversation(conversation);
             }
 

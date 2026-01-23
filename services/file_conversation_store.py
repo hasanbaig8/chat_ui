@@ -120,11 +120,16 @@ class FileConversationStore:
     # Conversation CRUD
     # =========================================================================
 
+    def get_workspace_path(self, conversation_id: str) -> str:
+        """Get the workspace path for an agent conversation."""
+        return str(self._get_conversation_path(conversation_id) / "workspace")
+
     async def create_conversation(
         self,
         title: str = "New Conversation",
         model: Optional[str] = None,
-        system_prompt: Optional[str] = None
+        system_prompt: Optional[str] = None,
+        is_agent: bool = False
     ) -> Dict[str, Any]:
         """Create a new conversation."""
         conversation_id = str(uuid.uuid4())
@@ -136,6 +141,7 @@ class FileConversationStore:
             "title": title,
             "model": model,
             "system_prompt": system_prompt,
+            "is_agent": is_agent,
             "created_at": now,
             "updated_at": now,
             "current_branch": [0]  # Track current branch for the conversation
@@ -144,6 +150,11 @@ class FileConversationStore:
         # Create conversation folder
         conv_path = self._get_conversation_path(conversation_id)
         conv_path.mkdir(parents=True, exist_ok=True)
+
+        # Create workspace for agent conversations
+        if is_agent:
+            workspace_path = conv_path / "workspace"
+            workspace_path.mkdir(exist_ok=True)
 
         # Write metadata
         await self._write_json(self._get_metadata_path(conversation_id), metadata)
@@ -161,6 +172,7 @@ class FileConversationStore:
             "updated_at": now,
             "model": model,
             "system_prompt": system_prompt,
+            "is_agent": is_agent,
             "messages": [],
             "current_branch": [0]
         }
@@ -181,7 +193,8 @@ class FileConversationStore:
                         "title": metadata["title"],
                         "created_at": metadata["created_at"],
                         "updated_at": metadata["updated_at"],
-                        "model": metadata.get("model")
+                        "model": metadata.get("model"),
+                        "is_agent": metadata.get("is_agent", False)
                     })
 
         # Sort by updated_at descending
@@ -219,6 +232,7 @@ class FileConversationStore:
             "updated_at": metadata["updated_at"],
             "model": metadata.get("model"),
             "system_prompt": metadata.get("system_prompt"),
+            "is_agent": metadata.get("is_agent", False),
             "messages": messages_with_versions,
             "current_branch": branch
         }
@@ -241,6 +255,10 @@ class FileConversationStore:
         for i, msg in enumerate(messages):
             msg_copy = dict(msg)
             msg_copy["position"] = i
+
+            # Preserve tool_results if present (for agent messages)
+            if "tool_results" in msg:
+                msg_copy["tool_results"] = msg["tool_results"]
 
             if msg["role"] == "user":
                 # Get version info for this user message position
@@ -303,6 +321,7 @@ class FileConversationStore:
         role: str,
         content: Any,
         thinking: Optional[str] = None,
+        tool_results: Optional[List[Dict]] = None,
         branch: Optional[List[int]] = None,
         streaming: bool = False
     ) -> Dict[str, Any]:
@@ -336,6 +355,10 @@ class FileConversationStore:
             "created_at": now
         }
 
+        # Add tool_results for agent messages
+        if tool_results:
+            message["tool_results"] = tool_results
+
         # Append message
         branch_data["messages"].append(message)
         await self._write_json(branch_path, branch_data)
@@ -350,6 +373,7 @@ class FileConversationStore:
             "role": role,
             "content": content,
             "thinking": thinking,
+            "tool_results": tool_results,
             "position": position,
             "version": 1,
             "total_versions": 1,
@@ -361,8 +385,9 @@ class FileConversationStore:
         self,
         conversation_id: str,
         message_id: str,
-        content: str,
+        content: Any,
         thinking: Optional[str] = None,
+        tool_results: Optional[List[Dict]] = None,
         branch: Optional[List[int]] = None,
         streaming: bool = True
     ) -> bool:
@@ -385,6 +410,8 @@ class FileConversationStore:
                 msg["content"] = content
                 if thinking is not None:
                     msg["thinking"] = thinking
+                if tool_results is not None:
+                    msg["tool_results"] = tool_results
                 await self._write_json(branch_path, branch_data)
                 return True
 

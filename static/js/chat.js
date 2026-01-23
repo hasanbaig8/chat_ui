@@ -6,6 +6,7 @@ const ChatManager = {
     messages: [],  // Array of {role, content, position, version, total_versions, user_msg_index}
     currentBranch: [0],  // Current branch array
     isStreaming: false,
+    isAgentConversation: false,  // Whether current conversation uses agent SDK
     abortController: null,
     editingPosition: null,
     originalEditContent: null,  // Original content when editing
@@ -21,6 +22,7 @@ const ChatManager = {
     streamingAnimationFrame: null,  // Animation frame for smooth text reveal
     userScrolledAway: false,  // Track if user has scrolled away during streaming
     lastTabRefresh: 0,  // Timestamp of last tab refresh to debounce
+    toolBlocks: {},  // Map of tool_use_id to DOM elements for agent chats
 
     // Model context limits (in tokens)
     MODEL_LIMITS: {
@@ -288,6 +290,8 @@ const ChatManager = {
 
         this.messages = [];
         this.currentBranch = conversation.current_branch || [0];
+        this.isAgentConversation = conversation.is_agent || false;
+        this.toolBlocks = {};
         this.clearMessagesUI();
         this.streamingMessageEl = null;
         this.streamingMessageId = null;
@@ -301,6 +305,7 @@ const ChatManager = {
                     id: msg.id,
                     role: msg.role,
                     content: msg.content,
+                    tool_results: msg.tool_results,
                     position: msg.position,
                     version: msg.current_version || msg.version || 1,
                     total_versions: msg.total_versions || 1,
@@ -315,6 +320,7 @@ const ChatManager = {
                     role: msg.role,
                     content: msg.content,
                     thinking: msg.thinking,
+                    tool_results: msg.tool_results,
                     position: msg.position,
                     version: msg.current_version || msg.version || 1,
                     total_versions: msg.total_versions || 1,
@@ -610,9 +616,11 @@ const ChatManager = {
         this.streamingMessageEl = null;
         this.streamingMessageId = null;
         this.isStreaming = false;
+        this.isAgentConversation = false;
         this.userScrolledAway = false;
         this.abortController = null;
         this.lastStreamingText = '';
+        this.toolBlocks = {};
         document.getElementById('welcome-message').style.display = '';
         this.updateContextStats();
         this.updateSendButton();
@@ -636,12 +644,14 @@ const ChatManager = {
         this.streamingMessageEl = null;
         this.streamingMessageId = null;
         this.lastStreamingText = '';
+        this.toolBlocks = {};
 
         // Show loading state or welcome message
         document.getElementById('welcome-message').style.display = '';
 
         // Reset streaming state - will be updated when conversation loads
         this.isStreaming = false;
+        this.isAgentConversation = false;
         this.userScrolledAway = false;
         this.updateSendButton();
         this.updateContextStats();
@@ -1145,6 +1155,11 @@ const ChatManager = {
      * Backend saves streaming content directly to DB
      */
     async streamResponse(isRetry = false) {
+        // Use agent streaming for agent conversations
+        if (this.isAgentConversation) {
+            return this.streamAgentResponse(isRetry);
+        }
+
         this.isStreaming = true;
         this.lastStreamingText = '';  // Reset for fresh stream
         this.stopStreamingAnimation();  // Clear any pending animation
@@ -1367,6 +1382,323 @@ const ChatManager = {
     },
 
     /**
+     * Stream response from Agent API (Claude Agent SDK)
+     */
+    async streamAgentResponse(isRetry = false) {
+        this.isStreaming = true;
+        this.lastStreamingText = '';
+        this.stopStreamingAnimation();
+        this.userScrolledAway = false;
+        this.toolBlocks = {};
+        this.updateSendButton();
+
+        const conversationId = ConversationsManager.getCurrentConversationId();
+        const settings = SettingsManager.getSettings();
+
+        // Mark conversation as streaming
+        if (typeof StreamingTracker !== 'undefined') {
+            StreamingTracker.setStreaming(conversationId, true);
+        }
+
+        // Create assistant message element
+        const position = this.messages.length;
+        const messageEl = this.createMessageElement('assistant', position, 1, 1);
+        const container = document.getElementById('messages-container');
+        container.appendChild(messageEl);
+        this.streamingMessageEl = messageEl;
+
+        // Force scroll to bottom when starting a new response
+        this.scrollToBottom(true);
+
+        let textContent = '';
+        const accumulatedContent = [];
+        const toolResults = [];
+
+        const indicator = document.createElement('span');
+        indicator.className = 'streaming-indicator';
+
+        // Create abort controller for this stream
+        const abortController = new AbortController();
+        this.abortController = abortController;
+
+        try {
+            // Build messages for API
+            const allMessages = this.messages.map(m => ({
+                role: m.role,
+                content: m.content
+            }));
+
+            // Prune messages
+            const apiMessages = this.pruneMessages(allMessages);
+
+            // Use agent streaming endpoint
+            const response = await fetch('/api/agent-chat/stream', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    messages: apiMessages,
+                    conversation_id: isRetry ? null : conversationId,
+                    branch: isRetry ? null : this.currentBranch,
+                    system_prompt: settings.system_prompt,
+                    model: settings.model
+                }),
+                signal: abortController.signal
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            const contentEl = messageEl.querySelector('.message-content');
+            contentEl.appendChild(indicator);
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        try {
+                            const event = JSON.parse(line.slice(6));
+
+                            if (event.type === 'message_id') {
+                                this.streamingMessageId = event.id;
+                                messageEl.dataset.messageId = event.id;
+                            } else if (event.type === 'text') {
+                                textContent += event.content;
+
+                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                    this.updateMessageContent(contentEl, textContent, indicator);
+                                }
+                            } else if (event.type === 'tool_use') {
+                                // Create tool use block
+                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                    const toolBlock = this.createToolUseBlock(event.name, event.input, event.id);
+                                    // Insert before the indicator
+                                    contentEl.insertBefore(toolBlock, indicator);
+                                    this.toolBlocks[event.id] = toolBlock;
+                                }
+                                accumulatedContent.push({
+                                    type: 'tool_use',
+                                    id: event.id,
+                                    name: event.name,
+                                    input: event.input
+                                });
+                            } else if (event.type === 'tool_result') {
+                                // Update tool block with result
+                                if (this.activeConversationId === conversationId) {
+                                    this.updateToolResult(event.tool_use_id, event.content, event.is_error);
+                                }
+                                toolResults.push({
+                                    tool_use_id: event.tool_use_id,
+                                    content: event.content,
+                                    is_error: event.is_error || false
+                                });
+                            } else if (event.type === 'error') {
+                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                    this.showError(contentEl, event.content);
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Error parsing event:', e);
+                        }
+                    }
+                }
+
+                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                    this.scrollToBottom();
+                }
+            }
+
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                console.error('Agent streaming error:', error);
+                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                    const contentEl = messageEl.querySelector('.message-content');
+                    this.showError(contentEl, error.message);
+                }
+            }
+        } finally {
+            // Mark streaming as complete
+            if (typeof StreamingTracker !== 'undefined') {
+                StreamingTracker.setStreaming(conversationId, false);
+            }
+
+            if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                const indicatorEl = messageEl.querySelector('.streaming-indicator');
+                if (indicatorEl) indicatorEl.remove();
+
+                this.isStreaming = false;
+                this.abortController = null;
+                this.streamingMessageEl = null;
+                this.streamingMessageId = null;
+                this.updateSendButton();
+                this.updateContextStats();
+            }
+
+            // Update local messages array
+            if (textContent || accumulatedContent.length > 0) {
+                // Build final content
+                let finalContent;
+                if (accumulatedContent.length > 0) {
+                    if (textContent) {
+                        accumulatedContent.push({ type: 'text', text: textContent });
+                    }
+                    finalContent = accumulatedContent;
+                } else {
+                    finalContent = textContent;
+                }
+
+                if (this.activeConversationId === conversationId) {
+                    this.messages.push({
+                        id: this.streamingMessageId,
+                        role: 'assistant',
+                        content: finalContent,
+                        tool_results: toolResults.length > 0 ? toolResults : undefined,
+                        position: position,
+                        version: 1,
+                        total_versions: 1
+                    });
+                }
+            }
+
+            // Clean up from BackgroundStreams
+            if (typeof BackgroundStreams !== 'undefined') {
+                BackgroundStreams.removeStream(conversationId);
+            }
+
+            if (this.activeConversationId === conversationId) {
+                this.scrollToBottom();
+            }
+        }
+    },
+
+    /**
+     * Create a tool use block element
+     */
+    createToolUseBlock(toolName, input, toolUseId) {
+        const el = document.createElement('div');
+        el.className = 'tool-use-block';
+        el.dataset.toolUseId = toolUseId;
+
+        const icon = this.getToolIcon(toolName);
+        const inputPreview = typeof input === 'object' ? JSON.stringify(input, null, 2) : String(input);
+
+        el.innerHTML = `
+            <div class="tool-header">
+                <span class="tool-icon">${icon}</span>
+                <span class="tool-name">${this.escapeHtml(toolName)}</span>
+                <span class="tool-status">Running...</span>
+            </div>
+            <div class="tool-input">
+                <pre>${this.escapeHtml(inputPreview)}</pre>
+            </div>
+            <div class="tool-result" style="display: none;"></div>
+        `;
+
+        return el;
+    },
+
+    /**
+     * Update a tool block with its result
+     */
+    updateToolResult(toolUseId, content, isError) {
+        const toolBlock = this.toolBlocks[toolUseId] ||
+            document.querySelector(`[data-tool-use-id="${toolUseId}"]`);
+
+        if (!toolBlock) return;
+
+        const statusEl = toolBlock.querySelector('.tool-status');
+        if (statusEl) {
+            statusEl.textContent = isError ? 'Error' : 'Done';
+            statusEl.classList.remove('running');
+            statusEl.classList.add(isError ? 'error' : 'success');
+        }
+
+        const resultEl = toolBlock.querySelector('.tool-result');
+        if (resultEl) {
+            // Check if the result is a GIF from gif_search.py
+            const gifResult = this.parseGifResult(content);
+            if (gifResult && gifResult.url) {
+                // Render as GIF image
+                resultEl.innerHTML = '';
+                const gifContainer = document.createElement('div');
+                gifContainer.className = 'gif-result';
+                gifContainer.innerHTML = `
+                    <img src="${this.escapeHtml(gifResult.url)}"
+                         alt="${this.escapeHtml(gifResult.title || 'GIF')}"
+                         class="gif-image"
+                         loading="lazy">
+                    ${gifResult.title ? `<div class="gif-title">${this.escapeHtml(gifResult.title)}</div>` : ''}
+                `;
+                resultEl.appendChild(gifContainer);
+                resultEl.style.display = 'block';
+                resultEl.classList.add('gif-result-container');
+                return;
+            }
+
+            // Only show result section if there's content or an error
+            if (content || isError) {
+                // Truncate long results
+                const displayContent = content && content.length > 500
+                    ? content.substring(0, 500) + '...'
+                    : content;
+                resultEl.textContent = displayContent || (isError ? 'Tool execution failed' : 'Success');
+                resultEl.style.display = 'block';
+                if (isError) {
+                    resultEl.classList.add('error');
+                }
+            }
+            // If no content and no error, hide the result section (tool completed silently)
+        }
+    },
+
+    /**
+     * Try to parse content as a GIF result from gif_search.py
+     */
+    parseGifResult(content) {
+        if (!content || typeof content !== 'string') return null;
+
+        try {
+            const parsed = JSON.parse(content);
+            if (parsed.type === 'gif' && parsed.url) {
+                return parsed;
+            }
+        } catch (e) {
+            // Not JSON, check if content contains GIF URL inline
+            // Look for giphy.com URLs in the content
+            const giphyMatch = content.match(/https:\/\/[^\s"]*giphy\.com[^\s"]*/i);
+            if (giphyMatch) {
+                return { url: giphyMatch[0], title: '' };
+            }
+        }
+        return null;
+    },
+
+    /**
+     * Get icon for a tool
+     */
+    getToolIcon(toolName) {
+        const icons = {
+            'Read': '&#128214;',    // Open book
+            'Write': '&#9997;',     // Writing hand
+            'Edit': '&#9997;',      // Writing hand
+            'Bash': '&#128187;',    // Computer
+            'Glob': '&#128269;',    // Magnifying glass
+            'Grep': '&#128270;',    // Magnifying glass right
+        };
+        return icons[toolName] || '&#128295;';  // Wrench as default
+    },
+
+    /**
      * Update the version nav badge on any message
      */
     updateMessageVersionNav(position, currentVersion, totalVersions) {
@@ -1506,7 +1838,7 @@ const ChatManager = {
      * Render a message to the UI
      */
     renderMessage(msg, forceScroll = false) {
-        const { role, content, thinking, position = 0, version = 1, total_versions = 1, created_at } = msg;
+        const { role, content, thinking, tool_results, position = 0, version = 1, total_versions = 1, created_at } = msg;
 
         // Version info is now passed directly for user messages
         const el = this.createMessageElement(role, position, version, total_versions, null, created_at);
@@ -1522,6 +1854,7 @@ const ChatManager = {
             const files = content.filter(b => b.type === 'image' || b.type === 'document');
             const textFiles = content.filter(b => b.type === 'text' && b.text?.startsWith('File: '));
             const userMessages = content.filter(b => b.type === 'text' && !b.text?.startsWith('File: '));
+            const toolUseBlocks = content.filter(b => b.type === 'tool_use');
 
             if (files.length > 0 || textFiles.length > 0) {
                 const filesEl = document.createElement('div');
@@ -1548,6 +1881,33 @@ const ChatManager = {
                 });
 
                 contentEl.appendChild(filesEl);
+            }
+
+            // Render tool use blocks (for agent messages)
+            if (toolUseBlocks.length > 0) {
+                // Build a map of tool results by tool_use_id
+                const toolResultsMap = {};
+                if (tool_results) {
+                    tool_results.forEach(tr => {
+                        toolResultsMap[tr.tool_use_id] = tr;
+                    });
+                }
+
+                toolUseBlocks.forEach(toolBlock => {
+                    const toolEl = this.createToolUseBlock(toolBlock.name, toolBlock.input, toolBlock.id);
+                    contentEl.appendChild(toolEl);
+                    // Store reference for later status update
+                    this.toolBlocks[toolBlock.id] = toolEl;
+
+                    // Update tool status - mark as done for loaded messages
+                    const result = toolResultsMap[toolBlock.id];
+                    if (result) {
+                        this.updateToolResult(toolBlock.id, result.content, result.is_error);
+                    } else {
+                        // No explicit result - assume success for loaded messages
+                        this.updateToolResult(toolBlock.id, null, false);
+                    }
+                });
             }
 
             if (userMessages.length > 0) {
@@ -1690,7 +2050,10 @@ const ChatManager = {
 
         if (typeof marked !== 'undefined') {
             try {
-                return marked.parse(text);
+                let html = marked.parse(text);
+                // Auto-embed Giphy URLs as images
+                html = this.embedGiphyUrls(html);
+                return html;
             } catch (e) {
                 console.error('Markdown parsing error:', e);
             }
@@ -1702,7 +2065,28 @@ const ChatManager = {
         html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
         html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
         html = html.replace(/\n/g, '<br>');
+        // Auto-embed Giphy URLs as images
+        html = this.embedGiphyUrls(html);
         return html;
+    },
+
+    /**
+     * Replace Giphy URLs with embedded GIF images
+     */
+    embedGiphyUrls(html) {
+        // Match Giphy gif URLs (both in links and standalone)
+        // Pattern for URLs ending in .gif from giphy.com
+        const giphyGifPattern = /(https:\/\/media[0-9]*\.giphy\.com\/[^\s"<>]+\.gif)/gi;
+
+        return html.replace(giphyGifPattern, (match, url) => {
+            // If it's already in an img tag, leave it
+            const imgPattern = new RegExp(`<img[^>]*src=["']${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["']`, 'i');
+            if (imgPattern.test(html)) {
+                return match;
+            }
+            // Replace the URL with an embedded GIF
+            return `<div class="embedded-gif"><img src="${url}" alt="GIF" class="gif-image" loading="lazy"></div>`;
+        });
     },
 
     /**

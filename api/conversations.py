@@ -17,6 +17,7 @@ class CreateConversationRequest(BaseModel):
     title: str = "New Conversation"
     model: Optional[str] = None
     system_prompt: Optional[str] = None
+    is_agent: bool = False
 
 
 class UpdateConversationRequest(BaseModel):
@@ -78,7 +79,8 @@ async def create_conversation(request: CreateConversationRequest):
     conversation = await store.create_conversation(
         title=request.title,
         model=request.model,
-        system_prompt=request.system_prompt
+        system_prompt=request.system_prompt,
+        is_agent=request.is_agent
     )
     return conversation
 
