@@ -4,12 +4,29 @@ from typing import Optional, List, Any
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
+from services.conversation_store import ConversationStore
 from services.file_conversation_store import FileConversationStore
 
 router = APIRouter(prefix="/api/conversations", tags=["conversations"])
 
-# Initialize store
-store = FileConversationStore()
+# Initialize both stores
+sqlite_store = ConversationStore()
+file_store = FileConversationStore()
+
+async def get_store_for_conversation(conversation_id: str):
+    """Get the appropriate store for an existing conversation by checking both stores."""
+    # Try SQLite store first
+    conv = await sqlite_store.get_conversation(conversation_id)
+    if conv:
+        return sqlite_store
+
+    # Try file store
+    conv = await file_store.get_conversation(conversation_id)
+    if conv:
+        return file_store
+
+    # Default to SQLite if not found in either
+    return sqlite_store
 
 
 class CreateConversationRequest(BaseModel):
@@ -69,13 +86,17 @@ class DeleteMessagesRequest(BaseModel):
 
 @router.on_event("startup")
 async def startup():
-    """Initialize storage on startup."""
-    await store.initialize()
+    """Initialize both storage backends on startup."""
+    await sqlite_store.initialize()
+    await file_store.initialize()
 
 
 @router.post("")
 async def create_conversation(request: CreateConversationRequest):
     """Create a new conversation."""
+    # Use file store for agent conversations, SQLite for regular
+    store = file_store if request.is_agent else sqlite_store
+
     conversation = await store.create_conversation(
         title=request.title,
         model=request.model,
@@ -87,21 +108,30 @@ async def create_conversation(request: CreateConversationRequest):
 
 @router.get("")
 async def list_conversations():
-    """List all conversations."""
-    conversations = await store.list_conversations()
-    return {"conversations": conversations}
+    """List all conversations from both stores."""
+    sqlite_conversations = await sqlite_store.list_conversations()
+    file_conversations = await file_store.list_conversations()
+    # Combine and sort by updated_at
+    all_conversations = sqlite_conversations + file_conversations
+    all_conversations.sort(key=lambda x: x.get("updated_at", ""), reverse=True)
+    return {"conversations": all_conversations}
 
 
 @router.get("/search")
 async def search_conversations(q: str = Query(..., min_length=1)):
     """Search conversations by title or message content (partial match)."""
-    conversations = await store.search_conversations(q)
-    return {"conversations": conversations, "query": q}
+    sqlite_conversations = await sqlite_store.search_conversations(q)
+    file_conversations = await file_store.search_conversations(q)
+    # Combine and sort by updated_at
+    all_conversations = sqlite_conversations + file_conversations
+    all_conversations.sort(key=lambda x: x.get("updated_at", ""), reverse=True)
+    return {"conversations": all_conversations, "query": q}
 
 
 @router.post("/{conversation_id}/duplicate")
 async def duplicate_conversation(conversation_id: str):
     """Duplicate a conversation with all its branches."""
+    store = await get_store_for_conversation(conversation_id)
     new_conversation = await store.duplicate_conversation(conversation_id)
     if not new_conversation:
         raise HTTPException(status_code=404, detail="Conversation not found")
@@ -121,6 +151,7 @@ async def get_conversation(
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid branch format")
 
+    store = await get_store_for_conversation(conversation_id)
     conversation = await store.get_conversation(conversation_id, branch_array)
     if not conversation:
         raise HTTPException(status_code=404, detail="Conversation not found")
@@ -296,6 +327,9 @@ async def delete_messages_from(
 
     This removes the message at the specified position and all messages after it.
     """
+    # Get the correct store for this conversation
+    store = await get_store_for_conversation(conversation_id)
+
     success = await store.delete_messages_from(
         conversation_id=conversation_id,
         position=position,

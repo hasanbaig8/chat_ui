@@ -891,25 +891,37 @@ class FileConversationStore:
         the specified position. Since children are naturally part of the
         same branch file, they are automatically deleted.
         """
+        print(f"[DELETE] Attempting to delete from conversation {conversation_id}, position {position}, branch {branch}")
+
         metadata = await self._read_json(self._get_metadata_path(conversation_id))
         if not metadata:
+            print(f"[DELETE] ERROR: Metadata not found for conversation {conversation_id}")
             return False
 
         if branch is None:
             branch = metadata.get("current_branch", [0])
 
+        print(f"[DELETE] Using branch: {branch}")
+
         branch_path = self._get_branch_path(conversation_id, branch)
+        print(f"[DELETE] Branch path: {branch_path}")
+
         branch_data = await self._read_json(branch_path)
         if not branch_data:
+            print(f"[DELETE] ERROR: Branch data not found at {branch_path}")
             return False
 
         # Truncate messages
         messages = branch_data.get("messages", [])
+        print(f"[DELETE] Found {len(messages)} messages in branch")
+
         if position >= len(messages):
+            print(f"[DELETE] ERROR: Position {position} >= message count {len(messages)}")
             return False  # Nothing to delete
 
         branch_data["messages"] = messages[:position]
         await self._write_json(branch_path, branch_data)
+        print(f"[DELETE] Successfully truncated to {position} messages")
 
         # Update metadata timestamp
         metadata["updated_at"] = datetime.utcnow().isoformat()
