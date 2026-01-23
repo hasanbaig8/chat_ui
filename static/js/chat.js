@@ -636,6 +636,11 @@ const ChatManager = {
         document.getElementById('welcome-message').style.display = '';
         this.updateContextStats();
         this.updateSendButton();
+
+        // Update workspace visibility
+        if (typeof WorkspaceManager !== 'undefined') {
+            WorkspaceManager.updateVisibility(this.isAgentConversation);
+        }
     },
 
     /**
@@ -669,6 +674,12 @@ const ChatManager = {
         this.userScrolledAway = false;
         this.updateSendButton();
         this.updateContextStats();
+
+        // Update workspace visibility based on conversation type
+        if (typeof WorkspaceManager !== 'undefined') {
+            WorkspaceManager.updateVisibility(this.isAgentConversation);
+            WorkspaceManager.setConversation(newConversationId);
+        }
     },
 
     clearMessagesUI() {
@@ -1226,6 +1237,8 @@ const ChatManager = {
         const conversationId = ConversationsManager.getCurrentConversationId();
         if (!conversationId) return;
 
+        console.log('Delete request - Position:', position, 'Total messages:', this.messages.length, 'Branch:', this.currentBranch);
+
         // Confirm deletion
         const msgCount = this.messages.filter(m => m.position >= position).length;
         if (!confirm(`Delete ${msgCount} message${msgCount > 1 ? 's' : ''}? This cannot be undone.`)) {
@@ -1240,22 +1253,33 @@ const ChatManager = {
                 body: JSON.stringify({ branch: this.currentBranch })
             });
 
+            console.log('Delete response status:', response.status);
+
             if (response.ok) {
+                console.log('Delete successful, removing from UI');
                 // Remove from UI
                 this.removeMessagesFromPosition(position);
                 this.updateContextStats();
 
                 // Show welcome message if no messages left
                 if (this.messages.length === 0) {
-                    document.getElementById('welcome-message').style.display = '';
+                    const welcomeEl = document.getElementById('welcome-message');
+                    welcomeEl.innerHTML = this.getWelcomeMessage();
+                    welcomeEl.style.display = '';
                 }
             } else {
-                const error = await response.json();
-                alert(`Failed to delete messages: ${error.detail || 'Unknown error'}`);
+                const errorText = await response.text();
+                console.error('Delete failed - Status:', response.status, 'Response:', errorText);
+                try {
+                    const error = JSON.parse(errorText);
+                    alert(`Failed to delete messages: ${error.detail || 'Unknown error'}`);
+                } catch (e) {
+                    alert(`Failed to delete messages: ${errorText || response.status}`);
+                }
             }
         } catch (error) {
-            console.error('Failed to delete messages:', error);
-            alert('Failed to delete messages');
+            console.error('Delete exception:', error);
+            alert(`Failed to delete messages: ${error.message}`);
         }
     },
 
