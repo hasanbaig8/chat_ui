@@ -1709,8 +1709,10 @@ html, body {
 }
 
 .agent-icon {
-    font-size: 14px;
+    width: 18px;
+    height: 18px;
     flex-shrink: 0;
+    object-fit: contain;
 }
 
 /* Tool Use Blocks for Agent Messages */
