@@ -663,7 +663,29 @@ const ChatManager = {
 
     clearMessagesUI() {
         const container = document.getElementById('messages-container');
-        container.innerHTML = '<div class="welcome-message" id="welcome-message" style="display: none;"><h2>Welcome to Claude Chat</h2><p>Start a conversation by typing a message below.</p></div>';
+        const welcomeHtml = this.getWelcomeMessage();
+        container.innerHTML = `<div class="welcome-message" id="welcome-message" style="display: none;">${welcomeHtml}</div>`;
+    },
+
+    /**
+     * Get welcome message based on conversation type
+     */
+    getWelcomeMessage() {
+        if (this.isAgentConversation) {
+            return `
+                <h2>Welcome to Claude Agent Chat</h2>
+                <p>This is an agentic conversation where Claude can:</p>
+                <ul style="text-align: left; display: inline-block; margin-top: 10px;">
+                    <li>Read and write files in your workspace</li>
+                    <li>Execute bash commands</li>
+                    <li>Search for GIFs to enhance responses</li>
+                    <li>Maintain context across multiple turns</li>
+                </ul>
+                <p style="margin-top: 15px;">Start by asking Claude to help with coding tasks!</p>
+            `;
+        } else {
+            return '<h2>Welcome to Claude Chat</h2><p>Start a conversation by typing a message below.</p>';
+        }
     },
 
     /**

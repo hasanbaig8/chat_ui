@@ -1696,16 +1696,16 @@ html, body {
 }
 
 .new-chat-btn.agent-btn {
-    background-color: #5B6EAE;
+    background-color: #7BA7D7;
 }
 
 .new-chat-btn.agent-btn:hover {
-    background-color: #4A5C96;
+    background-color: #6A96C6;
 }
 
 /* Agent conversation indicator in sidebar */
 .conversation-item.agent {
-    border-left: 3px solid #5B6EAE;
+    border-left: 3px solid #7BA7D7;
 }
 
 .agent-icon {

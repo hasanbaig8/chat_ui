@@ -313,10 +313,11 @@ const ConversationsManager = {
 
             // Clear the chat UI to show the new empty conversation
             if (clearUI && typeof ChatManager !== 'undefined') {
+                ChatManager.isAgentConversation = isAgent;  // Set this first so clearChat shows correct welcome message
                 ChatManager.clearChat();
                 ChatManager.activeConversationId = conversation.id;
                 ChatManager.currentBranch = [0];
-                ChatManager.isAgentConversation = isAgent;
+                ChatManager.isAgentConversation = isAgent;  // Set again since clearChat resets it
             }
 
             return conversation;
