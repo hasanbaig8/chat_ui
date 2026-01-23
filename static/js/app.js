@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         PromptLibrary.init();
         WorkspaceManager.init();
         ChatManager.init();
+        await ProjectsManager.init();
         await ConversationsManager.init();
 
         console.log('Claude Chat UI initialized successfully');

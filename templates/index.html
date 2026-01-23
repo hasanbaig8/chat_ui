@@ -47,6 +47,9 @@
                     <button id="new-agent-chat-btn" class="new-chat-btn agent-btn">
                         <img src="/static/favicon.png" alt="Agent" class="agent-icon"> Agent Chat
                     </button>
+                    <button id="new-project-btn" class="new-chat-btn project-btn">
+                        <span>+</span> New Project
+                    </button>
                 </div>
                 <div class="search-container">
                     <input
@@ -56,6 +59,9 @@
                         placeholder="Search chats..."
                     >
                     <button id="clear-search-btn" class="clear-search-btn" style="display: none;">&times;</button>
+                </div>
+                <div class="projects-section" id="projects-section">
+                    <!-- Projects will be populated here -->
                 </div>
                 <div class="conversations-list" id="conversations-list">
                     <!-- Conversations will be populated here -->
@@ -393,6 +399,7 @@
 
     <!-- Scripts -->
     <script src="/static/js/background-streams.js"></script>
+    <script src="/static/js/projects.js"></script>
     <script src="/static/js/conversations.js"></script>
     <script src="/static/js/files.js"></script>
     <script src="/static/js/settings.js"></script>

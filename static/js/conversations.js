@@ -193,6 +193,11 @@ const ConversationsManager = {
             const data = await response.json();
             this.conversations = data.conversations || [];
             this.renderConversationsList();
+
+            // Also refresh projects to sync conversation data
+            if (typeof ProjectsManager !== 'undefined') {
+                ProjectsManager.renderProjects();
+            }
         } catch (error) {
             console.error('Failed to load conversations:', error);
         }
@@ -206,7 +211,12 @@ const ConversationsManager = {
         container.innerHTML = '';
 
         // Use search results if available, otherwise all conversations
-        const conversationsToShow = this.searchResults !== null ? this.searchResults : this.conversations;
+        let conversationsToShow = this.searchResults !== null ? this.searchResults : this.conversations;
+
+        // When not searching, filter out conversations that belong to projects
+        if (this.searchResults === null && typeof ProjectsManager !== 'undefined') {
+            conversationsToShow = ProjectsManager.getUnorganizedConversations(conversationsToShow);
+        }
 
         if (this.conversations.length === 0) {
             container.innerHTML = '<p style="padding: 12px; color: var(--color-text-secondary); font-size: 13px;">No conversations yet</p>';
@@ -215,6 +225,11 @@ const ConversationsManager = {
 
         if (conversationsToShow.length === 0 && this.searchQuery) {
             container.innerHTML = '<p style="padding: 12px; color: var(--color-text-secondary); font-size: 13px;">No matches found</p>';
+            return;
+        }
+
+        if (conversationsToShow.length === 0 && !this.searchQuery) {
+            container.innerHTML = '<p style="padding: 12px; color: var(--color-text-secondary); font-size: 13px;">All conversations are in projects</p>';
             return;
         }
 
@@ -234,9 +249,22 @@ const ConversationsManager = {
             // Add agent indicator if this is an agent conversation
             const agentIcon = conv.is_agent ? '<img src="/static/favicon.png" alt="Agent" class="agent-icon" title="Agent Chat">' : '';
 
+            // Add project badge if searching and conversation is in a project
+            let projectBadge = '';
+            if (this.searchQuery && typeof ProjectsManager !== 'undefined') {
+                const projectId = ProjectsManager.conversationProjectMap[conv.id];
+                if (projectId) {
+                    const project = ProjectsManager.projects.find(p => p.id === projectId);
+                    if (project) {
+                        projectBadge = `<span class="project-badge" style="background-color: ${project.color}">${ProjectsManager.escapeHtml(project.name)}</span>`;
+                    }
+                }
+            }
+
             item.innerHTML = `
                 ${agentIcon}
                 <span class="conversation-title">${titleHtml}</span>
+                ${projectBadge}
                 <div class="conversation-actions">
                     <button class="conversation-settings" title="Settings">⚙️</button>
                     <button class="conversation-duplicate" title="Duplicate">📋</button>
@@ -291,6 +319,11 @@ const ConversationsManager = {
                 e.stopPropagation();
                 this.deleteConversation(conv.id);
             });
+
+            // Setup drag handlers for moving to projects
+            if (typeof ProjectsManager !== 'undefined') {
+                ProjectsManager.setupDragHandlers(item, conv.id);
+            }
 
             container.appendChild(item);
         });
@@ -373,6 +406,11 @@ const ConversationsManager = {
 
         this.currentConversationId = conversationId;
         this.renderConversationsList();
+
+        // Re-render projects to update active state
+        if (typeof ProjectsManager !== 'undefined') {
+            ProjectsManager.renderProjects();
+        }
 
         // Find the conversation to get its is_agent flag before preparing
         const conversation = this.conversations.find(c => c.id === conversationId);
@@ -567,6 +605,19 @@ const ConversationsManager = {
 
             // Remove from local state
             this.conversations = this.conversations.filter(c => c.id !== conversationId);
+
+            // Remove from projects map if present
+            if (typeof ProjectsManager !== 'undefined') {
+                const projectId = ProjectsManager.conversationProjectMap[conversationId];
+                if (projectId) {
+                    delete ProjectsManager.conversationProjectMap[conversationId];
+                    const project = ProjectsManager.projects.find(p => p.id === projectId);
+                    if (project) {
+                        project.conversation_ids = project.conversation_ids.filter(id => id !== conversationId);
+                    }
+                }
+                ProjectsManager.renderProjects();
+            }
 
             // If deleted current conversation, clear chat
             if (conversationId === this.currentConversationId) {

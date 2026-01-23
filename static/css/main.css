@@ -2316,3 +2316,250 @@ html, body {
     font-size: 13px;
     line-height: 1.5;
 }
+
+/* Projects Section */
+.projects-section {
+    padding: 0 8px 8px;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 8px;
+}
+
+.project-item {
+    margin-bottom: 4px;
+    border-radius: 8px;
+    background-color: var(--color-border-light);
+    overflow: hidden;
+}
+
+.project-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+    user-select: none;
+}
+
+.project-header:hover {
+    background-color: var(--color-border);
+}
+
+.project-header.drag-over {
+    background-color: rgba(193, 95, 60, 0.2);
+    outline: 2px dashed var(--color-primary);
+    outline-offset: -2px;
+}
+
+.project-expand-icon {
+    font-size: 10px;
+    color: var(--color-text-secondary);
+    width: 14px;
+    text-align: center;
+}
+
+.project-color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.project-name {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.project-count {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+}
+
+.project-actions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.project-header:hover .project-actions {
+    opacity: 1;
+}
+
+.project-color-btn,
+.project-rename-btn,
+.project-delete-btn {
+    padding: 4px 6px;
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 11px;
+    transition: all var(--transition-fast);
+}
+
+.project-color-btn:hover {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.project-rename-btn:hover {
+    background-color: #5B8DEF;
+    color: white;
+}
+
+.project-delete-btn:hover {
+    background-color: var(--color-error);
+    color: white;
+}
+
+.project-conversations {
+    padding: 4px 8px 8px 24px;
+}
+
+.project-conversations.drag-over {
+    background-color: rgba(193, 95, 60, 0.1);
+}
+
+.project-empty {
+    padding: 12px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    font-style: italic;
+}
+
+.project-conversation {
+    padding: 8px 10px;
+    margin-bottom: 2px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.project-conversation:last-child {
+    margin-bottom: 0;
+}
+
+.project-rename-input {
+    width: 100%;
+    padding: 2px 6px;
+    border: 1px solid var(--color-primary);
+    border-radius: 4px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 13px;
+    outline: none;
+}
+
+.conversation-remove-from-project,
+.project-conversation .conversation-settings {
+    padding: 2px 6px;
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 10px;
+    transition: all var(--transition-fast);
+}
+
+.conversation-remove-from-project:hover {
+    background-color: var(--color-error);
+    color: white;
+}
+
+.project-conversation .conversation-settings:hover {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+/* Color Picker */
+.project-color-picker {
+    display: flex;
+    gap: 6px;
+    padding: 8px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+    z-index: 1001;
+}
+
+.color-option {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.color-option:hover {
+    transform: scale(1.15);
+    border-color: var(--color-text);
+}
+
+/* New Project Button */
+.new-chat-btn.project-btn {
+    background-color: var(--color-secondary);
+    color: var(--color-text);
+}
+
+.new-chat-btn.project-btn:hover {
+    background-color: #9A968B;
+}
+
+/* Drag and Drop States */
+.conversation-item.dragging {
+    opacity: 0.5;
+    border: 2px dashed var(--color-primary);
+}
+
+.conversations-list.drag-over {
+    background-color: rgba(193, 95, 60, 0.1);
+    border-radius: 8px;
+}
+
+/* Dark theme adjustments for projects */
+[data-theme="dark"] .project-item {
+    background-color: var(--color-border);
+}
+
+[data-theme="dark"] .project-header:hover {
+    background-color: var(--color-border-light);
+}
+
+[data-theme="dark"] .project-color-picker {
+    background: var(--color-surface);
+    border-color: var(--color-border-light);
+}
+
+[data-theme="dark"] .new-chat-btn.project-btn {
+    background-color: #4A4744;
+    color: var(--color-text);
+}
+
+[data-theme="dark"] .new-chat-btn.project-btn:hover {
+    background-color: #5A5754;
+}
+
+/* Project Badge for search results */
+.project-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    color: white;
+    margin-left: 6px;
+    flex-shrink: 0;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

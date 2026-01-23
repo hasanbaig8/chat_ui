@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
 from dotenv import load_dotenv
 
-from api import chat_router, conversations_router, files_router, agent_chat_router, settings_router
+from api import chat_router, conversations_router, files_router, agent_chat_router, settings_router, projects_router
 from services.file_conversation_store import FileConversationStore
 
 # Load environment variables
@@ -48,6 +48,7 @@ app.include_router(conversations_router)
 app.include_router(files_router)
 app.include_router(agent_chat_router)
 app.include_router(settings_router)
+app.include_router(projects_router)
 
 
 @app.get("/")
