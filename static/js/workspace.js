@@ -33,6 +33,37 @@ const WorkspaceManager = {
                 this.togglePanel();
             });
         }
+
+        // Drag and drop events
+        const panel = document.getElementById('workspace-panel');
+        if (panel) {
+            panel.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (this.isOpen && this.currentConversationId) {
+                    panel.classList.add('drag-over');
+                }
+            });
+
+            panel.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Only remove if leaving the panel itself, not a child
+                if (e.target === panel) {
+                    panel.classList.remove('drag-over');
+                }
+            });
+
+            panel.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                panel.classList.remove('drag-over');
+
+                if (this.isOpen && this.currentConversationId) {
+                    this.handleFileDrop(e);
+                }
+            });
+        }
     },
 
     /**
@@ -102,7 +133,7 @@ const WorkspaceManager = {
         pathEl.textContent = workspacePath || '';
 
         if (this.files.length === 0) {
-            listEl.innerHTML = '<div class="workspace-empty">No files in workspace yet</div>';
+            listEl.innerHTML = '<div class="workspace-empty">No files in workspace yet<br><span style="font-size: 12px; opacity: 0.7;">Drag and drop files here to upload</span></div>';
             return;
         }
 
@@ -199,6 +230,54 @@ const WorkspaceManager = {
             console.error('Failed to delete file:', error);
             alert('Failed to delete file');
         }
+    },
+
+    /**
+     * Handle file drop event
+     */
+    async handleFileDrop(event) {
+        const files = Array.from(event.dataTransfer.files);
+
+        if (files.length === 0) {
+            return;
+        }
+
+        console.log(`Uploading ${files.length} file(s) to workspace`);
+
+        // Upload each file
+        for (const file of files) {
+            try {
+                await this.uploadFile(file);
+            } catch (error) {
+                console.error(`Failed to upload ${file.name}:`, error);
+                alert(`Failed to upload ${file.name}: ${error.message}`);
+            }
+        }
+
+        // Reload files list
+        await this.loadFiles(this.currentConversationId);
+    },
+
+    /**
+     * Upload a file to workspace
+     */
+    async uploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch(`/api/agent-chat/workspace/${this.currentConversationId}/upload`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Upload failed');
+        }
+
+        const result = await response.json();
+        console.log(`Uploaded ${file.name}: ${result.message}`);
+        return result;
     },
 
     /**
