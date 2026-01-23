@@ -304,6 +304,13 @@ const ChatManager = {
         this.streamingMessageEl = null;
         this.streamingMessageId = null;
 
+        // Check if this conversation is streaming on the server FIRST
+        let isStreamingActive = false;
+        if (typeof StreamingTracker !== 'undefined') {
+            isStreamingActive = await StreamingTracker.checkServerStatus(conversation.id);
+            this.isStreaming = isStreamingActive;
+        }
+
         if (conversation.messages && conversation.messages.length > 0) {
             document.getElementById('welcome-message').style.display = 'none';
 
@@ -339,35 +346,29 @@ const ChatManager = {
             // Force scroll to bottom when loading a conversation
             this.scrollToBottom(true);
             this.updateContextStats();
-        } else {
-            // Regenerate welcome message to ensure it matches conversation type
+        } else if (!isStreamingActive) {
+            // Only show welcome message if NOT streaming (streaming might have in-progress message)
             const welcomeEl = document.getElementById('welcome-message');
             welcomeEl.innerHTML = this.getWelcomeMessage();
             welcomeEl.style.display = '';
         }
 
-        // Check if this conversation is streaming on the server
-        if (typeof StreamingTracker !== 'undefined') {
-            const isStreaming = await StreamingTracker.checkServerStatus(conversation.id);
-            if (isStreaming) {
-                // Initialize streaming state with current content for smooth animation
-                if (conversation.messages && conversation.messages.length > 0) {
-                    const lastMsg = conversation.messages[conversation.messages.length - 1];
-                    if (lastMsg.role === 'assistant') {
-                        this.lastStreamingText = lastMsg.content || '';
-                        this.streamingDisplayedText = lastMsg.content || '';
-                        this.streamingTextQueue = '';
-                    }
+        // Set up streaming if active
+        if (isStreamingActive) {
+            // Initialize streaming state with current content for smooth animation
+            if (conversation.messages && conversation.messages.length > 0) {
+                const lastMsg = conversation.messages[conversation.messages.length - 1];
+                if (lastMsg.role === 'assistant') {
+                    this.lastStreamingText = lastMsg.content || '';
+                    this.streamingDisplayedText = lastMsg.content || '';
+                    this.streamingTextQueue = '';
                 }
-                this.startPolling(conversation.id);
-            } else {
-                this.lastStreamingText = '';
-                this.stopStreamingAnimation();
             }
-            this.isStreaming = isStreaming;
+            this.startPolling(conversation.id);
         } else {
-            this.isStreaming = false;
             this.lastStreamingText = '';
+            this.stopStreamingAnimation();
+            this.isStreaming = false;
         }
 
         this.updateSendButton();

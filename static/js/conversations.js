@@ -373,8 +373,15 @@ const ConversationsManager = {
 
             // Load messages into chat
             if (typeof ChatManager !== 'undefined') {
-                ChatManager.isAgentConversation = conversation.is_agent || false;
+                // Don't overwrite isAgentConversation - it was already set before prepareForConversationSwitch
+                // This prevents the workspace button from flickering
                 ChatManager.loadConversation(conversation);
+            }
+
+            // Update workspace visibility after loading conversation
+            if (typeof WorkspaceManager !== 'undefined') {
+                WorkspaceManager.updateVisibility(conversation.is_agent || false);
+                WorkspaceManager.setConversation(conversation.id);
             }
 
             // Update settings if conversation has model preference
