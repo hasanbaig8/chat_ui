@@ -493,6 +493,34 @@ class ConversationStore:
             "created_at": now
         }
 
+    async def create_branch(
+        self,
+        conversation_id: str,
+        current_branch: List[int],
+        user_msg_index: int,
+        new_content: Any
+    ) -> Dict[str, Any]:
+        """Create a new branch by editing a user message.
+
+        This is an adapter that matches the file store's interface.
+        For SQLite, we use position-based versioning instead of branch arrays.
+        """
+        # User messages are at even positions (0, 2, 4, ...)
+        position = user_msg_index * 2
+
+        # Call the existing edit_message method
+        message = await self.edit_message(conversation_id, position, new_content)
+
+        # Construct a branch array for compatibility
+        # The branch array represents version choices at each user message position
+        new_branch = current_branch[:user_msg_index] if user_msg_index < len(current_branch) else current_branch[:]
+        new_branch.append(message["version"] - 1)  # Version is 1-based, branch is 0-based
+
+        return {
+            "branch": new_branch,
+            "message": message
+        }
+
     async def retry_message(
         self,
         conversation_id: str,

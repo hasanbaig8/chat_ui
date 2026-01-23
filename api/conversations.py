@@ -4,29 +4,12 @@ from typing import Optional, List, Any
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-from services.conversation_store import ConversationStore
 from services.file_conversation_store import FileConversationStore
 
 router = APIRouter(prefix="/api/conversations", tags=["conversations"])
 
-# Initialize both stores
-sqlite_store = ConversationStore()
-file_store = FileConversationStore()
-
-async def get_store_for_conversation(conversation_id: str):
-    """Get the appropriate store for an existing conversation by checking both stores."""
-    # Try SQLite store first
-    conv = await sqlite_store.get_conversation(conversation_id)
-    if conv:
-        return sqlite_store
-
-    # Try file store
-    conv = await file_store.get_conversation(conversation_id)
-    if conv:
-        return file_store
-
-    # Default to SQLite if not found in either
-    return sqlite_store
+# Initialize file store (SQLite removed)
+store = FileConversationStore()
 
 
 class CreateConversationRequest(BaseModel):
@@ -86,17 +69,13 @@ class DeleteMessagesRequest(BaseModel):
 
 @router.on_event("startup")
 async def startup():
-    """Initialize both storage backends on startup."""
-    await sqlite_store.initialize()
-    await file_store.initialize()
+    """Initialize storage on startup."""
+    await store.initialize()
 
 
 @router.post("")
 async def create_conversation(request: CreateConversationRequest):
     """Create a new conversation."""
-    # Use file store for agent conversations, SQLite for regular
-    store = file_store if request.is_agent else sqlite_store
-
     conversation = await store.create_conversation(
         title=request.title,
         model=request.model,
@@ -108,30 +87,21 @@ async def create_conversation(request: CreateConversationRequest):
 
 @router.get("")
 async def list_conversations():
-    """List all conversations from both stores."""
-    sqlite_conversations = await sqlite_store.list_conversations()
-    file_conversations = await file_store.list_conversations()
-    # Combine and sort by updated_at
-    all_conversations = sqlite_conversations + file_conversations
-    all_conversations.sort(key=lambda x: x.get("updated_at", ""), reverse=True)
-    return {"conversations": all_conversations}
+    """List all conversations."""
+    conversations = await store.list_conversations()
+    return {"conversations": conversations}
 
 
 @router.get("/search")
 async def search_conversations(q: str = Query(..., min_length=1)):
     """Search conversations by title or message content (partial match)."""
-    sqlite_conversations = await sqlite_store.search_conversations(q)
-    file_conversations = await file_store.search_conversations(q)
-    # Combine and sort by updated_at
-    all_conversations = sqlite_conversations + file_conversations
-    all_conversations.sort(key=lambda x: x.get("updated_at", ""), reverse=True)
-    return {"conversations": all_conversations, "query": q}
+    conversations = await store.search_conversations(q)
+    return {"conversations": conversations, "query": q}
 
 
 @router.post("/{conversation_id}/duplicate")
 async def duplicate_conversation(conversation_id: str):
     """Duplicate a conversation with all its branches."""
-    store = await get_store_for_conversation(conversation_id)
     new_conversation = await store.duplicate_conversation(conversation_id)
     if not new_conversation:
         raise HTTPException(status_code=404, detail="Conversation not found")
@@ -151,18 +121,16 @@ async def get_conversation(
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid branch format")
 
-    store = await get_store_for_conversation(conversation_id)
     conversation = await store.get_conversation(conversation_id, branch_array)
     if not conversation:
         raise HTTPException(status_code=404, detail="Conversation not found")
-    print(f"[GET_CONV] Loaded conversation {conversation_id} with {len(conversation.get('messages', []))} messages using {type(store).__name__}")
+    print(f"[GET_CONV] Loaded conversation {conversation_id} with {len(conversation.get('messages', []))} messages")
     return conversation
 
 
 @router.put("/{conversation_id}")
 async def update_conversation(conversation_id: str, request: UpdateConversationRequest):
     """Update conversation metadata."""
-    store = await get_store_for_conversation(conversation_id)
     success = await store.update_conversation(
         conversation_id=conversation_id,
         title=request.title,
@@ -177,7 +145,6 @@ async def update_conversation(conversation_id: str, request: UpdateConversationR
 @router.delete("/{conversation_id}")
 async def delete_conversation(conversation_id: str):
     """Delete a conversation."""
-    store = await get_store_for_conversation(conversation_id)
     success = await store.delete_conversation(conversation_id)
     if not success:
         raise HTTPException(status_code=404, detail="Conversation not found")
@@ -188,7 +155,6 @@ async def delete_conversation(conversation_id: str):
 async def add_message(conversation_id: str, request: AddMessageRequest):
     """Add a message to a conversation branch."""
     try:
-        store = await get_store_for_conversation(conversation_id)
         message = await store.add_message(
             conversation_id=conversation_id,
             role=request.role,
@@ -214,7 +180,6 @@ async def get_messages(
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid branch format")
 
-    store = await get_store_for_conversation(conversation_id)
     messages = await store.get_messages(conversation_id, branch_array)
     return {"messages": messages}
 
@@ -223,7 +188,6 @@ async def get_messages(
 async def edit_message(conversation_id: str, request: EditMessageRequest):
     """Edit a user message, creating a new branch."""
     try:
-        store = await get_store_for_conversation(conversation_id)
         result = await store.create_branch(
             conversation_id=conversation_id,
             current_branch=request.branch or [0],
@@ -238,7 +202,6 @@ async def edit_message(conversation_id: str, request: EditMessageRequest):
 @router.post("/{conversation_id}/switch-branch")
 async def switch_branch(conversation_id: str, request: SwitchBranchRequest):
     """Switch to an adjacent branch at a user message position."""
-    store = await get_store_for_conversation(conversation_id)
     new_branch = await store.switch_branch(
         conversation_id=conversation_id,
         current_branch=request.branch or [0],
@@ -259,7 +222,6 @@ async def switch_branch(conversation_id: str, request: SwitchBranchRequest):
 @router.post("/{conversation_id}/set-branch")
 async def set_branch(conversation_id: str, request: SetBranchRequest):
     """Set the current branch for a conversation."""
-    store = await get_store_for_conversation(conversation_id)
     success = await store.set_current_branch(conversation_id, request.branch)
     if not success:
         raise HTTPException(status_code=404, detail="Conversation not found")
@@ -335,9 +297,6 @@ async def delete_messages_from(
 
     This removes the message at the specified position and all messages after it.
     """
-    # Get the correct store for this conversation
-    store = await get_store_for_conversation(conversation_id)
-
     success = await store.delete_messages_from(
         conversation_id=conversation_id,
         position=position,

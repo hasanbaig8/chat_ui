@@ -313,6 +313,7 @@ const ChatManager = {
         }
 
         if (conversation.messages && conversation.messages.length > 0) {
+            console.log('[loadConversation] Branch:', conversation.current_branch, 'Message count:', conversation.messages.length);
             console.log('[loadConversation] Rendering messages:', conversation.messages.map(m => ({
                 role: m.role,
                 position: m.position,
@@ -1344,6 +1345,10 @@ const ChatManager = {
                 role: m.role,
                 content: m.content
             }));
+
+            // Debug: Log messages being sent
+            console.log('[streamResponse] this.messages:', this.messages.map(m => ({ role: m.role, position: m.position, contentPreview: typeof m.content === 'string' ? m.content.substring(0, 50) : 'array' })));
+            console.log('[streamResponse] allMessages for API:', allMessages.map(m => ({ role: m.role, contentPreview: typeof m.content === 'string' ? m.content.substring(0, 50) : 'array' })));
 
             // Prune messages to keep context under threshold
             const apiMessages = this.pruneMessages(allMessages);

@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Claude Chat UI is a full-stack web chat interface for Anthropic's Claude AI models. It features real-time streaming responses, conversation branching (edit/retry with version navigation), extended thinking support, file attachments, and persistent SQLite storage.
+Claude Chat UI is a full-stack web chat interface for Anthropic's Claude AI models. It features real-time streaming responses, conversation branching (edit/retry with version navigation), extended thinking support, file attachments, and dual storage backends (SQLite for regular chats, file-based JSON for agent conversations).
 
-**Tech Stack:** FastAPI (Python) backend + Vanilla JavaScript frontend + SQLite database
+**Tech Stack:** FastAPI (Python) backend + Vanilla JavaScript frontend + SQLite/JSON storage
 
 ## Development Commands
 
@@ -26,16 +26,26 @@ python app.py
 
 No build step required for frontend (vanilla JS with CDN dependencies).
 
+## Testing
+
+```bash
+pip install playwright && playwright install chromium
+python test_ui.py          # Headless, saves screenshots to screenshots/
+python test_ui.py --headed # Visible browser
+```
+
 ## Architecture
 
 ```
-Frontend (Vanilla JS)  →  FastAPI REST API  →  Services Layer  →  SQLite
-     ↓                         ↓                    ↓
- static/js/            api/*.py routes      services/*.py
- - chat.js             - /api/chat/stream   - anthropic_client.py (streaming)
- - conversations.js    - /api/conversations - conversation_store.py (persistence)
- - files.js            - /api/files         - file_processor.py (validation)
- - settings.js
+Frontend (Vanilla JS)  →  FastAPI REST API  →  Services Layer  →  Storage
+     ↓                         ↓                    ↓              ↓
+ static/js/            api/*.py routes      services/*.py     SQLite (regular)
+ - chat.js             - /api/chat/stream   - anthropic_client.py   JSON files (agent)
+ - conversations.js    - /api/conversations - conversation_store.py
+ - files.js            - /api/files         - file_conversation_store.py
+ - settings.js         - /api/agent-chat    - file_processor.py
+ - workspace.js                             - agent_client.py
+ - background-streams.js
  - prompts.js
 ```
 
@@ -44,37 +54,35 @@ Frontend (Vanilla JS)  →  FastAPI REST API  →  Services Layer  →  SQLite
 ## Key Files
 
 - **app.py** - FastAPI entry point, mounts routers, lifespan management
-- **config.py** - Model definitions (with thinking support flags), token limits, file size limits
-- **static/js/chat.js** - Core chat logic: streaming, branching, markdown rendering, version navigation
+- **config.py** - Model definitions (with `supports_thinking` flag), token limits, file size limits
+- **static/js/chat.js** - Core chat logic (~2400 lines): streaming, branching, markdown rendering, version navigation
 - **services/anthropic_client.py** - Async Anthropic API wrapper with extended thinking support
-- **services/conversation_store.py** - SQLite CRUD with message branching (multiple versions per position)
+- **services/conversation_store.py** - SQLite CRUD with message branching (regular conversations)
+- **services/file_conversation_store.py** - File-based JSON storage with branching (agent conversations)
+- **api/agent_chat.py** - Agent SDK streaming endpoints with workspace management
+- **services/agent_client.py** - Agent SDK wrapper for tool-enabled conversations
+
+## Dual Storage Backends
+
+**SQLite** (`services/conversation_store.py`) - For regular conversations:
+- Messages have `position` (order) and `version` (branch) fields
+- `active_versions` JSON in conversations tracks which version is displayed at each position
+- Uses `parent_message_id` to track branching chains
+
+**File-based JSON** (`services/file_conversation_store.py`) - For agent conversations:
+- Each conversation is a folder: `data/conversations/{id}/`
+- `metadata.json` contains title, model, system_prompt, session_id (for agent resumption)
+- Branch files: `0.json`, `1.json`, `0_1.json` (trailing zeros omitted)
+- `workspace/` subfolder stores files created by the agent
 
 ## Conversation Branching Model
 
-Messages have `position` (order) and `version` (branch) fields. Editing a user message or retrying a response creates a new version at that position. The `active_versions` JSON in conversations tracks which version is displayed at each position.
+Editing a user message creates a new branch (version). Both storage backends support navigation between versions using `◀ ▶` buttons. The branch array (e.g., `[0, 1, 0]`) encodes version choices at each user message position.
 
-## API Patterns
+## SSE Streaming Events
 
-- Streaming uses Server-Sent Events (SSE) with event types: `thinking`, `text`, `error`, `done`
-- All database operations use async/await (aiosqlite)
-- File uploads convert to Anthropic API content blocks (base64 images, PDF support)
+Event types: `thinking`, `text`, `error`, `done`, `message_id`, `tool_use`, `tool_result` (agent mode)
 
 ## Configuration (config.py)
 
-Models are defined with `supports_thinking` flag - temperature is automatically omitted when thinking is enabled (API requirement). Default model: `claude-sonnet-4-5-20250929`.
-
-## Testing
-
-```bash
-# Install test dependencies
-pip install playwright
-playwright install chromium
-
-# Run UI tests (headless, takes screenshots)
-python test_ui.py
-
-# Run with visible browser
-python test_ui.py --headed
-```
-
-The test script starts the server, opens the UI in a browser, and captures screenshots of various states (settings, file browser, dark mode, mobile view, etc.) to `screenshots/`.
+Models with `supports_thinking=True` automatically omit temperature (API requirement). Default model: `claude-sonnet-4-5-20250929`. Thinking budget range: 1K-128K tokens (default 10K).

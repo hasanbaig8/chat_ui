@@ -375,7 +375,7 @@ const ConversationsManager = {
             if (typeof ChatManager !== 'undefined') {
                 // Don't overwrite isAgentConversation - it was already set before prepareForConversationSwitch
                 // This prevents the workspace button from flickering
-                ChatManager.loadConversation(conversation);
+                await ChatManager.loadConversation(conversation);
             }
 
             // Update workspace visibility after loading conversation

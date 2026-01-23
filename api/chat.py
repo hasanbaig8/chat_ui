@@ -8,42 +8,23 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from services.anthropic_client import AnthropicClient
-from services.conversation_store import ConversationStore
 from services.file_conversation_store import FileConversationStore
 from config import DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_MAX_TOKENS, DEFAULT_THINKING_BUDGET
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 
-# Initialize client and both stores
+# Initialize client and file store
 client = AnthropicClient()
-sqlite_store = ConversationStore()
-file_store = FileConversationStore()
+store = FileConversationStore()
 
 # Track which conversations are currently streaming
 streaming_conversations: Set[str] = set()
 
 
-async def get_store_for_conversation(conversation_id: str):
-    """Get the appropriate store for an existing conversation by checking both stores."""
-    # Try SQLite store first
-    conv = await sqlite_store.get_conversation(conversation_id)
-    if conv:
-        return sqlite_store
-
-    # Try file store
-    conv = await file_store.get_conversation(conversation_id)
-    if conv:
-        return file_store
-
-    # Default to SQLite if not found in either
-    return sqlite_store
-
-
 @router.on_event("startup")
 async def startup():
-    """Initialize database and warm up API connection on startup."""
-    await sqlite_store.initialize()
-    await file_store.initialize()
+    """Initialize storage and warm up API connection on startup."""
+    await store.initialize()
     # Warm up Anthropic API connection in background
     asyncio.create_task(client.warmup())
 
@@ -96,8 +77,7 @@ async def stream_chat(request: ChatRequest):
         conversation_id = request.conversation_id
         branch = request.branch or [0]
 
-        # Get the correct store for this conversation
-        store = await get_store_for_conversation(conversation_id) if conversation_id else sqlite_store
+        # Use file store for all conversations
 
         # Convert messages to API format
         api_messages = []
