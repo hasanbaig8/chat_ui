@@ -21,6 +21,9 @@
                 <h1 class="logo">Claude Chat</h1>
             </div>
             <div class="header-right">
+                <button id="workspace-files-toggle" class="icon-btn" title="Workspace Files" style="display: none;">
+                    📁
+                </button>
                 <button id="copy-conversation-btn" class="icon-btn" title="Copy entire conversation">
                     📋
                 </button>
@@ -194,6 +197,23 @@
                     </div>
                 </div>
             </aside>
+
+            <!-- Workspace Files Panel -->
+            <aside class="workspace-panel" id="workspace-panel">
+                <div class="workspace-header">
+                    <h3>Workspace Files</h3>
+                    <button id="close-workspace" class="icon-btn">&times;</button>
+                </div>
+
+                <div class="workspace-content">
+                    <div class="workspace-path" id="workspace-path">
+                        <!-- Workspace path will be shown here -->
+                    </div>
+                    <div class="workspace-files-list" id="workspace-files-list">
+                        <!-- Files will be listed here -->
+                    </div>
+                </div>
+            </aside>
         </div>
     </div>
 
@@ -265,6 +285,7 @@
     <script src="/static/js/files.js"></script>
     <script src="/static/js/settings.js"></script>
     <script src="/static/js/prompts.js"></script>
+    <script src="/static/js/workspace.js"></script>
     <script src="/static/js/chat.js?v=7"></script>
     <script src="/static/js/app.js"></script>
 </body>

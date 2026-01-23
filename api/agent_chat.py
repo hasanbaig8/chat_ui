@@ -186,3 +186,29 @@ async def get_workspace_files(conversation_id: str):
         })
 
     return {"files": files, "workspace_path": workspace_path}
+
+
+@router.delete("/workspace/{conversation_id}/{filename}")
+async def delete_workspace_file(conversation_id: str, filename: str):
+    """Delete a file from conversation workspace."""
+    workspace_path = store.get_workspace_path(conversation_id)
+    file_path = os.path.join(workspace_path, filename)
+
+    # Security check - ensure file is within workspace
+    real_workspace = os.path.realpath(workspace_path)
+    real_file = os.path.realpath(file_path)
+    if not real_file.startswith(real_workspace):
+        raise HTTPException(status_code=400, detail="Invalid file path")
+
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+
+    try:
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+        elif os.path.isdir(file_path):
+            import shutil
+            shutil.rmtree(file_path)
+        return {"success": True, "message": f"Deleted {filename}"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete file: {str(e)}")

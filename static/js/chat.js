@@ -295,6 +295,12 @@ const ChatManager = {
         this.agentSessionId = conversation.session_id || null;  // For agent SDK resumption
         this.toolBlocks = {};
         this.clearMessagesUI();
+
+        // Update workspace visibility
+        if (typeof WorkspaceManager !== 'undefined') {
+            WorkspaceManager.updateVisibility(this.isAgentConversation);
+            WorkspaceManager.setConversation(conversation.id);
+        }
         this.streamingMessageEl = null;
         this.streamingMessageId = null;
 
@@ -334,7 +340,10 @@ const ChatManager = {
             this.scrollToBottom(true);
             this.updateContextStats();
         } else {
-            document.getElementById('welcome-message').style.display = '';
+            // Regenerate welcome message to ensure it matches conversation type
+            const welcomeEl = document.getElementById('welcome-message');
+            welcomeEl.innerHTML = this.getWelcomeMessage();
+            welcomeEl.style.display = '';
         }
 
         // Check if this conversation is streaming on the server
@@ -690,6 +699,71 @@ const ChatManager = {
     },
 
     /**
+     * Handle slash commands for agent conversations
+     * Returns true if command was handled, false otherwise
+     */
+    async handleSlashCommand(text) {
+        if (!this.isAgentConversation || !text.startsWith('/')) {
+            return false;
+        }
+
+        const parts = text.split(' ');
+        const command = parts[0].toLowerCase();
+        const args = parts.slice(1);
+
+        switch (command) {
+            case '/ls':
+                // Show workspace files
+                if (typeof WorkspaceManager !== 'undefined') {
+                    WorkspaceManager.togglePanel();
+                    if (!WorkspaceManager.isOpen) {
+                        // If was closed, open it
+                        WorkspaceManager.togglePanel();
+                    }
+                }
+                return true;
+
+            case '/delete':
+                // Delete a file
+                if (args.length === 0) {
+                    this.showSystemMessage('Usage: /delete <filename>');
+                    return true;
+                }
+                const filename = args.join(' ');
+                if (typeof WorkspaceManager !== 'undefined') {
+                    await WorkspaceManager.deleteFile(filename);
+                }
+                return true;
+
+            default:
+                return false;
+        }
+    },
+
+    /**
+     * Show system message in chat
+     */
+    showSystemMessage(text) {
+        const container = document.getElementById('messages-container');
+        const msgEl = document.createElement('div');
+        msgEl.className = 'system-message';
+        msgEl.textContent = text;
+        msgEl.style.cssText = `
+            padding: 8px 12px;
+            margin: 8px auto;
+            max-width: 600px;
+            background-color: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            color: var(--color-text-secondary);
+            font-size: 13px;
+            text-align: center;
+        `;
+        container.appendChild(msgEl);
+        this.scrollToBottom(true);
+    },
+
+    /**
      * Send a new message
      */
     async sendMessage() {
@@ -699,6 +773,14 @@ const ChatManager = {
 
         if (!text && fileBlocks.length === 0) return;
         if (this.isStreaming) return;
+
+        // Handle slash commands for agent conversations
+        if (await this.handleSlashCommand(text)) {
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            this.updateSendButton();
+            return;
+        }
 
         let content;
         if (fileBlocks.length > 0) {

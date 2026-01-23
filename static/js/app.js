@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await SettingsManager.init();
         FilesManager.init();
         PromptLibrary.init();
+        WorkspaceManager.init();
         ChatManager.init();
         await ConversationsManager.init();
 

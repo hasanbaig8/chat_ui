@@ -1121,6 +1121,135 @@ html, body {
     to { transform: rotate(360deg); }
 }
 
+/* Workspace Panel */
+.workspace-panel {
+    width: 0;
+    overflow: hidden;
+    background-color: var(--color-surface);
+    border-left: 1px solid var(--color-border);
+    transition: width var(--transition-normal);
+}
+
+.workspace-panel.open {
+    width: var(--settings-width);
+}
+
+.workspace-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.workspace-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.workspace-content {
+    padding: 16px;
+    overflow-y: auto;
+    height: calc(100vh - var(--header-height) - 57px);
+}
+
+.workspace-path {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    padding: 8px 12px;
+    background-color: var(--color-bg);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    word-break: break-all;
+    font-family: monospace;
+}
+
+.workspace-files-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.workspace-file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.workspace-file-item:hover {
+    background-color: var(--color-surface-hover);
+    border-color: var(--color-primary);
+}
+
+.workspace-file-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+.workspace-file-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.workspace-file-name {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.workspace-file-size {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.workspace-file-actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.workspace-file-item:hover .workspace-file-actions {
+    opacity: 1;
+}
+
+.workspace-file-action-btn {
+    padding: 4px 8px;
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all var(--transition-fast);
+}
+
+.workspace-file-action-btn:hover {
+    background-color: var(--color-surface);
+}
+
+.workspace-file-action-btn.delete {
+    color: #e74c3c;
+}
+
+.workspace-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--color-text-secondary);
+}
+
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
     width: 8px;
