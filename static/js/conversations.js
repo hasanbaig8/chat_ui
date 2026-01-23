@@ -313,11 +313,10 @@ const ConversationsManager = {
 
             // Clear the chat UI to show the new empty conversation
             if (clearUI && typeof ChatManager !== 'undefined') {
-                ChatManager.isAgentConversation = isAgent;  // Set this first so clearChat shows correct welcome message
+                ChatManager.isAgentConversation = isAgent;  // Set this so clearChat shows correct welcome message
                 ChatManager.clearChat();
                 ChatManager.activeConversationId = conversation.id;
                 ChatManager.currentBranch = [0];
-                ChatManager.isAgentConversation = isAgent;  // Set again since clearChat resets it
             }
 
             return conversation;
@@ -339,8 +338,13 @@ const ConversationsManager = {
         this.currentConversationId = conversationId;
         this.renderConversationsList();
 
+        // Find the conversation to get its is_agent flag before preparing
+        const conversation = this.conversations.find(c => c.id === conversationId);
+        const isAgent = conversation?.is_agent || false;
+
         // Immediately prepare ChatManager for the switch - clears UI and sets active ID
         if (typeof ChatManager !== 'undefined') {
+            ChatManager.isAgentConversation = isAgent;  // Set this before preparing so welcome message is correct
             ChatManager.prepareForConversationSwitch(conversationId);
         }
 

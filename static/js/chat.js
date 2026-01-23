@@ -614,11 +614,11 @@ const ChatManager = {
         this.stopStreamingAnimation();
         this.messages = [];
         this.currentBranch = [0];
+        // Don't reset isAgentConversation here - let the caller set it appropriately
         this.clearMessagesUI();
         this.streamingMessageEl = null;
         this.streamingMessageId = null;
         this.isStreaming = false;
-        this.isAgentConversation = false;
         this.agentSessionId = null;
         this.userScrolledAway = false;
         this.abortController = null;
@@ -643,6 +643,7 @@ const ChatManager = {
         // Clear UI immediately to prevent showing stale messages
         this.messages = [];
         this.currentBranch = [0];
+        // Note: isAgentConversation should be set by caller before calling this
         this.clearMessagesUI();
         this.streamingMessageEl = null;
         this.streamingMessageId = null;
@@ -654,7 +655,7 @@ const ChatManager = {
 
         // Reset streaming state - will be updated when conversation loads
         this.isStreaming = false;
-        this.isAgentConversation = false;
+        // Don't reset isAgentConversation here - it's set by the caller
         this.agentSessionId = null;
         this.userScrolledAway = false;
         this.updateSendButton();
