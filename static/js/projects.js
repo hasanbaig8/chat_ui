@@ -47,6 +47,16 @@ const ProjectsManager = {
             newProjectBtn.addEventListener('click', () => this.promptCreateProject());
         }
 
+        // Global click handler to close dropdown menus
+        document.addEventListener('click', (e) => {
+            // Don't close if clicking on a menu button (that's handled separately)
+            if (e.target.closest('.project-menu-btn')) return;
+            // Close all open dropdowns
+            document.querySelectorAll('.project-menu-dropdown.open').forEach(m => {
+                m.classList.remove('open');
+            });
+        });
+
         // Setup drop zone for removing conversations from projects
         const conversationsList = document.getElementById('conversations-list');
         if (conversationsList) {
@@ -110,10 +120,11 @@ const ProjectsManager = {
     },
 
     /**
-     * Create a new project
+     * Create a new project with default settings
      */
     async createProject(name, color = '#C15F3C') {
         try {
+            // Create the project first
             const response = await fetch('/api/projects', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -121,6 +132,12 @@ const ProjectsManager = {
             });
 
             const project = await response.json();
+
+            // Initialize project settings from current defaults
+            await fetch(`/api/settings/project/${project.id}/init`, {
+                method: 'POST'
+            });
+
             this.projects.unshift(project);
             this.expandedProjects.add(project.id);
             this.saveExpandedState();
@@ -346,9 +363,17 @@ const ProjectsManager = {
                 ${hasAgentConversations ? '<span class="project-memory-icon" title="Shared memory for agent chats">&#129504;</span>' : ''}
                 <span class="project-count">(${validConvIds.length})</span>
                 <div class="project-actions">
-                    <button class="project-color-btn" title="Change color">&#127912;</button>
-                    <button class="project-rename-btn" title="Rename">&#9998;</button>
-                    <button class="project-delete-btn" title="Delete">&#128465;</button>
+                    <button class="project-new-chat-btn" title="New Chat">+</button>
+                    <button class="project-new-agent-btn" title="New Agent Chat">+</button>
+                    <div class="project-menu-container">
+                        <button class="project-menu-btn" title="More options">&#8942;</button>
+                        <div class="project-menu-dropdown">
+                            <button class="project-menu-item project-settings-btn" title="Settings">&#9881;</button>
+                            <button class="project-menu-item project-color-btn" title="Change color">&#127912;</button>
+                            <button class="project-menu-item project-rename-btn" title="Rename">&#9998;</button>
+                            <button class="project-menu-item project-delete-btn" title="Delete">&#128465;</button>
+                        </div>
+                    </div>
                 </div>
             `;
 
@@ -380,19 +405,61 @@ const ProjectsManager = {
                 }
             });
 
-            // Action buttons
+            // New Chat button (blue)
+            header.querySelector('.project-new-chat-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.createConversationInProject(project.id, false);
+            });
+
+            // New Agent Chat button (orange)
+            header.querySelector('.project-new-agent-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.createConversationInProject(project.id, true);
+            });
+
+            // Menu button
+            const menuBtn = header.querySelector('.project-menu-btn');
+            const menuDropdown = header.querySelector('.project-menu-dropdown');
+
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                // Close other open menus
+                document.querySelectorAll('.project-menu-dropdown.open').forEach(m => {
+                    if (m !== menuDropdown) m.classList.remove('open');
+                });
+
+                // Position the dropdown to the right of the button
+                const rect = menuBtn.getBoundingClientRect();
+                menuDropdown.style.top = `${rect.top + rect.height / 2}px`;
+                menuDropdown.style.left = `${rect.right + 4}px`;
+                menuDropdown.style.transform = 'translateY(-50%)';
+
+                menuDropdown.classList.toggle('open');
+            });
+
+            // Action buttons in menu
+            header.querySelector('.project-settings-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                menuDropdown.classList.remove('open');
+                this.openProjectSettings(project.id);
+            });
+
             header.querySelector('.project-color-btn').addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.showColorPicker(project.id, e.target);
+                menuDropdown.classList.remove('open');
+                this.showColorPicker(project.id, menuBtn);
             });
 
             header.querySelector('.project-rename-btn').addEventListener('click', (e) => {
                 e.stopPropagation();
+                menuDropdown.classList.remove('open');
                 this.startRename(project.id, header.querySelector('.project-name'));
             });
 
             header.querySelector('.project-delete-btn').addEventListener('click', (e) => {
                 e.stopPropagation();
+                menuDropdown.classList.remove('open');
                 this.deleteProject(project.id);
             });
 
@@ -614,6 +681,103 @@ const ProjectsManager = {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    },
+
+    /**
+     * Create a new conversation directly inside a project using project settings
+     */
+    async createConversationInProject(projectId, isAgent = false) {
+        try {
+            // Fetch project settings from API
+            const settingsResponse = await fetch(`/api/settings/project/${projectId}`);
+            const settingsData = await settingsResponse.json();
+            const projectSettings = settingsData.settings || {};
+
+            const title = isAgent ? 'New Agent Chat' : 'New Conversation';
+
+            // Build the request body using project settings
+            const requestBody = {
+                title,
+                is_agent: isAgent
+            };
+
+            if (isAgent) {
+                // Use project's agent settings
+                if (projectSettings.agent_model) {
+                    requestBody.model = projectSettings.agent_model;
+                }
+                if (projectSettings.agent_system_prompt) {
+                    requestBody.system_prompt = projectSettings.agent_system_prompt;
+                }
+            } else {
+                // Use project's normal chat settings
+                if (projectSettings.normal_model) {
+                    requestBody.model = projectSettings.normal_model;
+                }
+                if (projectSettings.normal_system_prompt) {
+                    requestBody.system_prompt = projectSettings.normal_system_prompt;
+                }
+                requestBody.settings = {
+                    thinking_enabled: projectSettings.normal_thinking_enabled ?? true,
+                    thinking_budget: projectSettings.normal_thinking_budget ?? 60000,
+                    max_tokens: projectSettings.normal_max_tokens ?? 64000,
+                    temperature: projectSettings.normal_temperature ?? 1.0,
+                    top_p: projectSettings.normal_top_p ?? 1.0,
+                    top_k: projectSettings.normal_top_k ?? 0,
+                    prune_threshold: projectSettings.normal_prune_threshold ?? 0.7
+                };
+            }
+
+            // Create the conversation directly via API
+            const response = await fetch('/api/conversations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            });
+
+            const conversation = await response.json();
+
+            if (conversation && conversation.id) {
+                // Add to ConversationsManager list
+                if (typeof ConversationsManager !== 'undefined') {
+                    ConversationsManager.conversations.unshift(conversation);
+                    ConversationsManager.currentConversationId = conversation.id;
+                    ConversationsManager.renderConversationsList();
+
+                    // Update ChatManager
+                    if (typeof ChatManager !== 'undefined') {
+                        ChatManager.isAgentConversation = isAgent;
+                        ChatManager.clearChat();
+                        ChatManager.activeConversationId = conversation.id;
+                        ChatManager.currentBranch = [0];
+                    }
+
+                    // Update SettingsManager
+                    if (typeof SettingsManager !== 'undefined') {
+                        SettingsManager.setMode(isAgent ? 'agent' : 'normal');
+                        SettingsManager.loadConversationSettings(conversation);
+                    }
+                }
+
+                // Add to project
+                await this.addConversationToProject(projectId, conversation.id);
+            }
+        } catch (error) {
+            console.error('Failed to create conversation in project:', error);
+        }
+    },
+
+    /**
+     * Open project settings panel
+     */
+    openProjectSettings(projectId) {
+        const project = this.projects.find(p => p.id === projectId);
+        if (!project) return;
+
+        // Open the project settings modal
+        if (typeof ProjectSettingsManager !== 'undefined') {
+            ProjectSettingsManager.openForProject(project);
+        }
     },
 
     /**

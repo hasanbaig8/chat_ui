@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await SettingsManager.init();
         SettingsManager.setMode('normal');  // Default to normal mode
         await DefaultSettingsManager.init();
+        await ProjectSettingsManager.init();
         FilesManager.init();
         PromptLibrary.init();
         WorkspaceManager.init();
@@ -38,9 +39,11 @@ document.addEventListener('visibilitychange', () => {
 
 // Handle keyboard shortcuts
 document.addEventListener('keydown', (e) => {
-    // Escape to close settings panel
+    // Escape to close settings panel or project settings modal
     if (e.key === 'Escape') {
-        if (SettingsManager.isOpen) {
+        if (typeof ProjectSettingsManager !== 'undefined' && ProjectSettingsManager.isOpen) {
+            ProjectSettingsManager.close();
+        } else if (SettingsManager.isOpen) {
             SettingsManager.togglePanel();
         }
     }
