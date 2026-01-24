@@ -23,11 +23,173 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         console.log('Claude Chat UI initialized successfully');
 
+        // Set up help chat button
+        const helpChatBtn = document.getElementById('help-chat-btn');
+        if (helpChatBtn) {
+            helpChatBtn.addEventListener('click', () => createHelpChat());
+        }
+
     } catch (error) {
         console.error('Failed to initialize app:', error);
         alert('Failed to initialize application. Please refresh the page.');
     }
 });
+
+/**
+ * Create a special help chat with documentation and code context
+ */
+async function createHelpChat() {
+    try {
+        // Fetch the latest documentation and code
+        console.log('Fetching documentation and code...');
+        const [capabilitiesResponse, codeResponse] = await Promise.all([
+            fetch('/api/docs/capabilities'),
+            fetch('/api/docs/code')
+        ]);
+
+        if (!capabilitiesResponse.ok || !codeResponse.ok) {
+            throw new Error('Failed to fetch documentation');
+        }
+
+        const capabilities = await capabilitiesResponse.text();
+        const code = await codeResponse.text();
+
+        // Create a new conversation with helpful title and system prompt
+        const systemPrompt = `You are a helpful assistant for the Claude Chat UI application.
+
+The user's first message contains the COMPLETE and UP-TO-DATE documentation (CAPABILITIES.md) and backend code for this application. This is the current state of the application.
+
+Your role:
+- Help users understand how to use the application features
+- Answer questions about capabilities, settings, projects, agent mode, workspace, etc.
+- Explain how the code works when asked technical questions
+- Provide clear, concise answers with examples
+
+IMPORTANT: ONLY reference features that are explicitly documented in the provided CAPABILITIES.md or visible in the provided backend code. If a feature is not mentioned in the documentation or code that was provided to you, do NOT suggest it exists. If you're unsure whether a feature exists, clearly state that you don't see it in the documentation.
+
+Be friendly, clear, and helpful!`;
+
+        // Create conversation with proper parameters
+        const conversation = await ConversationsManager.createConversation(
+            '❓ Help: How to Use This App',
+            true, // clearUI
+            false // isAgent
+        );
+
+        // Update conversation with system prompt
+        await fetch(`/api/conversations/${conversation.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                system_prompt: systemPrompt
+            })
+        });
+
+        // Switch to the new conversation
+        await ConversationsManager.selectConversation(conversation.id);
+
+        // Add documentation and code as the first user message (hidden from UI)
+        const contextMessage = `Here is the complete, up-to-date documentation and code for the Claude Chat UI application:
+
+# CAPABILITIES.md
+
+${capabilities}
+
+# Backend Code
+
+${code}`;
+
+        // Save the context message to the backend
+        const response = await fetch(`/api/conversations/${conversation.id}/messages`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                role: 'user',
+                content: contextMessage,
+                branch: [0]
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to save context message');
+        }
+
+        // Add a welcome message from the assistant
+        if (typeof ChatManager !== 'undefined') {
+            const welcomeMessage = `# Welcome to Help Chat! 👋
+
+I'm here to help you learn how to use Claude Chat UI. I have access to the complete, up-to-date documentation and backend code for this application.
+
+I can answer questions about:
+
+## Features & Usage 🎯
+- **Projects** - How to organize conversations
+- **Agent Chat** - Using the workspace and tools
+- **Settings** - Customizing models, temperature, and more
+- **Conversation Branching** - Editing and retrying messages
+- **File Attachments** - Uploading and working with files
+- **Extended Thinking** - Using deep reasoning mode
+- **Keyboard Shortcuts** - Faster navigation
+
+## Technical Questions 🔧
+- How the streaming works
+- Backend architecture and APIs
+- Storage systems (SQLite vs JSON)
+- Project memory system
+- How features are implemented
+
+## Examples:
+- "How do I create a project?"
+- "What can agent chat do with files?"
+- "How does conversation branching work?"
+- "How is streaming implemented in the backend?"
+- "What keyboard shortcuts are available?"
+
+**Just ask me anything!** 😊`;
+
+            // Add context message to local state (hidden)
+            ChatManager.messages.push({
+                id: 'help-context',
+                role: 'user',
+                content: contextMessage,
+                position: 0,
+                version: 1,
+                total_versions: 1,
+                hidden: true // Mark as hidden so it doesn't render
+            });
+
+            // Add welcome message to local state
+            ChatManager.messages.push({
+                id: 'help-welcome',
+                role: 'assistant',
+                content: welcomeMessage,
+                position: 1,
+                version: 1,
+                total_versions: 1
+            });
+
+            // Only render the welcome message (not the context)
+            ChatManager.renderMessage({
+                id: 'help-welcome',
+                role: 'assistant',
+                content: welcomeMessage,
+                position: 1,
+                version: 1,
+                total_versions: 1
+            });
+
+            // Hide welcome message
+            document.getElementById('welcome-message').style.display = 'none';
+            ChatManager.updateContextStats();
+        }
+
+        console.log('Help chat created successfully with documentation context');
+
+    } catch (error) {
+        console.error('Failed to create help chat:', error);
+        alert('Failed to create help chat: ' + error.message);
+    }
+}
 
 // Handle page visibility changes to stop streaming if hidden
 document.addEventListener('visibilitychange', () => {

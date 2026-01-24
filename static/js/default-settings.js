@@ -110,7 +110,7 @@ const DefaultSettingsManager = {
         const normalThinkingBudget = document.getElementById('default-normal-thinking-budget');
         const normalThinkingBudgetValue = document.getElementById('default-normal-thinking-budget-value');
         if (normalThinkingBudget) {
-            normalThinkingBudget.value = this.settings.normal_thinking_budget || 60000;
+            normalThinkingBudget.value = this.settings.normal_thinking_budget || 10000;
             if (normalThinkingBudgetValue) {
                 normalThinkingBudgetValue.textContent = normalThinkingBudget.value;
             }
@@ -276,6 +276,45 @@ const DefaultSettingsManager = {
                 });
             }
         });
+
+        // Add specific validation for thinking budget and max tokens
+        const thinkingBudgetSlider = document.getElementById('default-normal-thinking-budget');
+        const maxTokensSlider = document.getElementById('default-normal-max-tokens');
+        const thinkingToggle = document.getElementById('default-normal-thinking-toggle');
+
+        if (thinkingBudgetSlider && maxTokensSlider) {
+            // Thinking budget validation - enforce total <= 64000
+            thinkingBudgetSlider.addEventListener('input', (e) => {
+                const thinkingBudget = parseInt(e.target.value);
+                let currentMaxTokens = parseInt(maxTokensSlider.value);
+
+                // When thinking is enabled, enforce thinking_budget + max_tokens <= 64000
+                if (thinkingToggle && thinkingToggle.checked) {
+                    const maxAllowed = 64000 - thinkingBudget;
+                    if (currentMaxTokens > maxAllowed) {
+                        currentMaxTokens = maxAllowed;
+                        maxTokensSlider.value = currentMaxTokens;
+                        document.getElementById('default-normal-max-tokens-value').textContent = currentMaxTokens;
+                    }
+                    maxTokensSlider.max = maxAllowed;
+                }
+            });
+
+            // Max tokens validation - enforce total <= 64000
+            maxTokensSlider.addEventListener('input', (e) => {
+                let value = parseInt(e.target.value);
+
+                if (thinkingToggle && thinkingToggle.checked) {
+                    const thinkingBudget = parseInt(thinkingBudgetSlider.value);
+                    const maxAllowed = 64000 - thinkingBudget;
+                    if (value > maxAllowed) {
+                        value = maxAllowed;
+                        e.target.value = value;
+                        document.getElementById('default-normal-max-tokens-value').textContent = value;
+                    }
+                }
+            });
+        }
     },
 
     /**
@@ -326,7 +365,7 @@ const DefaultSettingsManager = {
             normal_model: document.getElementById('default-normal-model')?.value || null,
             normal_system_prompt: document.getElementById('default-normal-system-prompt')?.value || '',
             normal_thinking_enabled: document.getElementById('default-normal-thinking-toggle')?.checked ?? true,
-            normal_thinking_budget: parseInt(document.getElementById('default-normal-thinking-budget')?.value) || 60000,
+            normal_thinking_budget: parseInt(document.getElementById('default-normal-thinking-budget')?.value) || 10000,
             normal_max_tokens: parseInt(document.getElementById('default-normal-max-tokens')?.value) || 64000,
             normal_temperature: parseFloat(document.getElementById('default-normal-temperature')?.value) ?? 1.0,
             normal_top_p: parseFloat(document.getElementById('default-normal-top-p')?.value) ?? 1.0,
