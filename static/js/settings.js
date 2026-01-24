@@ -55,14 +55,26 @@ const SettingsManager = {
             this.scheduleSave();
         });
 
-        // Thinking budget slider - enforce max_tokens >= thinking_budget
+        // Thinking budget slider - enforce max_tokens >= thinking_budget and total <= 64000
         document.getElementById('thinking-budget').addEventListener('input', (e) => {
             const thinkingBudget = parseInt(e.target.value);
             document.getElementById('thinking-budget-value').textContent = thinkingBudget;
 
             // Ensure max_tokens is at least as large as thinking_budget
             const maxTokensInput = document.getElementById('max-tokens');
-            const currentMaxTokens = parseInt(maxTokensInput.value);
+            let currentMaxTokens = parseInt(maxTokensInput.value);
+
+            // When thinking is enabled, enforce thinking_budget + max_tokens <= 64000
+            if (document.getElementById('thinking-toggle').checked) {
+                const maxAllowed = 64000 - thinkingBudget;
+                if (currentMaxTokens > maxAllowed) {
+                    currentMaxTokens = maxAllowed;
+                    maxTokensInput.value = currentMaxTokens;
+                    document.getElementById('max-tokens-value').textContent = currentMaxTokens;
+                }
+                maxTokensInput.max = maxAllowed;
+            }
+
             if (currentMaxTokens < thinkingBudget) {
                 maxTokensInput.value = thinkingBudget;
                 document.getElementById('max-tokens-value').textContent = thinkingBudget;
@@ -80,16 +92,22 @@ const SettingsManager = {
             this.scheduleSave();
         });
 
-        // Max tokens slider - respect thinking budget minimum
+        // Max tokens slider - respect thinking budget minimum and total <= 64000
         document.getElementById('max-tokens').addEventListener('input', (e) => {
             let value = parseInt(e.target.value);
             const thinkingEnabled = document.getElementById('thinking-toggle').checked;
 
-            // If thinking is enabled, enforce minimum
+            // If thinking is enabled, enforce minimum and maximum
             if (thinkingEnabled) {
                 const thinkingBudget = parseInt(document.getElementById('thinking-budget').value);
                 if (value < thinkingBudget) {
                     value = thinkingBudget;
+                    e.target.value = value;
+                }
+                // Enforce thinking_budget + max_tokens <= 64000
+                const maxAllowed = 64000 - thinkingBudget;
+                if (value > maxAllowed) {
+                    value = maxAllowed;
                     e.target.value = value;
                 }
             }

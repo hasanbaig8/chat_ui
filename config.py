@@ -20,21 +20,21 @@ MODELS = {
         id="claude-opus-4-5-20251101",
         name="Claude Opus 4.5",
         supports_thinking=True,
-        max_tokens=128000,
+        max_tokens=64000,  # API limit for output tokens
         description="Most capable model, best for complex tasks"
     ),
     "claude-sonnet-4-5-20250929": ModelConfig(
         id="claude-sonnet-4-5-20250929",
         name="Claude Sonnet 4.5",
         supports_thinking=True,
-        max_tokens=128000,
+        max_tokens=64000,  # API limit for output tokens
         description="Balanced performance and speed with extended thinking"
     ),
     "claude-sonnet-4-20250514": ModelConfig(
         id="claude-sonnet-4-20250514",
         name="Claude Sonnet 4",
         supports_thinking=True,
-        max_tokens=128000,
+        max_tokens=64000,  # API limit for output tokens
         description="Fast and capable"
     ),
     "claude-3-5-sonnet-20241022": ModelConfig(
@@ -63,8 +63,9 @@ DEFAULT_TOP_P = 1.0
 DEFAULT_TOP_K = 0  # 0 means disabled
 
 # Extended thinking limits
+# Note: thinking_budget + max_tokens must not exceed 64000 (API limit)
 MIN_THINKING_BUDGET = 1024
-MAX_THINKING_BUDGET = 128000
+MAX_THINKING_BUDGET = 50000  # Leave room for response tokens
 DEFAULT_THINKING_BUDGET = 10000
 
 # File upload limits
