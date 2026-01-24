@@ -330,6 +330,12 @@ const ProjectsManager = {
             projectEl.className = `project-item${isExpanded ? ' expanded' : ''}`;
             projectEl.dataset.projectId = project.id;
 
+            // Check if any conversations are agent conversations (have memory)
+            const hasAgentConversations = validConvIds.some(id => {
+                const conv = conversationsMap[id];
+                return conv && conv.is_agent;
+            });
+
             // Project header
             const header = document.createElement('div');
             header.className = 'project-header';
@@ -337,6 +343,7 @@ const ProjectsManager = {
                 <span class="project-expand-icon">${isExpanded ? '&#9660;' : '&#9654;'}</span>
                 <span class="project-color-dot" style="background-color: ${project.color}"></span>
                 <span class="project-name">${this.escapeHtml(project.name)}</span>
+                ${hasAgentConversations ? '<span class="project-memory-icon" title="Shared memory for agent chats">&#129504;</span>' : ''}
                 <span class="project-count">(${validConvIds.length})</span>
                 <div class="project-actions">
                     <button class="project-color-btn" title="Change color">&#127912;</button>

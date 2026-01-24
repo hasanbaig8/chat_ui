@@ -6,7 +6,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
-DATA_DIR = Path("data")
+# Use absolute path to avoid issues when MCP servers run with different cwd
+DATA_DIR = Path(__file__).parent.parent / "data"
 PROJECTS_FILE = DATA_DIR / "projects.json"
 
 
@@ -160,3 +161,11 @@ class ProjectStore:
             if conversation_id in project['conversation_ids']:
                 return project['id']
         return None
+
+    def get_project_memory_path(self, project_id: str) -> str:
+        """Get the memory directory path for a project."""
+        return str(DATA_DIR / "projects" / project_id / "memories")
+
+    def get_conversation_memory_path(self, conversation_id: str) -> str:
+        """Get the memory directory path for a standalone conversation (not in a project)."""
+        return str(DATA_DIR / "conversations" / conversation_id / "memories")

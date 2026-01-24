@@ -9,11 +9,26 @@ from pydantic import BaseModel
 
 from services.agent_client import get_agent_client, is_sdk_available, get_sdk_import_error
 from services.file_conversation_store import FileConversationStore
+from services.project_store import ProjectStore
 
 router = APIRouter(prefix="/api/agent-chat", tags=["agent-chat"])
 
-# Initialize store
+# Initialize stores
 store = FileConversationStore()
+project_store = ProjectStore()
+
+# Memory system prompt instruction
+MEMORY_SYSTEM_PROMPT = """
+IMPORTANT: You have access to a persistent memory system. ALWAYS check your memory at the start of conversations.
+
+MEMORY PROTOCOL:
+1. Use `memory_view` with path "/memories" to see what memories exist.
+2. Read relevant memory files to recall past context, decisions, and progress.
+3. As you work, save important information to memory using `memory_create` or update existing files with `memory_str_replace`.
+4. Keep memories organized - use descriptive filenames, update rather than duplicate.
+
+Your memories persist across conversations, so record anything you'd want to remember later.
+"""
 
 
 class AgentChatRequest(BaseModel):
@@ -34,9 +49,10 @@ async def stream_agent_chat(request: AgentChatRequest):
         conversation_id = request.conversation_id
         branch = request.branch or [0]
 
-        # Get workspace path and session_id for this conversation
+        # Get workspace path, session_id, and memory path for this conversation
         workspace_path = None
         existing_session_id = None
+        memory_path = None
         msg_record = None
 
         if conversation_id:
@@ -51,6 +67,20 @@ async def stream_agent_chat(request: AgentChatRequest):
                     existing_session_id = conv.get("session_id")
             except Exception:
                 pass  # Continue without session_id if we can't get it
+
+            # Determine memory path based on whether conversation is in a project
+            try:
+                project_id = await project_store.get_project_for_conversation(conversation_id)
+                if project_id:
+                    # Use shared project memory
+                    memory_path = project_store.get_project_memory_path(project_id)
+                else:
+                    # Use conversation-specific memory
+                    memory_path = project_store.get_conversation_memory_path(conversation_id)
+                # Ensure memory directory exists
+                os.makedirs(memory_path, exist_ok=True)
+            except Exception as e:
+                print(f"Warning: Could not determine memory path: {e}")
 
             # Create assistant message record in DB first
             try:
@@ -73,12 +103,18 @@ async def stream_agent_chat(request: AgentChatRequest):
         new_session_id = None
 
         try:
+            # Build system prompt with memory instructions if memory is available
+            system_prompt = request.system_prompt or ""
+            if memory_path:
+                system_prompt = MEMORY_SYSTEM_PROMPT + "\n\n" + system_prompt
+
             async for event in agent_client.stream_agent_response(
                 messages=request.messages,
                 workspace_path=workspace_path or os.getcwd(),
-                system_prompt=request.system_prompt,
+                system_prompt=system_prompt if system_prompt.strip() else None,
                 model=request.model,
-                session_id=existing_session_id  # Pass session_id for resumption
+                session_id=existing_session_id,  # Pass session_id for resumption
+                memory_path=memory_path  # Pass memory path for project-shared memories
             ):
                 # Send event to client
                 yield f"data: {json.dumps(event)}\n\n"
@@ -249,3 +285,85 @@ async def upload_workspace_file(conversation_id: str, file: UploadFile = File(..
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
+
+
+@router.get("/memory/{conversation_id}")
+async def get_memory_files(conversation_id: str):
+    """List memory files for a conversation (or its project if in one)."""
+    # Determine memory path based on whether conversation is in a project
+    try:
+        project_id = await project_store.get_project_for_conversation(conversation_id)
+        if project_id:
+            memory_path = project_store.get_project_memory_path(project_id)
+            is_project_memory = True
+        else:
+            memory_path = project_store.get_conversation_memory_path(conversation_id)
+            is_project_memory = False
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get memory path: {str(e)}")
+
+    if not os.path.exists(memory_path):
+        return {
+            "files": [],
+            "memory_path": memory_path,
+            "is_project_memory": is_project_memory,
+            "project_id": project_id if is_project_memory else None
+        }
+
+    files = []
+    for item in os.listdir(memory_path):
+        item_path = os.path.join(memory_path, item)
+        if not item.startswith('.'):  # Skip hidden files
+            files.append({
+                "name": item,
+                "is_dir": os.path.isdir(item_path),
+                "size": os.path.getsize(item_path) if os.path.isfile(item_path) else None
+            })
+
+    return {
+        "files": files,
+        "memory_path": memory_path,
+        "is_project_memory": is_project_memory,
+        "project_id": project_id if is_project_memory else None
+    }
+
+
+@router.get("/memory/{conversation_id}/{filename:path}")
+async def read_memory_file(conversation_id: str, filename: str):
+    """Read a specific memory file."""
+    # Determine memory path
+    try:
+        project_id = await project_store.get_project_for_conversation(conversation_id)
+        if project_id:
+            memory_path = project_store.get_project_memory_path(project_id)
+        else:
+            memory_path = project_store.get_conversation_memory_path(conversation_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get memory path: {str(e)}")
+
+    file_path = os.path.join(memory_path, filename)
+
+    # Security check
+    real_memory = os.path.realpath(memory_path)
+    real_file = os.path.realpath(file_path)
+    if not real_file.startswith(real_memory):
+        raise HTTPException(status_code=400, detail="Invalid file path")
+
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Memory file not found")
+
+    if os.path.isdir(file_path):
+        raise HTTPException(status_code=400, detail="Cannot read directory")
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        return {
+            "filename": filename,
+            "content": content,
+            "size": len(content)
+        }
+    except UnicodeDecodeError:
+        raise HTTPException(status_code=400, detail="Binary file cannot be read")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to read file: {str(e)}")

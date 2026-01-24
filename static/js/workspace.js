@@ -6,6 +6,8 @@ const WorkspaceManager = {
     isOpen: false,
     currentConversationId: null,
     files: [],
+    memoryFiles: [],
+    memoryInfo: null,
 
     /**
      * Initialize workspace manager
@@ -105,18 +107,40 @@ const WorkspaceManager = {
     },
 
     /**
-     * Load files from workspace
+     * Load files from workspace and memory
      */
     async loadFiles(conversationId) {
         try {
-            const response = await fetch(`/api/agent-chat/workspace/${conversationId}`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            // Load workspace files
+            const workspaceResponse = await fetch(`/api/agent-chat/workspace/${conversationId}`);
+            if (!workspaceResponse.ok) {
+                throw new Error(`HTTP error! status: ${workspaceResponse.status}`);
             }
 
-            const data = await response.json();
-            this.files = data.files || [];
-            this.renderFiles(data.workspace_path);
+            const workspaceData = await workspaceResponse.json();
+            this.files = workspaceData.files || [];
+
+            // Load memory files
+            try {
+                const memoryResponse = await fetch(`/api/agent-chat/memory/${conversationId}`);
+                if (memoryResponse.ok) {
+                    const memoryData = await memoryResponse.json();
+                    this.memoryFiles = memoryData.files || [];
+                    this.memoryInfo = {
+                        isProjectMemory: memoryData.is_project_memory,
+                        projectId: memoryData.project_id
+                    };
+                } else {
+                    this.memoryFiles = [];
+                    this.memoryInfo = null;
+                }
+            } catch (e) {
+                console.debug('Memory endpoint not available:', e);
+                this.memoryFiles = [];
+                this.memoryInfo = null;
+            }
+
+            this.renderFiles(workspaceData.workspace_path);
         } catch (error) {
             console.error('Failed to load workspace files:', error);
             this.renderError();
@@ -132,16 +156,107 @@ const WorkspaceManager = {
 
         pathEl.textContent = workspacePath || '';
 
-        if (this.files.length === 0) {
-            listEl.innerHTML = '<div class="workspace-empty">No files in workspace yet<br><span style="font-size: 12px; opacity: 0.7;">Drag and drop files here to upload</span></div>';
-            return;
+        listEl.innerHTML = '';
+
+        // Render memory section if there are memory files or memory is enabled
+        if (this.memoryInfo) {
+            const memorySection = document.createElement('div');
+            memorySection.className = 'workspace-section memory-section';
+
+            const memoryHeader = document.createElement('div');
+            memoryHeader.className = 'workspace-section-header';
+            const memoryLabel = this.memoryInfo.isProjectMemory
+                ? '🧠 Shared Project Memory'
+                : '🧠 Conversation Memory';
+            memoryHeader.innerHTML = `<span>${memoryLabel}</span>`;
+            memorySection.appendChild(memoryHeader);
+
+            if (this.memoryFiles.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'workspace-empty small';
+                emptyMsg.textContent = 'No memories yet';
+                memorySection.appendChild(emptyMsg);
+            } else {
+                this.memoryFiles.forEach(file => {
+                    const item = this.createMemoryFileItem(file);
+                    memorySection.appendChild(item);
+                });
+            }
+
+            listEl.appendChild(memorySection);
         }
 
-        listEl.innerHTML = '';
-        this.files.forEach(file => {
-            const item = this.createFileItem(file);
-            listEl.appendChild(item);
+        // Render workspace files section
+        const filesSection = document.createElement('div');
+        filesSection.className = 'workspace-section files-section';
+
+        const filesHeader = document.createElement('div');
+        filesHeader.className = 'workspace-section-header';
+        filesHeader.innerHTML = '<span>📁 Workspace Files</span>';
+        filesSection.appendChild(filesHeader);
+
+        if (this.files.length === 0) {
+            const emptyMsg = document.createElement('div');
+            emptyMsg.className = 'workspace-empty small';
+            emptyMsg.innerHTML = 'No files yet<br><span style="font-size: 11px; opacity: 0.7;">Drag and drop to upload</span>';
+            filesSection.appendChild(emptyMsg);
+        } else {
+            this.files.forEach(file => {
+                const item = this.createFileItem(file);
+                filesSection.appendChild(item);
+            });
+        }
+
+        listEl.appendChild(filesSection);
+    },
+
+    /**
+     * Create memory file item element
+     */
+    createMemoryFileItem(file) {
+        const item = document.createElement('div');
+        item.className = 'workspace-file-item memory-file';
+
+        const icon = file.is_dir ? '📁' : '📝';
+        const size = file.size ? this.formatFileSize(file.size) : '';
+
+        item.innerHTML = `
+            <div class="workspace-file-info">
+                <span class="workspace-file-icon">${icon}</span>
+                <span class="workspace-file-name" title="${this.escapeHtml(file.name)}">${this.escapeHtml(file.name)}</span>
+                ${size ? `<span class="workspace-file-size">${size}</span>` : ''}
+            </div>
+            <div class="workspace-file-actions">
+                <button class="workspace-file-action-btn view" title="View">👁️</button>
+            </div>
+        `;
+
+        // View button
+        const viewBtn = item.querySelector('.view');
+        viewBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.viewMemoryFile(file.name);
         });
+
+        return item;
+    },
+
+    /**
+     * View a memory file
+     */
+    async viewMemoryFile(filename) {
+        try {
+            const response = await fetch(`/api/agent-chat/memory/${this.currentConversationId}/${encodeURIComponent(filename)}`);
+            if (!response.ok) {
+                throw new Error('Failed to load memory file');
+            }
+
+            const data = await response.json();
+            alert(`Memory: ${filename}\n\n${data.content}`);
+        } catch (error) {
+            console.error('Failed to view memory file:', error);
+            alert('Failed to load memory file');
+        }
     },
 
     /**

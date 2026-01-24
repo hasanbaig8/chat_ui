@@ -109,3 +109,39 @@ async def remove_conversation_from_project(project_id: str, conversation_id: str
     if not success:
         raise HTTPException(status_code=404, detail="Project or conversation not found")
     return {"success": True}
+
+
+@router.get("/{project_id}/memory")
+async def get_project_memory(project_id: str):
+    """Get memory files for a project."""
+    import os
+    await store.initialize()
+
+    project = await store.get_project(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    memory_path = store.get_project_memory_path(project_id)
+
+    if not os.path.exists(memory_path):
+        return {
+            "files": [],
+            "memory_path": memory_path,
+            "project_id": project_id
+        }
+
+    files = []
+    for item in os.listdir(memory_path):
+        item_path = os.path.join(memory_path, item)
+        if not item.startswith('.'):
+            files.append({
+                "name": item,
+                "is_dir": os.path.isdir(item_path),
+                "size": os.path.getsize(item_path) if os.path.isfile(item_path) else None
+            })
+
+    return {
+        "files": files,
+        "memory_path": memory_path,
+        "project_id": project_id
+    }

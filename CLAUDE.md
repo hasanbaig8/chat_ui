@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Note:** This project was completed as part of the Anthropic Fellowship.
+
 ## Project Overview
 
 Claude Chat UI is a full-stack web chat interface for Anthropic's Claude AI models. It features real-time streaming responses, conversation branching (edit/retry with version navigation), extended thinking support, file attachments, and dual storage backends (SQLite for regular chats, file-based JSON for agent conversations).

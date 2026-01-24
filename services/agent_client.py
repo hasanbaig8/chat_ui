@@ -24,10 +24,13 @@ except ImportError as e:
 except Exception as e:
     SDK_IMPORT_ERROR = f"Unexpected error: {e}"
 
-# Path to GIF MCP server script
+# Path to MCP server scripts
 import pathlib
 GIF_MCP_SERVER_PATH = pathlib.Path(__file__).parent.parent / "tools" / "gif_mcp_server.py"
 GIF_TOOL_AVAILABLE = GIF_MCP_SERVER_PATH.exists()
+
+MEMORY_MCP_SERVER_PATH = pathlib.Path(__file__).parent.parent / "tools" / "memory_mcp_server.py"
+MEMORY_TOOL_AVAILABLE = MEMORY_MCP_SERVER_PATH.exists()
 
 
 class AgentClient:
@@ -45,7 +48,8 @@ class AgentClient:
         workspace_path: str,
         system_prompt: Optional[str] = None,
         model: Optional[str] = None,
-        session_id: Optional[str] = None
+        session_id: Optional[str] = None,
+        memory_path: Optional[str] = None
     ) -> AsyncIterator[Dict[str, Any]]:
         """
         Stream agent responses as SSE-compatible events.
@@ -56,6 +60,7 @@ class AgentClient:
             system_prompt: Optional system prompt
             model: Optional model override
             session_id: Optional session ID to resume a previous conversation
+            memory_path: Optional path to memory directory (for project-shared memories)
 
         Yields:
             Events with types: 'session_id', 'text', 'tool_use', 'tool_result', 'done', 'error'
@@ -97,20 +102,42 @@ class AgentClient:
             if GIF_TOOL_AVAILABLE:
                 allowed_tools.append("mcp__gif-search__search_gif")
 
+            # Add memory tools if memory path is provided
+            if memory_path and MEMORY_TOOL_AVAILABLE:
+                allowed_tools.extend([
+                    "mcp__memory__memory_view",
+                    "mcp__memory__memory_create",
+                    "mcp__memory__memory_str_replace",
+                    "mcp__memory__memory_insert",
+                    "mcp__memory__memory_delete",
+                    "mcp__memory__memory_rename",
+                ])
+
             options = ClaudeCodeOptions(
                 cwd=workspace_path,
                 allowed_tools=allowed_tools,
                 permission_mode="acceptEdits",
             )
 
+            # Build MCP servers configuration
+            mcp_servers = {}
+
             # Add GIF MCP server if available
             if GIF_TOOL_AVAILABLE:
-                options.mcp_servers = {
-                    "gif-search": {
-                        "command": "python3",
-                        "args": [str(GIF_MCP_SERVER_PATH)]
-                    }
+                mcp_servers["gif-search"] = {
+                    "command": "python3",
+                    "args": [str(GIF_MCP_SERVER_PATH)]
                 }
+
+            # Add memory MCP server if memory path is provided
+            if memory_path and MEMORY_TOOL_AVAILABLE:
+                mcp_servers["memory"] = {
+                    "command": "python3",
+                    "args": [str(MEMORY_MCP_SERVER_PATH), "--memory-path", memory_path]
+                }
+
+            if mcp_servers:
+                options.mcp_servers = mcp_servers
 
             if system_prompt:
                 options.system_prompt = system_prompt
