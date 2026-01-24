@@ -83,6 +83,35 @@ const ProjectSettingsManager = {
                             <label>System Prompt</label>
                             <textarea id="project-agent-system-prompt" rows="4" placeholder="Optional system prompt for agent..."></textarea>
                         </div>
+                        <div class="setting-group">
+                            <label>Working Directory (CWD)</label>
+                            <div class="cwd-input-group">
+                                <input type="text" id="project-agent-cwd" placeholder="Leave empty for default workspace">
+                                <button type="button" class="btn-icon folder-browse-btn" data-target="project-agent-cwd" title="Browse folders">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <span class="setting-description">Custom directory where the agent will operate. Leave empty to use the default workspace.</span>
+                        </div>
+                        <div class="setting-group">
+                            <label>Available Tools</label>
+                            <div class="tool-toggles" id="project-agent-tools">
+                                <label class="tool-toggle"><input type="checkbox" name="Read" checked> Read</label>
+                                <label class="tool-toggle"><input type="checkbox" name="Write" checked> Write</label>
+                                <label class="tool-toggle"><input type="checkbox" name="Edit" checked> Edit</label>
+                                <label class="tool-toggle"><input type="checkbox" name="Bash" checked> Bash</label>
+                                <label class="tool-toggle"><input type="checkbox" name="Glob" checked> Glob</label>
+                                <label class="tool-toggle"><input type="checkbox" name="Grep" checked> Grep</label>
+                                <label class="tool-toggle"><input type="checkbox" name="WebSearch" checked> WebSearch</label>
+                                <label class="tool-toggle"><input type="checkbox" name="WebFetch" checked> WebFetch</label>
+                                <label class="tool-toggle"><input type="checkbox" name="Task" checked> Task</label>
+                                <label class="tool-toggle"><input type="checkbox" name="GIF" checked> GIF</label>
+                                <label class="tool-toggle"><input type="checkbox" name="Memory" checked> Memory</label>
+                            </div>
+                            <span class="setting-description">Toggle tools on/off to control what the agent can use.</span>
+                        </div>
                     </div>
                 </div>
                 <div class="project-settings-footer">
@@ -116,20 +145,48 @@ const ProjectSettingsManager = {
             });
         });
 
-        // Range input updates
-        modal.querySelector('#project-normal-thinking-budget').addEventListener('input', (e) => {
-            modal.querySelector('#project-thinking-budget-value').textContent = e.target.value;
+        // Range input updates with value sync
+        const thinkingBudgetSlider = modal.querySelector('#project-normal-thinking-budget');
+        const maxTokensSlider = modal.querySelector('#project-normal-max-tokens');
+        const thinkingToggle = modal.querySelector('#project-normal-thinking-enabled');
+
+        // Thinking budget - if increased above max_tokens, raise max_tokens
+        thinkingBudgetSlider.addEventListener('input', (e) => {
+            const thinkingBudget = parseInt(e.target.value);
+            modal.querySelector('#project-thinking-budget-value').textContent = thinkingBudget;
+
+            if (thinkingToggle.checked && parseInt(maxTokensSlider.value) < thinkingBudget) {
+                maxTokensSlider.value = thinkingBudget;
+                modal.querySelector('#project-max-tokens-value').textContent = thinkingBudget;
+            }
         });
-        modal.querySelector('#project-normal-max-tokens').addEventListener('input', (e) => {
-            modal.querySelector('#project-max-tokens-value').textContent = e.target.value;
+
+        // Max tokens - if decreased below thinking_budget, lower thinking_budget
+        maxTokensSlider.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            modal.querySelector('#project-max-tokens-value').textContent = value;
+
+            if (thinkingToggle.checked && parseInt(thinkingBudgetSlider.value) > value) {
+                thinkingBudgetSlider.value = value;
+                modal.querySelector('#project-thinking-budget-value').textContent = value;
+            }
         });
+
         modal.querySelector('#project-normal-temperature').addEventListener('input', (e) => {
             modal.querySelector('#project-temperature-value').textContent = e.target.value;
         });
 
-        // Thinking enabled toggle
-        modal.querySelector('#project-normal-thinking-enabled').addEventListener('change', (e) => {
+        // Thinking enabled toggle - sync values when enabled
+        thinkingToggle.addEventListener('change', (e) => {
             modal.querySelector('#project-thinking-budget-group').style.display = e.target.checked ? 'block' : 'none';
+            if (e.target.checked) {
+                const thinkingBudget = parseInt(thinkingBudgetSlider.value);
+                const maxTokens = parseInt(maxTokensSlider.value);
+                if (maxTokens < thinkingBudget) {
+                    maxTokensSlider.value = thinkingBudget;
+                    modal.querySelector('#project-max-tokens-value').textContent = thinkingBudget;
+                }
+            }
         });
     },
 
@@ -224,6 +281,16 @@ const ProjectSettingsManager = {
             modal.querySelector('#project-agent-model').value = s.agent_model;
         }
         modal.querySelector('#project-agent-system-prompt').value = s.agent_system_prompt || '';
+        modal.querySelector('#project-agent-cwd').value = s.agent_cwd || '';
+
+        // Load tool toggles
+        const toolToggles = modal.querySelectorAll('#project-agent-tools input[type="checkbox"]');
+        const agentTools = s.agent_tools || {};
+        toolToggles.forEach(checkbox => {
+            const toolName = checkbox.name;
+            // Default to true (enabled) if not specified
+            checkbox.checked = agentTools[toolName] !== false;
+        });
     },
 
     /**
@@ -246,7 +313,9 @@ const ProjectSettingsManager = {
 
             // Agent settings
             agent_model: modal.querySelector('#project-agent-model').value,
-            agent_system_prompt: modal.querySelector('#project-agent-system-prompt').value || null
+            agent_system_prompt: modal.querySelector('#project-agent-system-prompt').value || null,
+            agent_cwd: modal.querySelector('#project-agent-cwd').value || null,
+            agent_tools: this.getToolToggles()
         };
 
         try {
@@ -265,6 +334,19 @@ const ProjectSettingsManager = {
             console.error('Failed to save project settings:', error);
             alert('Failed to save project settings');
         }
+    },
+
+    /**
+     * Get tool toggle values as object
+     */
+    getToolToggles() {
+        const modal = document.getElementById('project-settings-modal');
+        const toolToggles = modal.querySelectorAll('#project-agent-tools input[type="checkbox"]');
+        const tools = {};
+        toolToggles.forEach(checkbox => {
+            tools[checkbox.name] = checkbox.checked;
+        });
+        return tools;
     },
 
     /**

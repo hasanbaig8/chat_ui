@@ -153,6 +153,39 @@ const ChatManager = {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 this.sendMessage();
+            } else if (e.key === 'Enter' && e.shiftKey) {
+                // Auto-continue bullet points on Shift+Enter
+                const cursorPos = messageInput.selectionStart;
+                const text = messageInput.value;
+                const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
+                const currentLine = text.substring(lineStart, cursorPos);
+
+                // Check for bullet patterns: "- ", "* ", "1. ", "2. " etc.
+                const bulletMatch = currentLine.match(/^(\s*)([-*]|\d+\.)\s/);
+                if (bulletMatch) {
+                    e.preventDefault();
+                    const indent = bulletMatch[1];
+                    const bullet = bulletMatch[2];
+
+                    // If line only has the bullet (empty item), remove it
+                    if (currentLine.trim() === bullet) {
+                        // Remove the bullet line
+                        messageInput.value = text.substring(0, lineStart) + text.substring(cursorPos);
+                        messageInput.selectionStart = messageInput.selectionEnd = lineStart;
+                    } else {
+                        // Increment numbered list, or keep same bullet
+                        let nextBullet = bullet;
+                        const numMatch = bullet.match(/^(\d+)\.$/);
+                        if (numMatch) {
+                            nextBullet = (parseInt(numMatch[1], 10) + 1) + '.';
+                        }
+                        const insertion = '\n' + indent + nextBullet + ' ';
+                        messageInput.value = text.substring(0, cursorPos) + insertion + text.substring(cursorPos);
+                        const newPos = cursorPos + insertion.length;
+                        messageInput.selectionStart = messageInput.selectionEnd = newPos;
+                    }
+                    this.autoResizeTextarea(messageInput);
+                }
             }
         });
 
@@ -1155,12 +1188,16 @@ const ChatManager = {
             // Show visual feedback
             const copyBtn = document.getElementById('copy-conversation-btn');
             if (copyBtn) {
-                const originalText = copyBtn.textContent;
+                // Clear any existing timeout to prevent race conditions
+                if (copyBtn._copyTimeout) {
+                    clearTimeout(copyBtn._copyTimeout);
+                }
                 copyBtn.textContent = 'Copied';
                 copyBtn.style.color = '#4CAF50';
-                setTimeout(() => {
-                    copyBtn.textContent = originalText;
+                copyBtn._copyTimeout = setTimeout(() => {
+                    copyBtn.textContent = '📋';
                     copyBtn.style.color = '';
+                    copyBtn._copyTimeout = null;
                 }, 2000);
             }
         } catch (error) {
@@ -1375,7 +1412,9 @@ const ChatManager = {
                     top_p: settings.top_p !== 1.0 ? settings.top_p : null,
                     top_k: settings.top_k > 0 ? settings.top_k : null,
                     thinking_enabled: settings.thinking_enabled,
-                    thinking_budget: settings.thinking_budget
+                    thinking_budget: settings.thinking_budget,
+                    web_search_enabled: settings.web_search_enabled || false,
+                    web_search_max_uses: settings.web_search_max_uses || 5
                 }),
                 signal: abortController.signal
             });
@@ -1425,6 +1464,29 @@ const ChatManager = {
                                 // Only update UI if this conversation is still active and element is in DOM
                                 if (this.activeConversationId === conversationId && document.contains(messageEl)) {
                                     this.updateMessageContent(contentEl, textContent, indicator);
+                                }
+                            } else if (event.type === 'web_search_start') {
+                                // Web search started - show indicator
+                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                    const searchBlock = this.createWebSearchBlock(event.id, event.name);
+                                    contentEl.insertBefore(searchBlock, indicator);
+                                    this.toolBlocks[event.id] = searchBlock;
+                                }
+                            } else if (event.type === 'web_search_query') {
+                                // Web search query being streamed
+                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                    const searchBlock = this.toolBlocks[event.id];
+                                    if (searchBlock) {
+                                        this.updateWebSearchQuery(searchBlock, event.partial_query);
+                                    }
+                                }
+                            } else if (event.type === 'web_search_result') {
+                                // Web search completed - show results
+                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                    const searchBlock = this.toolBlocks[event.tool_use_id];
+                                    if (searchBlock) {
+                                        this.updateWebSearchBlock(searchBlock, event.results);
+                                    }
                                 }
                             } else if (event.type === 'error') {
                                 if (this.activeConversationId === conversationId && document.contains(messageEl)) {
@@ -2113,6 +2175,12 @@ const ChatManager = {
         const { role, content, thinking, tool_results, position = 0, version = 1, total_versions = 1, created_at } = msg;
         console.log('[renderMessage]', {role, position, contentLength: typeof content === 'string' ? content.length : 'array', content: typeof content === 'string' ? content.substring(0, 100) : content});
 
+        // Check for compaction marker (system message with compaction type)
+        if (role === 'system' && typeof content === 'object' && content?.type === 'compaction') {
+            this.renderCompactionSeparator();
+            return;
+        }
+
         // Version info is now passed directly for user messages
         const el = this.createMessageElement(role, position, version, total_versions, null, created_at);
         const contentEl = el.querySelector('.message-content');
@@ -2190,6 +2258,22 @@ const ChatManager = {
                     contentEl.appendChild(textEl);
                 }
             });
+        } else if (typeof content === 'object' && content !== null && content.web_searches) {
+            // Content with web search results - restore web search blocks first
+            if (Array.isArray(content.web_searches)) {
+                content.web_searches.forEach(ws => {
+                    const searchBlock = this.createWebSearchBlock(ws.id, 'web_search');
+                    this.updateWebSearchBlock(searchBlock, ws.results);
+                    contentEl.appendChild(searchBlock);
+                });
+            }
+            // Then render text content
+            if (content.text) {
+                const textEl = document.createElement('div');
+                textEl.className = 'message-text';
+                textEl.innerHTML = this.formatText(content.text);
+                contentEl.appendChild(textEl);
+            }
         } else {
             contentEl.innerHTML += this.formatText(content);
         }
@@ -2223,6 +2307,100 @@ const ChatManager = {
         const label = el.querySelector('.thinking-label');
         const lines = content.split('\n').length;
         label.textContent = `Thinking (${lines} lines)`;
+    },
+
+    /**
+     * Create a web search indicator block
+     */
+    createWebSearchBlock(id, name) {
+        const el = document.createElement('div');
+        el.className = 'web-search-block';
+        el.dataset.toolUseId = id;
+        el.innerHTML = `
+            <div class="web-search-header" onclick="this.parentElement.classList.toggle('expanded')">
+                <span class="web-search-toggle">▶</span>
+                <span class="web-search-icon">🔍</span>
+                <span class="web-search-label">Searching the web...</span>
+                <span class="web-search-status searching">searching</span>
+            </div>
+            <div class="web-search-content">
+                <div class="web-search-results"></div>
+            </div>
+        `;
+        return el;
+    },
+
+    /**
+     * Update web search block with results
+     */
+    /**
+     * Update web search block with query being streamed
+     */
+    updateWebSearchQuery(el, partialQuery) {
+        const label = el.querySelector('.web-search-label');
+        // Try to extract query from the partial JSON
+        try {
+            // The partial_query might be incomplete JSON like {"query":"weather in london
+            const match = partialQuery.match(/"query"\s*:\s*"([^"]*)(")?/);
+            if (match && match[1]) {
+                label.textContent = `Searching: "${match[1]}..."`;
+            }
+        } catch (e) {
+            // Ignore parse errors
+        }
+    },
+
+    /**
+     * Update web search block with results
+     */
+    updateWebSearchBlock(el, results) {
+        const label = el.querySelector('.web-search-label');
+        const status = el.querySelector('.web-search-status');
+        const resultsContainer = el.querySelector('.web-search-results');
+
+        // Update status
+        status.className = 'web-search-status complete';
+        status.textContent = 'done';
+
+        // Update label with result count
+        const resultCount = Array.isArray(results) ? results.length : 0;
+        label.textContent = `Web search (${resultCount} results)`;
+
+        // Auto-expand to show results
+        el.classList.add('expanded');
+
+        // Render results
+        if (Array.isArray(results) && results.length > 0) {
+            let html = '';
+            for (const result of results) {
+                // Handle both direct objects and objects with type field
+                const url = result.url || '';
+                const title = result.title || 'Untitled';
+                const snippet = result.snippet || result.page_age || '';
+
+                html += `
+                    <div class="web-search-result-item">
+                        <a href="${this.escapeHtml(url)}" target="_blank" class="web-search-result-title">
+                            ${this.escapeHtml(title)}
+                        </a>
+                        <div class="web-search-result-url">${this.escapeHtml(url)}</div>
+                        ${snippet ? `<div class="web-search-result-snippet">${this.escapeHtml(snippet)}</div>` : ''}
+                    </div>
+                `;
+            }
+            resultsContainer.innerHTML = html || '<p>No results found</p>';
+        } else {
+            resultsContainer.innerHTML = '<p>No results found</p>';
+        }
+    },
+
+    /**
+     * Escape HTML to prevent XSS
+     */
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     },
 
     /**
@@ -2318,6 +2496,23 @@ const ChatManager = {
         errorEl.style.color = 'var(--color-error)';
         errorEl.textContent = `Error: ${message}`;
         contentEl.appendChild(errorEl);
+    },
+
+    /**
+     * Render a compaction separator in the chat
+     */
+    renderCompactionSeparator() {
+        const container = document.getElementById('messages-container');
+        if (!container) return;
+
+        const separator = document.createElement('div');
+        separator.className = 'compaction-separator';
+        separator.innerHTML = `
+            <div class="compaction-line"></div>
+            <span class="compaction-label">CONTEXT COMPACTED</span>
+            <div class="compaction-line"></div>
+        `;
+        container.appendChild(separator);
     },
 
     formatText(text) {

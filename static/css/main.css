@@ -150,12 +150,37 @@ html, body {
 /* Sidebar */
 .sidebar {
     width: var(--sidebar-width);
+    min-width: 180px;
+    max-width: 500px;
     background-color: var(--color-surface);
     border-right: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transition: width var(--transition-normal);
+    position: relative;
+}
+
+/* Sidebar resize handle */
+.sidebar-resize-handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    cursor: ew-resize;
+    background: transparent;
+    z-index: 10;
+    transition: background-color var(--transition-fast);
+}
+
+.sidebar-resize-handle:hover,
+.sidebar-resize-handle.dragging {
+    background-color: var(--color-primary);
+}
+
+body.sidebar-resizing {
+    cursor: ew-resize !important;
+    user-select: none;
 }
 
 .new-chat-btn {
@@ -242,6 +267,7 @@ html, body {
     border-radius: 8px;
     cursor: pointer;
     transition: background-color var(--transition-fast);
+    position: relative;
 }
 
 .conversation-item:hover {
@@ -274,14 +300,27 @@ html, body {
 }
 
 .conversation-actions {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     gap: 4px;
     opacity: 0;
+    pointer-events: none;
+    background: linear-gradient(to right, transparent, var(--color-surface) 8px);
+    padding-left: 16px;
     transition: opacity var(--transition-fast);
 }
 
 .conversation-item:hover .conversation-actions {
     opacity: 1;
+    pointer-events: auto;
+    background: linear-gradient(to right, transparent, var(--color-border-light) 8px);
+}
+
+.conversation-item.active .conversation-actions {
+    background: linear-gradient(to right, transparent, var(--color-border) 8px);
 }
 
 .conversation-duplicate,
@@ -1790,10 +1829,13 @@ html, body {
     display: flex;
     justify-content: center;
     gap: 24px;
+    max-width: 800px;
+    margin: 8px auto 0;
     padding: 6px 16px;
     font-size: 11px;
     color: var(--color-text-secondary);
-    border-top: 1px solid var(--color-border);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
     background: var(--color-surface);
 }
 
@@ -1929,6 +1971,37 @@ html, body {
     height: 18px;
     flex-shrink: 0;
     object-fit: contain;
+}
+
+/* Compaction Separator */
+.compaction-separator {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0;
+    padding: 0 20px;
+}
+
+.compaction-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--color-border), var(--color-border), transparent);
+}
+
+.compaction-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: var(--color-text-secondary);
+    background: var(--color-background);
+    padding: 4px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    white-space: nowrap;
+}
+
+[data-theme="dark"] .compaction-label {
+    background: var(--color-surface);
 }
 
 /* Tool Use Blocks for Agent Messages */
@@ -2174,13 +2247,15 @@ html, body {
 .default-settings-modal {
     width: 90vw;
     max-width: 700px;
-    max-height: 85vh;
+    max-height: 90vh;
+    height: 90vh;  /* Ensure modal uses available height */
 }
 
 .default-settings-content {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
+    min-height: 0;  /* Required for flex child to scroll */
 }
 
 .default-settings-tabs {
@@ -2297,6 +2372,17 @@ html, body {
     display: none;
 }
 
+/* Override for tool toggles - show checkboxes */
+.default-settings-tab-content .tool-toggles input[type="checkbox"],
+#default-agent-tools input[type="checkbox"],
+#quick-agent-tools input[type="checkbox"] {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+
 .default-settings-tab-content input[type="checkbox"]:checked + .toggle-slider {
     background: var(--color-primary);
 }
@@ -2307,6 +2393,22 @@ html, body {
 
 .default-settings-tab-content .hidden {
     display: none !important;
+}
+
+.default-settings-tab-content input[type="text"] {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-size: 14px;
+    font-family: var(--font-mono);
+}
+
+.default-settings-tab-content input[type="text"]:focus {
+    outline: none;
+    border-color: var(--color-primary);
 }
 
 .default-settings-tab-content .agent-info {
@@ -2731,7 +2833,8 @@ html, body {
     margin-bottom: 0;
 }
 
-.project-rename-input {
+.project-rename-input,
+.conversation-rename-input {
     width: 100%;
     padding: 2px 6px;
     border: 1px solid var(--color-primary);
@@ -2740,6 +2843,25 @@ html, body {
     color: var(--color-text);
     font-size: 13px;
     outline: none;
+}
+
+.project-conversation .conversation-rename {
+    padding: 2px 6px;
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.project-conversation:hover .conversation-rename {
+    opacity: 1;
+}
+
+.project-conversation .conversation-rename:hover {
+    color: var(--color-primary);
 }
 
 .conversation-remove-from-project,
@@ -2913,4 +3035,415 @@ html, body {
 [data-theme="dark"] .workspace-file-item.memory-file {
     background: rgba(155, 89, 182, 0.15);
     border-color: rgba(155, 89, 182, 0.3);
+}
+
+/* Tool Toggles in Project Settings */
+.tool-toggles {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 12px;
+    background: var(--color-border-light);
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.tool-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 4px;
+    transition: background-color var(--transition-fast);
+}
+
+.tool-toggle:hover {
+    background-color: var(--color-background);
+}
+
+.tool-toggle input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+
+[data-theme="dark"] .tool-toggles {
+    background: var(--color-border);
+}
+
+[data-theme="dark"] .tool-toggle:hover {
+    background-color: var(--color-border-light);
+}
+
+/* Tool Badges (read-only display in conversation settings) */
+.tool-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 0;
+}
+
+.tool-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.tool-badge.enabled {
+    background: var(--color-success);
+    color: white;
+}
+
+.tool-badge.disabled {
+    background: var(--color-border);
+    color: var(--color-text-secondary);
+    text-decoration: line-through;
+}
+
+/* Agent CWD Display (read-only) */
+.agent-cwd-display {
+    padding: 8px 12px;
+    background: var(--color-border-light);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text);
+}
+
+.agent-cwd-display .cwd-path {
+    word-break: break-all;
+}
+
+[data-theme="dark"] .agent-cwd-display {
+    background: var(--color-border);
+}
+
+/* Quick Agent Settings Modal */
+#quick-agent-modal {
+    z-index: 1100;  /* Above default settings */
+}
+
+.quick-agent-settings {
+    width: 500px;
+    max-width: 90vw;
+    max-height: 90vh;
+}
+
+.quick-agent-content {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: 60vh;
+}
+
+.quick-agent-content .setting-group {
+    margin-bottom: 16px;
+}
+
+.quick-agent-content .setting-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--color-text);
+}
+
+.quick-agent-content .setting-group select,
+.quick-agent-content .setting-group textarea,
+.quick-agent-content .setting-group input[type="text"] {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.quick-agent-content .setting-group select:focus,
+.quick-agent-content .setting-group textarea:focus,
+.quick-agent-content .setting-group input[type="text"]:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.quick-agent-content .setting-group textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.quick-agent-content .setting-group input[type="text"] {
+    font-family: var(--font-mono);
+}
+
+/* CWD Input in Project Settings */
+.project-settings-panel input[type="text"] {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-size: 14px;
+    font-family: var(--font-mono);
+}
+
+.project-settings-panel input[type="text"]:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+/* Web Search Settings */
+.web-search-config {
+    display: none;
+    margin-top: 12px;
+    padding: 10px;
+    background: var(--color-border-light);
+    border-radius: 6px;
+}
+
+[data-theme="dark"] .web-search-config {
+    background: var(--color-border);
+}
+
+/* Web Search Results Block */
+.web-search-block {
+    margin: 12px 0;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--color-surface);
+}
+
+.web-search-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, #2563eb10, #3b82f620);
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.web-search-header:hover {
+    background: linear-gradient(135deg, #2563eb18, #3b82f630);
+}
+
+.web-search-toggle {
+    font-size: 10px;
+    color: var(--color-text-secondary);
+    transition: transform 0.15s ease;
+}
+
+.web-search-block.expanded .web-search-toggle {
+    transform: rotate(90deg);
+}
+
+.web-search-icon {
+    font-size: 16px;
+}
+
+.web-search-label {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.web-search-status {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.web-search-status.searching {
+    background: #3b82f6;
+    color: white;
+    animation: pulse 1.5s infinite;
+}
+
+.web-search-status.complete {
+    background: var(--color-success);
+    color: white;
+}
+
+.web-search-content {
+    display: none;
+    padding: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.web-search-block.expanded .web-search-content {
+    display: block;
+}
+
+.web-search-results {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.web-search-result-item {
+    padding: 10px;
+    background: var(--color-border-light);
+    border-radius: 6px;
+    border-left: 3px solid #3b82f6;
+}
+
+.web-search-result-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #3b82f6;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.web-search-result-title:hover {
+    text-decoration: underline;
+}
+
+.web-search-result-url {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;
+    word-break: break-all;
+}
+
+.web-search-result-snippet {
+    font-size: 12px;
+    color: var(--color-text);
+    line-height: 1.5;
+}
+
+[data-theme="dark"] .web-search-block {
+    background: var(--color-surface);
+}
+
+[data-theme="dark"] .web-search-header {
+    background: linear-gradient(135deg, #2563eb20, #3b82f630);
+}
+
+[data-theme="dark"] .web-search-header:hover {
+    background: linear-gradient(135deg, #2563eb30, #3b82f640);
+}
+
+[data-theme="dark"] .web-search-result-item {
+    background: var(--color-border);
+}
+
+/* CWD Input Group with Folder Browse Button */
+.cwd-input-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.cwd-input-group input[type="text"] {
+    flex: 1;
+}
+
+.btn-icon.folder-browse-btn {
+    padding: 8px;
+    background: var(--color-border-light);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon.folder-browse-btn:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+[data-theme="dark"] .btn-icon.folder-browse-btn {
+    background: var(--color-border);
+    border-color: var(--color-border);
+}
+
+[data-theme="dark"] .btn-icon.folder-browse-btn:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+/* Folder Browser Modal - higher z-index to appear above other modals */
+#folder-browser-modal {
+    z-index: 2100;  /* Higher than default settings (1000) and project settings (2000) */
+}
+
+.folder-browser {
+    width: 600px;
+    max-width: 95vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.folder-browser-path {
+    padding: 12px 16px;
+    background: var(--color-border-light);
+    border-bottom: 1px solid var(--color-border);
+    font-family: monospace;
+    font-size: 13px;
+    word-break: break-all;
+}
+
+.folder-browser-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+    min-height: 300px;
+    max-height: 400px;
+}
+
+.folder-browser-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.1s ease;
+}
+
+.folder-browser-item:hover {
+    background: var(--color-border-light);
+}
+
+.folder-browser-item.parent {
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.folder-browser-item .folder-icon {
+    font-size: 18px;
+}
+
+.folder-browser-item .folder-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+[data-theme="dark"] .folder-browser-path {
+    background: var(--color-border);
+}
+
+[data-theme="dark"] .folder-browser-item:hover {
+    background: var(--color-border);
 }

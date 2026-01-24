@@ -47,7 +47,7 @@
                     <button id="new-chat-btn" class="new-chat-btn">
                         <span>+</span> New Chat
                     </button>
-                    <button id="new-agent-chat-btn" class="new-chat-btn agent-btn">
+                    <button id="new-agent-chat-btn" class="new-chat-btn agent-btn" title="Create Agent Chat (Shift+click for settings)">
                         <img src="/static/favicon.png" alt="Agent" class="agent-icon"> Agent Chat
                     </button>
                     <button id="new-project-btn" class="new-chat-btn project-btn">
@@ -69,6 +69,7 @@
                 <div class="conversations-list" id="conversations-list">
                     <!-- Conversations will be populated here -->
                 </div>
+                <div class="sidebar-resize-handle" id="sidebar-resize-handle"></div>
             </aside>
 
             <!-- Chat Area -->
@@ -202,6 +203,20 @@
                             <span class="setting-description">Automatically remove oldest messages to keep context under this threshold</span>
                         </div>
 
+                        <!-- Web Search -->
+                        <div class="setting-group" id="web-search-group">
+                            <label class="toggle-label">
+                                <span>Web Search</span>
+                                <input type="checkbox" id="web-search-toggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="web-search-config" id="web-search-config">
+                                <label for="web-search-max-uses">Max Uses: <span id="web-search-max-uses-value">5</span></label>
+                                <input type="range" id="web-search-max-uses" min="1" max="20" value="5" step="1">
+                            </div>
+                            <span class="setting-description">Allow Claude to search the web for current information</span>
+                        </div>
+
                         <!-- Prompt Library -->
                         <div class="setting-group" id="prompt-library-group">
                             <div class="prompt-library-header">
@@ -218,8 +233,31 @@
                     <div class="agent-chat-settings">
                         <div class="setting-group">
                             <span class="setting-description agent-info">
-                                Agent mode uses the Claude Code SDK with automatic tool access (Read, Write, Edit, Bash, Glob, Grep, WebSearch, WebFetch).
+                                Agent mode uses the Claude Code SDK with automatic tool access.
                             </span>
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Working Directory (CWD)</label>
+                            <div class="agent-cwd-display" id="agent-cwd-display">
+                                <span class="cwd-path">Default workspace</span>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Available Tools</label>
+                            <div class="tool-badges" id="agent-tools-display">
+                                <!-- Filled dynamically when loading agent conversation -->
+                            </div>
+                            <span class="setting-description">Tools are configured in Project Settings or Default Settings</span>
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Context Management</label>
+                            <button class="btn btn-secondary" id="compact-context-btn" title="Summarize conversation to free up context">
+                                Compact Context
+                            </button>
+                            <span class="setting-description">Summarize conversation history to free up context window</span>
                         </div>
                     </div>
                 </div>
@@ -260,6 +298,26 @@
             <div class="modal-footer">
                 <span id="selected-files-count">0 files selected</span>
                 <button class="btn btn-primary" id="add-selected-files" disabled>Add Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Folder Browser Modal -->
+    <div class="modal-overlay" id="folder-browser-modal">
+        <div class="modal-content folder-browser">
+            <div class="modal-header">
+                <h3>Select Folder</h3>
+                <button class="icon-btn" id="close-folder-browser">&times;</button>
+            </div>
+            <div class="folder-browser-path" id="folder-browser-path">
+                <!-- Current path will be shown here -->
+            </div>
+            <div class="folder-browser-list" id="folder-browser-list">
+                <!-- Folder list will be populated here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancel-folder-browser">Cancel</button>
+                <button class="btn btn-primary" id="select-folder">Select This Folder</button>
             </div>
         </div>
     </div>
@@ -328,6 +386,17 @@
                         <textarea id="default-normal-system-prompt" rows="4" placeholder="Optional default system prompt..."></textarea>
                     </div>
 
+                    <!-- Prompt Library in Default Settings -->
+                    <div class="setting-group" id="default-prompt-library-group">
+                        <div class="prompt-library-header">
+                            <label>Prompt Library</label>
+                            <button class="btn-small" id="default-add-prompt-btn">+ Add Prompt</button>
+                        </div>
+                        <div id="default-prompt-library-list" class="prompt-library-list">
+                            <!-- Prompts will be listed here -->
+                        </div>
+                    </div>
+
                     <div class="setting-group">
                         <label class="toggle-label">
                             <span>Extended Thinking</span>
@@ -365,6 +434,19 @@
                         <input type="range" id="default-normal-prune-threshold" min="50" max="95" value="70" step="5">
                         <span class="setting-description">Automatically remove oldest messages to keep context under this threshold</span>
                     </div>
+
+                    <div class="setting-group">
+                        <label class="toggle-label">
+                            <span>Web Search</span>
+                            <input type="checkbox" id="default-normal-web-search-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <div class="web-search-config" id="default-normal-web-search-config">
+                            <label for="default-normal-web-search-max-uses">Max Uses: <span id="default-normal-web-search-max-uses-value">5</span></label>
+                            <input type="range" id="default-normal-web-search-max-uses" min="1" max="20" value="5" step="1">
+                        </div>
+                        <span class="setting-description">Allow Claude to search the web for current information</span>
+                    </div>
                 </div>
 
                 <!-- Agent Chat Defaults -->
@@ -382,15 +464,98 @@
                     </div>
 
                     <div class="setting-group">
-                        <span class="setting-description agent-info">
-                            Agent mode uses the Claude Code SDK with automatic tool access (Read, Write, Edit, Bash, Glob, Grep, WebSearch, WebFetch).
-                        </span>
+                        <label for="default-agent-cwd">Working Directory (CWD)</label>
+                        <div class="cwd-input-group">
+                            <input type="text" id="default-agent-cwd" placeholder="Leave empty for default workspace">
+                            <button type="button" class="btn-icon folder-browse-btn" data-target="default-agent-cwd" title="Browse folders">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="setting-description">Custom directory where the agent will operate. Leave empty to use the default workspace.</span>
+                    </div>
+
+                    <div class="setting-group">
+                        <label>Available Tools</label>
+                        <div class="tool-toggles" id="default-agent-tools">
+                            <label class="tool-toggle"><input type="checkbox" name="Read" checked> Read</label>
+                            <label class="tool-toggle"><input type="checkbox" name="Write" checked> Write</label>
+                            <label class="tool-toggle"><input type="checkbox" name="Edit" checked> Edit</label>
+                            <label class="tool-toggle"><input type="checkbox" name="Bash" checked> Bash</label>
+                            <label class="tool-toggle"><input type="checkbox" name="Glob" checked> Glob</label>
+                            <label class="tool-toggle"><input type="checkbox" name="Grep" checked> Grep</label>
+                            <label class="tool-toggle"><input type="checkbox" name="WebSearch" checked> WebSearch</label>
+                            <label class="tool-toggle"><input type="checkbox" name="WebFetch" checked> WebFetch</label>
+                            <label class="tool-toggle"><input type="checkbox" name="Task" checked> Task</label>
+                            <label class="tool-toggle"><input type="checkbox" name="GIF" checked> GIF</label>
+                            <label class="tool-toggle"><input type="checkbox" name="Memory" checked> Memory</label>
+                        </div>
+                        <span class="setting-description">Toggle tools on/off to control what the agent can use.</span>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn" id="cancel-default-settings">Cancel</button>
                 <button class="btn btn-primary" id="save-default-settings">Save Defaults</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Agent Settings Modal (Shift+Click on Agent Chat button) -->
+    <div class="modal-overlay" id="quick-agent-modal">
+        <div class="modal-content quick-agent-settings">
+            <div class="modal-header">
+                <h3>Agent Chat Settings</h3>
+                <button class="icon-btn" id="close-quick-agent">&times;</button>
+            </div>
+            <div class="quick-agent-content">
+                <div class="setting-group">
+                    <label for="quick-agent-model">Model</label>
+                    <select id="quick-agent-model">
+                        <!-- Models will be populated here -->
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label for="quick-agent-system-prompt">System Prompt</label>
+                    <textarea id="quick-agent-system-prompt" rows="3" placeholder="Optional system prompt for the agent..."></textarea>
+                </div>
+
+                <div class="setting-group">
+                    <label for="quick-agent-cwd">Working Directory (CWD)</label>
+                    <div class="cwd-input-group">
+                        <input type="text" id="quick-agent-cwd" placeholder="Leave empty for default workspace">
+                        <button type="button" class="btn-icon folder-browse-btn" data-target="quick-agent-cwd" title="Browse folders">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <span class="setting-description">Custom directory where the agent will operate.</span>
+                </div>
+
+                <div class="setting-group">
+                    <label>Available Tools</label>
+                    <div class="tool-toggles" id="quick-agent-tools">
+                        <label class="tool-toggle"><input type="checkbox" name="Read" checked> Read</label>
+                        <label class="tool-toggle"><input type="checkbox" name="Write" checked> Write</label>
+                        <label class="tool-toggle"><input type="checkbox" name="Edit" checked> Edit</label>
+                        <label class="tool-toggle"><input type="checkbox" name="Bash" checked> Bash</label>
+                        <label class="tool-toggle"><input type="checkbox" name="Glob" checked> Glob</label>
+                        <label class="tool-toggle"><input type="checkbox" name="Grep" checked> Grep</label>
+                        <label class="tool-toggle"><input type="checkbox" name="WebSearch" checked> WebSearch</label>
+                        <label class="tool-toggle"><input type="checkbox" name="WebFetch" checked> WebFetch</label>
+                        <label class="tool-toggle"><input type="checkbox" name="Task" checked> Task</label>
+                        <label class="tool-toggle"><input type="checkbox" name="GIF" checked> GIF</label>
+                        <label class="tool-toggle"><input type="checkbox" name="Memory" checked> Memory</label>
+                    </div>
+                    <span class="setting-description">Toggle tools on/off to control what the agent can use.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancel-quick-agent">Cancel</button>
+                <button class="btn btn-primary" id="create-quick-agent">Create Chat</button>
             </div>
         </div>
     </div>
@@ -404,6 +569,8 @@
     <script src="/static/js/background-streams.js"></script>
     <script src="/static/js/projects.js"></script>
     <script src="/static/js/project-settings.js"></script>
+    <script src="/static/js/folder-browser.js"></script>
+    <script src="/static/js/quick-agent-settings.js"></script>
     <script src="/static/js/conversations.js"></script>
     <script src="/static/js/files.js"></script>
     <script src="/static/js/settings.js"></script>

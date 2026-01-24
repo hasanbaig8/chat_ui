@@ -55,6 +55,8 @@ class ChatRequest(BaseModel):
     top_k: Optional[int] = None
     thinking_enabled: bool = False
     thinking_budget: int = DEFAULT_THINKING_BUDGET
+    web_search_enabled: bool = False
+    web_search_max_uses: int = 5
 
 
 @router.post("/stream")
@@ -76,6 +78,10 @@ async def stream_chat(request: ChatRequest):
         thinking_content = ""
         conversation_id = request.conversation_id
         branch = request.branch or [0]
+
+        # Track web search events for persistence
+        web_search_blocks = []
+        current_web_search = None
 
         # Use file store for all conversations
 
@@ -128,6 +134,8 @@ async def stream_chat(request: ChatRequest):
                 top_k=request.top_k,
                 thinking_enabled=request.thinking_enabled,
                 thinking_budget=request.thinking_budget,
+                web_search_enabled=request.web_search_enabled,
+                web_search_max_uses=request.web_search_max_uses,
             ):
                 yield f"data: {json.dumps(event)}\n\n"
 
@@ -136,6 +144,30 @@ async def stream_chat(request: ChatRequest):
                     thinking_content += event.get("content", "")
                 elif event.get("type") == "text":
                     text_content += event.get("content", "")
+                elif event.get("type") == "web_search_start":
+                    # Start tracking a new web search
+                    current_web_search = {
+                        "id": event.get("id"),
+                        "query": "",
+                        "results": []
+                    }
+                elif event.get("type") == "web_search_query":
+                    # Accumulate the search query
+                    if current_web_search:
+                        current_web_search["query"] += event.get("partial_query", "")
+                elif event.get("type") == "web_search_result":
+                    # Web search completed - save results
+                    search_id = event.get("tool_use_id")
+                    if current_web_search and current_web_search["id"] == search_id:
+                        current_web_search["results"] = event.get("results", [])
+                        web_search_blocks.append(current_web_search)
+                        current_web_search = None
+                    elif current_web_search:
+                        # ID mismatch - save with the event's ID
+                        current_web_search["id"] = search_id
+                        current_web_search["results"] = event.get("results", [])
+                        web_search_blocks.append(current_web_search)
+                        current_web_search = None
 
                 # Update DB periodically (every 10 chunks) to avoid too many writes
                 update_counter += 1
@@ -152,11 +184,20 @@ async def stream_chat(request: ChatRequest):
 
             # Final update to DB with complete content
             if message_id:
-                print(f"[STREAM] Final update for message {message_id}: {len(text_content)} chars, streaming=False")
+                # Include web search data if present
+                if web_search_blocks:
+                    final_content = {
+                        "text": text_content,
+                        "web_searches": web_search_blocks
+                    }
+                else:
+                    final_content = text_content
+
+                print(f"[STREAM] Final update for message {message_id}: {len(text_content)} chars, {len(web_search_blocks)} web searches, streaming=False")
                 await store.update_message_content(
                     conversation_id=conversation_id,
                     message_id=message_id,
-                    content=text_content,
+                    content=final_content,
                     thinking=thinking_content if thinking_content else None,
                     branch=branch,
                     streaming=False

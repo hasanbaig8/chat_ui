@@ -63,10 +63,11 @@ DEFAULT_TOP_P = 1.0
 DEFAULT_TOP_K = 0  # 0 means disabled
 
 # Extended thinking limits
-# Note: thinking_budget + max_tokens must not exceed 64000 (API limit)
+# thinking_budget should be less than max_tokens to leave room for response
 MIN_THINKING_BUDGET = 1024
-MAX_THINKING_BUDGET = 50000  # Leave room for response tokens
+MAX_THINKING_BUDGET = 50000  # Keep under max output tokens (64K)
 DEFAULT_THINKING_BUDGET = 10000
+MAX_OUTPUT_TOKENS = 64000  # Standard API max output limit
 
 # File upload limits
 MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5MB

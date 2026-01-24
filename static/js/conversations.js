@@ -101,8 +101,20 @@ const ConversationsManager = {
         // New Agent Chat button
         const agentBtn = document.getElementById('new-agent-chat-btn');
         if (agentBtn) {
-            agentBtn.addEventListener('click', () => {
-                this.createConversation('New Agent Chat', true, true);  // clearUI=true, isAgent=true
+            agentBtn.addEventListener('click', (e) => {
+                if (e.shiftKey) {
+                    // Shift+click: show settings popup
+                    // Determine if we're in a project context
+                    const projectId = typeof ProjectsManager !== 'undefined'
+                        ? ProjectsManager.getCurrentProjectId()
+                        : null;
+                    if (typeof QuickAgentSettings !== 'undefined') {
+                        QuickAgentSettings.open(projectId);
+                    }
+                } else {
+                    // Normal click: create agent chat directly
+                    this.createConversation('New Agent Chat', true, true);  // clearUI=true, isAgent=true
+                }
             });
         }
     },

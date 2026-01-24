@@ -316,6 +316,16 @@ const ProjectsManager = {
     },
 
     /**
+     * Get the project ID of the currently selected conversation (if any)
+     */
+    getCurrentProjectId() {
+        if (typeof ConversationsManager !== 'undefined' && ConversationsManager.currentConversationId) {
+            return this.conversationProjectMap[ConversationsManager.currentConversationId] || null;
+        }
+        return null;
+    },
+
+    /**
      * Render the projects section
      */
     renderProjects() {
@@ -411,10 +421,18 @@ const ProjectsManager = {
                 this.createConversationInProject(project.id, false);
             });
 
-            // New Agent Chat button (orange)
+            // New Agent Chat button (orange) - with shift-click support
             header.querySelector('.project-new-agent-btn').addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.createConversationInProject(project.id, true);
+                if (e.shiftKey) {
+                    // Shift+click: show settings popup with project context
+                    if (typeof QuickAgentSettings !== 'undefined') {
+                        QuickAgentSettings.open(project.id);
+                    }
+                } else {
+                    // Normal click: create agent chat directly
+                    this.createConversationInProject(project.id, true);
+                }
             });
 
             // Menu button
@@ -531,19 +549,35 @@ const ProjectsManager = {
             ${agentIcon}
             <span class="conversation-title">${this.escapeHtml(conv.title)}</span>
             <div class="conversation-actions">
+                <button class="conversation-rename" title="Rename">&#9998;</button>
                 <button class="conversation-settings" title="Settings">&#9881;</button>
                 <button class="conversation-remove-from-project" title="Remove from project">&#10006;</button>
             </div>
         `;
 
+        const titleEl = item.querySelector('.conversation-title');
+
         // Click to select conversation
         item.addEventListener('click', (e) => {
             if (!e.target.classList.contains('conversation-remove-from-project') &&
-                !e.target.classList.contains('conversation-settings')) {
+                !e.target.classList.contains('conversation-settings') &&
+                !e.target.classList.contains('conversation-rename')) {
                 if (typeof ConversationsManager !== 'undefined') {
                     ConversationsManager.selectConversation(conv.id);
                 }
             }
+        });
+
+        // Double-click to rename
+        titleEl.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            this.startConversationRename(conv.id, titleEl);
+        });
+
+        // Rename button
+        item.querySelector('.conversation-rename').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.startConversationRename(conv.id, titleEl);
         });
 
         // Settings button - open settings panel for this conversation
@@ -580,6 +614,62 @@ const ProjectsManager = {
         });
 
         return item;
+    },
+
+    /**
+     * Start renaming a conversation in a project
+     */
+    startConversationRename(conversationId, titleEl) {
+        const currentTitle = titleEl.textContent;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentTitle;
+        input.className = 'conversation-rename-input';
+
+        titleEl.textContent = '';
+        titleEl.appendChild(input);
+        input.focus();
+        input.select();
+
+        const finishRename = async () => {
+            const newTitle = input.value.trim();
+            if (newTitle && newTitle !== currentTitle) {
+                try {
+                    await fetch(`/api/conversations/${conversationId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title: newTitle })
+                    });
+
+                    titleEl.textContent = newTitle;
+
+                    // Update in ConversationsManager too
+                    if (typeof ConversationsManager !== 'undefined') {
+                        const conv = ConversationsManager.conversations.find(c => c.id === conversationId);
+                        if (conv) {
+                            conv.title = newTitle;
+                            ConversationsManager.renderConversationsList();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Failed to rename conversation:', error);
+                    titleEl.textContent = currentTitle;
+                }
+            } else {
+                titleEl.textContent = currentTitle;
+            }
+        };
+
+        input.addEventListener('blur', finishRename);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                input.blur();
+            } else if (e.key === 'Escape') {
+                input.value = currentTitle;
+                input.blur();
+            }
+        });
     },
 
     /**

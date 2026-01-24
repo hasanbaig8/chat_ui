@@ -154,6 +154,7 @@ class FileConversationStore:
 
         # Merge provided settings with defaults
         conv_settings = {**default_settings, **(settings or {})}
+        print(f"[STORE] Creating conversation with settings: {conv_settings}")
 
         # Create metadata (no settings - stored separately)
         metadata = {

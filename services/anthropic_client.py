@@ -47,11 +47,13 @@ class AnthropicClient:
         top_k: Optional[int] = None,
         thinking_enabled: bool = False,
         thinking_budget: int = 10000,
+        web_search_enabled: bool = False,
+        web_search_max_uses: int = 5,
     ) -> AsyncGenerator[Dict[str, Any], None]:
         """
         Stream a message from the Anthropic API.
 
-        Yields events with types: 'thinking', 'text', 'error', 'done'
+        Yields events with types: 'thinking', 'text', 'error', 'done', 'web_search_start', 'web_search_result'
         """
         model_config = MODELS.get(model)
         if not model_config:
@@ -84,19 +86,73 @@ class AnthropicClient:
                 "budget_tokens": thinking_budget
             }
 
+        # Add web search tool if enabled
+        if web_search_enabled:
+            params["tools"] = [{
+                "type": "web_search_20250305",
+                "name": "web_search",
+                "max_uses": web_search_max_uses
+            }]
+
         try:
             async with self.client.messages.stream(**params) as stream:
+                current_tool_use_id = None
                 async for event in stream:
                     # Handle different event types from the streaming API
                     if hasattr(event, 'type'):
-                        if event.type == 'content_block_delta':
+                        if event.type == 'content_block_start':
+                            if hasattr(event, 'content_block'):
+                                block = event.content_block
+                                block_type = getattr(block, 'type', None)
+
+                                # Check if this is a server tool use (web search starting)
+                                if block_type == 'server_tool_use':
+                                    current_tool_use_id = getattr(block, 'id', None)
+                                    tool_name = getattr(block, 'name', 'web_search')
+                                    yield {
+                                        "type": "web_search_start",
+                                        "id": current_tool_use_id,
+                                        "name": tool_name
+                                    }
+
+                                # Check if this is web search results
+                                elif block_type == 'web_search_tool_result':
+                                    search_results = getattr(block, 'content', [])
+                                    # Convert results to serializable format
+                                    results_list = []
+                                    for result in search_results:
+                                        if hasattr(result, 'type'):
+                                            results_list.append({
+                                                "type": result.type,
+                                                "url": getattr(result, 'url', ''),
+                                                "title": getattr(result, 'title', ''),
+                                                "snippet": getattr(result, 'encrypted_content', '')[:200] if hasattr(result, 'encrypted_content') else '',
+                                                "page_age": getattr(result, 'page_age', '')
+                                            })
+                                    yield {
+                                        "type": "web_search_result",
+                                        "tool_use_id": getattr(block, 'tool_use_id', current_tool_use_id),
+                                        "results": results_list
+                                    }
+
+                        elif event.type == 'content_block_delta':
                             if hasattr(event, 'delta'):
                                 delta = event.delta
-                                if hasattr(delta, 'type'):
-                                    if delta.type == 'thinking_delta' and hasattr(delta, 'thinking'):
-                                        yield {"type": "thinking", "content": delta.thinking}
-                                    elif delta.type == 'text_delta' and hasattr(delta, 'text'):
-                                        yield {"type": "text", "content": delta.text}
+                                delta_type = getattr(delta, 'type', None)
+
+                                if delta_type == 'thinking_delta' and hasattr(delta, 'thinking'):
+                                    yield {"type": "thinking", "content": delta.thinking}
+                                elif delta_type == 'text_delta' and hasattr(delta, 'text'):
+                                    yield {"type": "text", "content": delta.text}
+                                elif delta_type == 'input_json_delta':
+                                    # This is the search query being streamed
+                                    partial_json = getattr(delta, 'partial_json', '')
+                                    if partial_json and current_tool_use_id:
+                                        yield {
+                                            "type": "web_search_query",
+                                            "id": current_tool_use_id,
+                                            "partial_query": partial_json
+                                        }
 
                         elif event.type == 'message_stop':
                             yield {"type": "done", "content": ""}

@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from services.agent_client import get_agent_client, is_sdk_available, get_sdk_import_error
 from services.file_conversation_store import FileConversationStore
 from services.project_store import ProjectStore
+from api.settings import get_project_settings, load_default_settings
 
 router = APIRouter(prefix="/api/agent-chat", tags=["agent-chat"])
 
@@ -54,6 +55,9 @@ async def stream_agent_chat(request: AgentChatRequest):
         existing_session_id = None
         memory_path = None
         msg_record = None
+        enabled_tools = None
+        custom_cwd = None
+        project_id = None
 
         if conversation_id:
             workspace_path = store.get_workspace_path(conversation_id)
@@ -81,6 +85,35 @@ async def stream_agent_chat(request: AgentChatRequest):
                 os.makedirs(memory_path, exist_ok=True)
             except Exception as e:
                 print(f"Warning: Could not determine memory path: {e}")
+
+            # Get settings for tool toggles and CWD
+            # Priority: conversation settings > project settings > default settings
+            try:
+                # Start with default settings
+                settings = load_default_settings()
+                print(f"[AGENT] Default settings agent_tools: {settings.get('agent_tools')}")
+
+                # Override with project settings if in a project
+                if project_id:
+                    project_settings = get_project_settings(project_id)
+                    print(f"[AGENT] Project {project_id} settings agent_tools: {project_settings.get('agent_tools')}")
+                    settings.update({k: v for k, v in project_settings.items() if v is not None})
+
+                # Override with conversation settings
+                conv_settings = conv.get("settings", {}) if conv else {}
+                print(f"[AGENT] Conversation settings: {conv_settings}")
+                settings.update({k: v for k, v in conv_settings.items() if v is not None})
+
+                # Get enabled tools from settings
+                enabled_tools = settings.get("agent_tools")
+                print(f"[AGENT] Final enabled_tools: {enabled_tools}")
+
+                # Get custom CWD from settings
+                custom_cwd = settings.get("agent_cwd")
+                if custom_cwd and os.path.isdir(custom_cwd):
+                    workspace_path = custom_cwd
+            except Exception as e:
+                print(f"Warning: Could not load settings: {e}")
 
             # Create assistant message record in DB first
             try:
@@ -114,7 +147,8 @@ async def stream_agent_chat(request: AgentChatRequest):
                 system_prompt=system_prompt if system_prompt.strip() else None,
                 model=request.model,
                 session_id=existing_session_id,  # Pass session_id for resumption
-                memory_path=memory_path  # Pass memory path for project-shared memories
+                memory_path=memory_path,  # Pass memory path for project-shared memories
+                enabled_tools=enabled_tools  # Pass enabled tools from settings
             ):
                 # Send event to client
                 yield f"data: {json.dumps(event)}\n\n"
@@ -285,6 +319,126 @@ async def upload_workspace_file(conversation_id: str, file: UploadFile = File(..
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
+
+
+class CompactRequest(BaseModel):
+    """Request to compact agent conversation context."""
+    conversation_id: str
+    instructions: Optional[str] = None  # Optional preservation instructions
+
+
+@router.post("/compact")
+async def compact_conversation(request: CompactRequest):
+    """
+    Compact the agent conversation context by summarizing history.
+    This helps manage the context window for long-running conversations.
+    """
+    async def event_generator():
+        conversation_id = request.conversation_id
+
+        # Get existing session_id and workspace for resumption
+        existing_session_id = None
+        workspace_path = None
+        try:
+            conv = await store.get_conversation(conversation_id)
+            if conv:
+                existing_session_id = conv.get("session_id")
+                # Get workspace path
+                workspace_path = store.get_workspace_path(conversation_id)
+                os.makedirs(workspace_path, exist_ok=True)
+
+                # Check for custom CWD in settings
+                conv_settings = conv.get("settings", {})
+                custom_cwd = conv_settings.get("agent_cwd")
+                if custom_cwd and os.path.isdir(custom_cwd):
+                    workspace_path = custom_cwd
+        except Exception as e:
+            yield f"data: {json.dumps({'type': 'error', 'content': f'Failed to load conversation: {str(e)}'})}\n\n"
+            return
+
+        if not existing_session_id:
+            yield f"data: {json.dumps({'type': 'error', 'content': 'No session to compact. Send a message first to create a session.'})}\n\n"
+            return
+
+        # Build compact command with optional instructions
+        compact_prompt = "/compact"
+        if request.instructions:
+            compact_prompt = f"/compact {request.instructions}"
+
+        try:
+            from claude_code_sdk import query, ClaudeCodeOptions
+
+            options = ClaudeCodeOptions(
+                cwd=workspace_path or os.getcwd(),
+                resume=existing_session_id,
+                permission_mode="acceptEdits",
+            )
+
+            print(f"[COMPACT] Sending compact command with session_id={existing_session_id}, cwd={workspace_path}")
+
+            # Send compact command
+            async for message in query(prompt=compact_prompt, options=options):
+                msg_type = type(message).__name__
+
+                if msg_type == 'SystemMessage':
+                    subtype = getattr(message, 'subtype', '')
+                    if subtype == 'init':
+                        # Capture new session_id after compact
+                        sid = getattr(message, 'session_id', None)
+                        if not sid and hasattr(message, 'data'):
+                            sid = message.data.get('session_id')
+                        if sid:
+                            # Update stored session_id
+                            await store.update_conversation_session_id(
+                                conversation_id=conversation_id,
+                                session_id=sid
+                            )
+                            yield f"data: {json.dumps({'type': 'session_id', 'session_id': sid})}\n\n"
+
+                elif msg_type == 'AssistantMessage':
+                    if hasattr(message, 'content') and message.content:
+                        for block in message.content:
+                            if type(block).__name__ == 'TextBlock':
+                                text = getattr(block, 'text', '')
+                                if text:
+                                    yield f"data: {json.dumps({'type': 'text', 'content': text})}\n\n"
+
+                elif msg_type == 'ResultMessage':
+                    subtype = getattr(message, 'subtype', '')
+                    if subtype == 'success':
+                        # Save compaction marker to conversation
+                        try:
+                            from datetime import datetime
+                            await store.add_message(
+                                conversation_id=conversation_id,
+                                role="system",
+                                content={"type": "compaction", "compacted_at": datetime.utcnow().isoformat()},
+                                branch=None  # Use current branch
+                            )
+                            print(f"[COMPACT] Saved compaction marker for conversation {conversation_id}")
+                        except Exception as e:
+                            print(f"[COMPACT] Failed to save compaction marker: {e}")
+                        yield f"data: {json.dumps({'type': 'compact_complete'})}\n\n"
+
+            yield f"data: {json.dumps({'type': 'done'})}\n\n"
+
+        except Exception as e:
+            error_msg = str(e)
+            print(f"[COMPACT] Error: {error_msg}")
+            # Provide more helpful error messages
+            if "exit code 1" in error_msg.lower() or "command failed" in error_msg.lower():
+                error_msg = "Compact failed. The session may have expired or the context is already minimal. Try sending a new message first."
+            yield f"data: {json.dumps({'type': 'error', 'content': error_msg})}\n\n"
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"
+        }
+    )
 
 
 @router.get("/memory/{conversation_id}")

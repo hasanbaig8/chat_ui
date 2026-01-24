@@ -60,8 +60,12 @@ const DefaultSettingsManager = {
             normal_top_p: 1.0,
             normal_top_k: 0,
             normal_prune_threshold: 0.7,
+            normal_web_search_enabled: false,
+            normal_web_search_max_uses: 5,
             agent_model: 'claude-opus-4-5-20251101',
-            agent_system_prompt: ''
+            agent_system_prompt: '',
+            agent_tools: null,
+            agent_cwd: null
         };
     },
 
@@ -162,6 +166,22 @@ const DefaultSettingsManager = {
             }
         }
 
+        // Web search
+        const webSearchToggle = document.getElementById('default-normal-web-search-toggle');
+        if (webSearchToggle) {
+            webSearchToggle.checked = this.settings.normal_web_search_enabled || false;
+            this.onWebSearchToggle(webSearchToggle.checked);
+        }
+
+        const webSearchMaxUses = document.getElementById('default-normal-web-search-max-uses');
+        const webSearchMaxUsesValue = document.getElementById('default-normal-web-search-max-uses-value');
+        if (webSearchMaxUses) {
+            webSearchMaxUses.value = this.settings.normal_web_search_max_uses || 5;
+            if (webSearchMaxUsesValue) {
+                webSearchMaxUsesValue.textContent = webSearchMaxUses.value;
+            }
+        }
+
         // Agent chat defaults
         const agentModel = document.getElementById('default-agent-model');
         if (agentModel && this.settings.agent_model) {
@@ -171,6 +191,29 @@ const DefaultSettingsManager = {
         const agentSystemPrompt = document.getElementById('default-agent-system-prompt');
         if (agentSystemPrompt) {
             agentSystemPrompt.value = this.settings.agent_system_prompt || '';
+        }
+
+        const agentCwd = document.getElementById('default-agent-cwd');
+        if (agentCwd) {
+            agentCwd.value = this.settings.agent_cwd || '';
+        }
+
+        // Agent tools
+        const toolToggles = document.querySelectorAll('#default-agent-tools input[type="checkbox"]');
+        const agentTools = this.settings.agent_tools || {};
+        toolToggles.forEach(checkbox => {
+            // Default to true (enabled) if not specified
+            checkbox.checked = agentTools[checkbox.name] !== false;
+        });
+    },
+
+    /**
+     * Handle web search toggle
+     */
+    onWebSearchToggle(enabled) {
+        const configContainer = document.getElementById('default-normal-web-search-config');
+        if (configContainer) {
+            configContainer.style.display = enabled ? 'block' : 'none';
         }
     },
 
@@ -250,6 +293,14 @@ const DefaultSettingsManager = {
             });
         }
 
+        // Web search toggle
+        const webSearchToggle = document.getElementById('default-normal-web-search-toggle');
+        if (webSearchToggle) {
+            webSearchToggle.addEventListener('change', (e) => {
+                this.onWebSearchToggle(e.target.checked);
+            });
+        }
+
         // Slider value updates
         this.bindSliderEvents();
     },
@@ -264,7 +315,8 @@ const DefaultSettingsManager = {
             { id: 'default-normal-temperature', valueId: 'default-normal-temperature-value' },
             { id: 'default-normal-top-p', valueId: 'default-normal-top-p-value' },
             { id: 'default-normal-top-k', valueId: 'default-normal-top-k-value' },
-            { id: 'default-normal-prune-threshold', valueId: 'default-normal-prune-threshold-value' }
+            { id: 'default-normal-prune-threshold', valueId: 'default-normal-prune-threshold-value' },
+            { id: 'default-normal-web-search-max-uses', valueId: 'default-normal-web-search-max-uses-value' }
         ];
 
         sliders.forEach(({ id, valueId }) => {
@@ -283,37 +335,39 @@ const DefaultSettingsManager = {
         const thinkingToggle = document.getElementById('default-normal-thinking-toggle');
 
         if (thinkingBudgetSlider && maxTokensSlider) {
-            // Thinking budget validation - enforce total <= 64000
+            // Thinking budget - if increased above max_tokens, raise max_tokens
             thinkingBudgetSlider.addEventListener('input', (e) => {
                 const thinkingBudget = parseInt(e.target.value);
-                let currentMaxTokens = parseInt(maxTokensSlider.value);
 
-                // When thinking is enabled, enforce thinking_budget + max_tokens <= 64000
-                if (thinkingToggle && thinkingToggle.checked) {
-                    const maxAllowed = 64000 - thinkingBudget;
-                    if (currentMaxTokens > maxAllowed) {
-                        currentMaxTokens = maxAllowed;
-                        maxTokensSlider.value = currentMaxTokens;
-                        document.getElementById('default-normal-max-tokens-value').textContent = currentMaxTokens;
-                    }
-                    maxTokensSlider.max = maxAllowed;
+                if (thinkingToggle && thinkingToggle.checked && parseInt(maxTokensSlider.value) < thinkingBudget) {
+                    maxTokensSlider.value = thinkingBudget;
+                    document.getElementById('default-normal-max-tokens-value').textContent = thinkingBudget;
                 }
             });
 
-            // Max tokens validation - enforce total <= 64000
+            // Max tokens - if decreased below thinking_budget, lower thinking_budget
             maxTokensSlider.addEventListener('input', (e) => {
-                let value = parseInt(e.target.value);
+                const value = parseInt(e.target.value);
 
-                if (thinkingToggle && thinkingToggle.checked) {
-                    const thinkingBudget = parseInt(thinkingBudgetSlider.value);
-                    const maxAllowed = 64000 - thinkingBudget;
-                    if (value > maxAllowed) {
-                        value = maxAllowed;
-                        e.target.value = value;
-                        document.getElementById('default-normal-max-tokens-value').textContent = value;
-                    }
+                if (thinkingToggle && thinkingToggle.checked && parseInt(thinkingBudgetSlider.value) > value) {
+                    thinkingBudgetSlider.value = value;
+                    document.getElementById('default-normal-thinking-budget-value').textContent = value;
                 }
             });
+
+            // Sync values when thinking is toggled on
+            if (thinkingToggle) {
+                thinkingToggle.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        const thinkingBudget = parseInt(thinkingBudgetSlider.value);
+                        const maxTokens = parseInt(maxTokensSlider.value);
+                        if (maxTokens < thinkingBudget) {
+                            maxTokensSlider.value = thinkingBudget;
+                            document.getElementById('default-normal-max-tokens-value').textContent = thinkingBudget;
+                        }
+                    }
+                });
+            }
         }
     },
 
@@ -371,10 +425,14 @@ const DefaultSettingsManager = {
             normal_top_p: parseFloat(document.getElementById('default-normal-top-p')?.value) ?? 1.0,
             normal_top_k: parseInt(document.getElementById('default-normal-top-k')?.value) ?? 0,
             normal_prune_threshold: (parseInt(document.getElementById('default-normal-prune-threshold')?.value) || 70) / 100,
+            normal_web_search_enabled: document.getElementById('default-normal-web-search-toggle')?.checked || false,
+            normal_web_search_max_uses: parseInt(document.getElementById('default-normal-web-search-max-uses')?.value) || 5,
 
             // Agent chat defaults
             agent_model: document.getElementById('default-agent-model')?.value || null,
-            agent_system_prompt: document.getElementById('default-agent-system-prompt')?.value || ''
+            agent_system_prompt: document.getElementById('default-agent-system-prompt')?.value || '',
+            agent_cwd: document.getElementById('default-agent-cwd')?.value || null,
+            agent_tools: this.getDefaultToolToggles()
         };
 
         try {
@@ -403,6 +461,23 @@ const DefaultSettingsManager = {
     },
 
     /**
+     * Get default tool toggles from UI
+     */
+    getDefaultToolToggles() {
+        const toolsContainer = document.getElementById('default-agent-tools');
+        if (!toolsContainer) return null;
+
+        const checkboxes = toolsContainer.querySelectorAll('input[type="checkbox"]');
+        if (checkboxes.length === 0) return null;
+
+        const tools = {};
+        checkboxes.forEach(cb => {
+            tools[cb.name] = cb.checked;
+        });
+        return tools;
+    },
+
+    /**
      * Get default settings for a specific mode
      */
     getDefaultsForMode(mode) {
@@ -411,7 +486,9 @@ const DefaultSettingsManager = {
         if (mode === 'agent') {
             return {
                 model: this.settings.agent_model,
-                system_prompt: this.settings.agent_system_prompt
+                system_prompt: this.settings.agent_system_prompt,
+                agent_cwd: this.settings.agent_cwd,
+                agent_tools: this.settings.agent_tools
             };
         }
 
@@ -425,7 +502,9 @@ const DefaultSettingsManager = {
                 temperature: this.settings.normal_temperature,
                 top_p: this.settings.normal_top_p,
                 top_k: this.settings.normal_top_k,
-                prune_threshold: this.settings.normal_prune_threshold
+                prune_threshold: this.settings.normal_prune_threshold,
+                web_search_enabled: this.settings.normal_web_search_enabled,
+                web_search_max_uses: this.settings.normal_web_search_max_uses
             }
         };
     }

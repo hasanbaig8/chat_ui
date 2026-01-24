@@ -49,7 +49,8 @@ class AgentClient:
         system_prompt: Optional[str] = None,
         model: Optional[str] = None,
         session_id: Optional[str] = None,
-        memory_path: Optional[str] = None
+        memory_path: Optional[str] = None,
+        enabled_tools: Optional[Dict[str, bool]] = None
     ) -> AsyncIterator[Dict[str, Any]]:
         """
         Stream agent responses as SSE-compatible events.
@@ -61,6 +62,8 @@ class AgentClient:
             model: Optional model override
             session_id: Optional session ID to resume a previous conversation
             memory_path: Optional path to memory directory (for project-shared memories)
+            enabled_tools: Optional dict of tool names to enabled state. If None, all tools are enabled.
+                          Example: {"Read": True, "Write": False, "Bash": True}
 
         Yields:
             Events with types: 'session_id', 'text', 'tool_use', 'tool_result', 'done', 'error'
@@ -88,7 +91,8 @@ class AgentClient:
                     user_message = "\n".join(text_blocks)
 
             # Configure agent options with explicit tool list
-            allowed_tools = [
+            # Define base tools that can be toggled
+            base_tools = [
                 "Read",
                 "Write",
                 "Edit",
@@ -99,24 +103,38 @@ class AgentClient:
                 "WebFetch",
                 "Task",
             ]
-            if GIF_TOOL_AVAILABLE:
-                allowed_tools.append("mcp__gif-search__search_gif")
 
-            # Add memory tools if memory path is provided
-            if memory_path and MEMORY_TOOL_AVAILABLE:
-                allowed_tools.extend([
-                    "mcp__memory__memory_view",
-                    "mcp__memory__memory_create",
-                    "mcp__memory__memory_str_replace",
-                    "mcp__memory__memory_insert",
-                    "mcp__memory__memory_delete",
-                    "mcp__memory__memory_rename",
-                ])
+            # Build disallowed_tools list based on enabled_tools setting
+            # Using disallowed_tools is more reliable than allowed_tools
+            disallowed_tools = []
+            if enabled_tools is not None:
+                # Add disabled base tools to disallowed list
+                for tool in base_tools:
+                    if not enabled_tools.get(tool, True):
+                        disallowed_tools.append(tool)
+
+                # Handle GIF tool
+                if GIF_TOOL_AVAILABLE and not enabled_tools.get("GIF", True):
+                    disallowed_tools.append("mcp__gif-search__search_gif")
+
+                # Handle memory tools
+                if memory_path and MEMORY_TOOL_AVAILABLE and not enabled_tools.get("Memory", True):
+                    disallowed_tools.extend([
+                        "mcp__memory__memory_view",
+                        "mcp__memory__memory_create",
+                        "mcp__memory__memory_str_replace",
+                        "mcp__memory__memory_insert",
+                        "mcp__memory__memory_delete",
+                        "mcp__memory__memory_rename",
+                    ])
+
+                print(f"[AGENT_CLIENT] Tool settings: {enabled_tools}")
+                print(f"[AGENT_CLIENT] Disallowed tools: {disallowed_tools}")
 
             options = ClaudeCodeOptions(
                 cwd=workspace_path,
-                allowed_tools=allowed_tools,
-                permission_mode="acceptEdits",
+                disallowed_tools=disallowed_tools if disallowed_tools else [],
+                permission_mode="bypassPermissions",  # Auto-accept all permissions since user controls tools via UI
             )
 
             # Build MCP servers configuration

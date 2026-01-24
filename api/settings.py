@@ -25,10 +25,14 @@ class DefaultSettings(BaseModel):
     normal_top_p: Optional[float] = 1.0
     normal_top_k: Optional[int] = 0
     normal_prune_threshold: Optional[float] = 0.7
+    normal_web_search_enabled: Optional[bool] = False
+    normal_web_search_max_uses: Optional[int] = 5
 
     # Agent chat defaults
     agent_model: Optional[str] = "claude-opus-4-5-20251101"
     agent_system_prompt: Optional[str] = None
+    agent_tools: Optional[dict] = None  # e.g., {"Read": True, "Write": True, ...}
+    agent_cwd: Optional[str] = None  # Custom working directory for agent
 
 
 def load_default_settings() -> dict:
@@ -125,10 +129,14 @@ class ProjectSettings(BaseModel):
     normal_top_p: Optional[float] = None
     normal_top_k: Optional[int] = None
     normal_prune_threshold: Optional[float] = None
+    normal_web_search_enabled: Optional[bool] = None
+    normal_web_search_max_uses: Optional[int] = None
 
     # Agent chat defaults
     agent_model: Optional[str] = None
     agent_system_prompt: Optional[str] = None
+    agent_tools: Optional[dict] = None  # e.g., {"Read": True, "Write": True, ...}
+    agent_cwd: Optional[str] = None  # Custom working directory for agent
 
 
 @router.get("/project/{project_id}")

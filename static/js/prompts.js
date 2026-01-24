@@ -46,10 +46,18 @@ const PromptLibrary = {
      * Bind DOM events
      */
     bindEvents() {
-        // Add prompt button in settings
+        // Add prompt button in settings (sidebar)
         const addBtn = document.getElementById('add-prompt-btn');
         if (addBtn) {
             addBtn.addEventListener('click', () => {
+                this.showEditModal();
+            });
+        }
+
+        // Add prompt button in default settings modal
+        const defaultAddBtn = document.getElementById('default-add-prompt-btn');
+        if (defaultAddBtn) {
+            defaultAddBtn.addEventListener('click', () => {
                 this.showEditModal();
             });
         }
@@ -157,48 +165,55 @@ const PromptLibrary = {
      * Render prompt list in settings panel
      */
     renderPromptList() {
-        const container = document.getElementById('prompt-library-list');
-        container.innerHTML = '';
+        // Render in both sidebar settings and default settings modal
+        const containers = [
+            document.getElementById('prompt-library-list'),
+            document.getElementById('default-prompt-library-list')
+        ].filter(c => c !== null);
 
-        if (this.prompts.length === 0) {
-            container.innerHTML = '<p style="color: var(--color-text-secondary); font-size: 13px; padding: 8px 0;">No prompts saved yet.</p>';
-            return;
-        }
+        containers.forEach(container => {
+            container.innerHTML = '';
 
-        this.prompts.forEach(prompt => {
-            const item = document.createElement('div');
-            item.className = 'prompt-item';
-            item.innerHTML = `
-                <div class="prompt-item-header">
-                    <span class="prompt-name">${this.escapeHtml(prompt.name)}</span>
-                    <div class="prompt-actions">
-                        <button class="prompt-action-btn insert-btn" title="Insert">↩</button>
-                        <button class="prompt-action-btn edit-btn" title="Edit">✏️</button>
-                        <button class="prompt-action-btn delete-btn" title="Delete">&times;</button>
+            if (this.prompts.length === 0) {
+                container.innerHTML = '<p style="color: var(--color-text-secondary); font-size: 13px; padding: 8px 0;">No prompts saved yet.</p>';
+                return;
+            }
+
+            this.prompts.forEach(prompt => {
+                const item = document.createElement('div');
+                item.className = 'prompt-item';
+                item.innerHTML = `
+                    <div class="prompt-item-header">
+                        <span class="prompt-name">${this.escapeHtml(prompt.name)}</span>
+                        <div class="prompt-actions">
+                            <button class="prompt-action-btn insert-btn" title="Insert">↩</button>
+                            <button class="prompt-action-btn edit-btn" title="Edit">✏️</button>
+                            <button class="prompt-action-btn delete-btn" title="Delete">&times;</button>
+                        </div>
                     </div>
-                </div>
-                <div class="prompt-preview">${this.escapeHtml(this.truncate(prompt.content, 100))}</div>
-            `;
+                    <div class="prompt-preview">${this.escapeHtml(this.truncate(prompt.content, 100))}</div>
+                `;
 
-            // Insert button
-            item.querySelector('.insert-btn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.insertPrompt(prompt.id);
+                // Insert button
+                item.querySelector('.insert-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.insertPrompt(prompt.id);
+                });
+
+                // Edit button
+                item.querySelector('.edit-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.showEditModal(prompt.id);
+                });
+
+                // Delete button
+                item.querySelector('.delete-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.deletePrompt(prompt.id);
+                });
+
+                container.appendChild(item);
             });
-
-            // Edit button
-            item.querySelector('.edit-btn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.showEditModal(prompt.id);
-            });
-
-            // Delete button
-            item.querySelector('.delete-btn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.deletePrompt(prompt.id);
-            });
-
-            container.appendChild(item);
         });
     },
 

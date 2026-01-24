@@ -21,6 +21,9 @@ class ConversationSettings(BaseModel):
     top_p: Optional[float] = None
     top_k: Optional[int] = None
     prune_threshold: Optional[float] = None
+    # Agent-specific settings
+    agent_cwd: Optional[str] = None
+    agent_tools: Optional[dict] = None
 
 
 class CreateConversationRequest(BaseModel):
@@ -93,6 +96,7 @@ async def create_conversation(request: CreateConversationRequest):
     settings_dict = None
     if request.settings:
         settings_dict = {k: v for k, v in request.settings.model_dump().items() if v is not None}
+        print(f"[API] Creating conversation with settings: {settings_dict}")
 
     conversation = await store.create_conversation(
         title=request.title,

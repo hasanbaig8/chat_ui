@@ -50,38 +50,32 @@ const SettingsManager = {
         });
 
         // Extended thinking toggle
-        document.getElementById('thinking-toggle').addEventListener('change', (e) => {
+        const thinkingToggle = document.getElementById('thinking-toggle');
+        const thinkingBudgetSlider = document.getElementById('thinking-budget');
+        const maxTokensSlider = document.getElementById('max-tokens');
+
+        thinkingToggle.addEventListener('change', (e) => {
             this.onThinkingToggle(e.target.checked);
+            // Sync values when thinking is enabled
+            if (e.target.checked) {
+                const thinkingBudget = parseInt(thinkingBudgetSlider.value);
+                const maxTokens = parseInt(maxTokensSlider.value);
+                if (maxTokens < thinkingBudget) {
+                    maxTokensSlider.value = thinkingBudget;
+                    document.getElementById('max-tokens-value').textContent = thinkingBudget;
+                }
+            }
             this.scheduleSave();
         });
 
-        // Thinking budget slider - enforce max_tokens >= thinking_budget and total <= 64000
-        document.getElementById('thinking-budget').addEventListener('input', (e) => {
+        // Thinking budget slider - if increased above max_tokens, raise max_tokens
+        thinkingBudgetSlider.addEventListener('input', (e) => {
             const thinkingBudget = parseInt(e.target.value);
             document.getElementById('thinking-budget-value').textContent = thinkingBudget;
 
-            // Ensure max_tokens is at least as large as thinking_budget
-            const maxTokensInput = document.getElementById('max-tokens');
-            let currentMaxTokens = parseInt(maxTokensInput.value);
-
-            // When thinking is enabled, enforce thinking_budget + max_tokens <= 64000
-            if (document.getElementById('thinking-toggle').checked) {
-                const maxAllowed = 64000 - thinkingBudget;
-                if (currentMaxTokens > maxAllowed) {
-                    currentMaxTokens = maxAllowed;
-                    maxTokensInput.value = currentMaxTokens;
-                    document.getElementById('max-tokens-value').textContent = currentMaxTokens;
-                }
-                maxTokensInput.max = maxAllowed;
-            }
-
-            if (currentMaxTokens < thinkingBudget) {
-                maxTokensInput.value = thinkingBudget;
+            if (thinkingToggle.checked && parseInt(maxTokensSlider.value) < thinkingBudget) {
+                maxTokensSlider.value = thinkingBudget;
                 document.getElementById('max-tokens-value').textContent = thinkingBudget;
-            }
-            // Update min value for max_tokens when thinking is enabled
-            if (document.getElementById('thinking-toggle').checked) {
-                maxTokensInput.min = thinkingBudget;
             }
             this.scheduleSave();
         });
@@ -92,26 +86,15 @@ const SettingsManager = {
             this.scheduleSave();
         });
 
-        // Max tokens slider - respect thinking budget minimum and total <= 64000
-        document.getElementById('max-tokens').addEventListener('input', (e) => {
-            let value = parseInt(e.target.value);
-            const thinkingEnabled = document.getElementById('thinking-toggle').checked;
-
-            // If thinking is enabled, enforce minimum and maximum
-            if (thinkingEnabled) {
-                const thinkingBudget = parseInt(document.getElementById('thinking-budget').value);
-                if (value < thinkingBudget) {
-                    value = thinkingBudget;
-                    e.target.value = value;
-                }
-                // Enforce thinking_budget + max_tokens <= 64000
-                const maxAllowed = 64000 - thinkingBudget;
-                if (value > maxAllowed) {
-                    value = maxAllowed;
-                    e.target.value = value;
-                }
-            }
+        // Max tokens slider - if decreased below thinking_budget, lower thinking_budget
+        maxTokensSlider.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
             document.getElementById('max-tokens-value').textContent = value;
+
+            if (thinkingToggle.checked && parseInt(thinkingBudgetSlider.value) > value) {
+                thinkingBudgetSlider.value = value;
+                document.getElementById('thinking-budget-value').textContent = value;
+            }
             this.scheduleSave();
         });
 
@@ -139,6 +122,42 @@ const SettingsManager = {
             });
         }
 
+        // Web search toggle
+        const webSearchToggle = document.getElementById('web-search-toggle');
+        if (webSearchToggle) {
+            webSearchToggle.addEventListener('change', (e) => {
+                this.onWebSearchToggle(e.target.checked);
+                this.scheduleSave();
+            });
+        }
+
+        // Web search max uses slider
+        const webSearchMaxUses = document.getElementById('web-search-max-uses');
+        if (webSearchMaxUses) {
+            webSearchMaxUses.addEventListener('input', (e) => {
+                document.getElementById('web-search-max-uses-value').textContent = e.target.value;
+                this.scheduleSave();
+            });
+        }
+
+        // Agent tools toggles (in conversation settings)
+        const agentToolsContainer = document.getElementById('agent-tools');
+        if (agentToolsContainer) {
+            agentToolsContainer.addEventListener('change', (e) => {
+                if (e.target.type === 'checkbox') {
+                    this.scheduleSave();
+                }
+            });
+        }
+
+        // Agent CWD input (in conversation settings)
+        const agentCwdInput = document.getElementById('agent-cwd');
+        if (agentCwdInput) {
+            agentCwdInput.addEventListener('input', () => {
+                this.scheduleSave();
+            });
+        }
+
         // System prompt
         document.getElementById('system-prompt').addEventListener('input', () => {
             this.scheduleSave();
@@ -148,6 +167,106 @@ const SettingsManager = {
         document.getElementById('theme-toggle').addEventListener('click', () => {
             this.toggleTheme();
         });
+
+        // Compact context button (for agent chats)
+        const compactBtn = document.getElementById('compact-context-btn');
+        if (compactBtn) {
+            compactBtn.addEventListener('click', () => {
+                this.compactAgentContext();
+            });
+        }
+    },
+
+    /**
+     * Compact agent conversation context
+     */
+    async compactAgentContext() {
+        const conversationId = typeof ConversationsManager !== 'undefined'
+            ? ConversationsManager.currentConversationId
+            : null;
+
+        if (!conversationId) {
+            alert('No conversation selected');
+            return;
+        }
+
+        const compactBtn = document.getElementById('compact-context-btn');
+        const originalText = compactBtn.textContent;
+        compactBtn.textContent = 'Compacting...';
+        compactBtn.disabled = true;
+
+        try {
+            const response = await fetch('/api/agent-chat/compact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    conversation_id: conversationId
+                })
+            });
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const text = decoder.decode(value);
+                const lines = text.split('\n');
+
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        try {
+                            const event = JSON.parse(line.slice(6));
+                            if (event.type === 'error') {
+                                alert('Compact failed: ' + event.content);
+                            } else if (event.type === 'compact_complete') {
+                                compactBtn.textContent = 'Compacted!';
+                                setTimeout(() => {
+                                    compactBtn.textContent = originalText;
+                                }, 2000);
+                                // Insert compaction separator in chat
+                                this.insertCompactionSeparator();
+                            }
+                        } catch (e) {
+                            // Ignore parse errors
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Compact failed:', error);
+            alert('Failed to compact context: ' + error.message);
+        } finally {
+            compactBtn.disabled = false;
+            if (compactBtn.textContent === 'Compacting...') {
+                compactBtn.textContent = originalText;
+            }
+        }
+    },
+
+    /**
+     * Insert a visual compaction separator in the chat
+     */
+    insertCompactionSeparator() {
+        const messagesContainer = document.getElementById('messages-container');
+        if (!messagesContainer) {
+            console.error('Messages container not found');
+            return;
+        }
+
+        const separator = document.createElement('div');
+        separator.className = 'compaction-separator';
+        separator.innerHTML = `
+            <div class="compaction-line"></div>
+            <span class="compaction-label">CONTEXT COMPACTED</span>
+            <div class="compaction-line"></div>
+        `;
+        messagesContainer.appendChild(separator);
+
+        // Scroll to show the separator
+        separator.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        console.log('Compaction separator inserted');
     },
 
     /**
@@ -220,19 +339,13 @@ const SettingsManager = {
 
         if (enabled) {
             budgetContainer.classList.add('visible');
-            // Hide temperature controls when thinking is enabled (not allowed)
+            // Hide temperature controls when thinking is enabled (not allowed by API)
             temperatureGroup.classList.add('hidden');
             topPGroup.classList.add('hidden');
             topKGroup.classList.add('hidden');
-
-            // Enforce max_tokens >= thinking_budget
-            const thinkingBudget = parseInt(document.getElementById('thinking-budget').value);
-            const currentMaxTokens = parseInt(maxTokensInput.value);
-            maxTokensInput.min = thinkingBudget;
-            if (currentMaxTokens < thinkingBudget) {
-                maxTokensInput.value = thinkingBudget;
-                document.getElementById('max-tokens-value').textContent = thinkingBudget;
-            }
+            // Reset max tokens slider to full range
+            maxTokensInput.min = 1;
+            maxTokensInput.max = 64000;
         } else {
             budgetContainer.classList.remove('visible');
             temperatureGroup.classList.remove('hidden');
@@ -241,6 +354,16 @@ const SettingsManager = {
 
             // Reset max_tokens minimum
             maxTokensInput.min = 1;
+        }
+    },
+
+    /**
+     * Handle web search toggle
+     */
+    onWebSearchToggle(enabled) {
+        const configContainer = document.getElementById('web-search-config');
+        if (configContainer) {
+            configContainer.style.display = enabled ? 'block' : 'none';
         }
     },
 
@@ -363,17 +486,6 @@ const SettingsManager = {
         // Apply thinking toggle UI state
         this.onThinkingToggle(thinkingEnabled);
 
-        // Ensure max_tokens >= thinking_budget when thinking is enabled
-        if (thinkingEnabled) {
-            const maxTokensInput = document.getElementById('max-tokens');
-            const currentMaxTokens = parseInt(maxTokensInput.value);
-            if (currentMaxTokens < thinkingBudget) {
-                maxTokensInput.value = Math.min(thinkingBudget, 64000);
-                document.getElementById('max-tokens-value').textContent = Math.min(thinkingBudget, 64000);
-            }
-            maxTokensInput.min = thinkingBudget;
-        }
-
         // System prompt
         const savedSystemPrompt = localStorage.getItem('claude-chat-system-prompt');
         if (savedSystemPrompt) {
@@ -386,6 +498,21 @@ const SettingsManager = {
             document.getElementById('prune-threshold').value = savedPruneThreshold;
             document.getElementById('prune-threshold-value').textContent = savedPruneThreshold;
         }
+
+        // Web search
+        const savedWebSearchEnabled = localStorage.getItem('claude-chat-web-search-enabled');
+        const webSearchEnabled = savedWebSearchEnabled === 'true';
+        const webSearchToggle = document.getElementById('web-search-toggle');
+        if (webSearchToggle) {
+            webSearchToggle.checked = webSearchEnabled;
+            this.onWebSearchToggle(webSearchEnabled);
+        }
+
+        const savedWebSearchMaxUses = localStorage.getItem('claude-chat-web-search-max-uses');
+        if (savedWebSearchMaxUses) {
+            document.getElementById('web-search-max-uses').value = savedWebSearchMaxUses;
+            document.getElementById('web-search-max-uses-value').textContent = savedWebSearchMaxUses;
+        }
     },
 
     /**
@@ -394,6 +521,8 @@ const SettingsManager = {
     getSettings() {
         const model = document.getElementById('model-select').value;
         const thinkingEnabled = document.getElementById('thinking-toggle').checked;
+        const webSearchEnabled = document.getElementById('web-search-toggle')?.checked || false;
+        const webSearchMaxUses = parseInt(document.getElementById('web-search-max-uses')?.value || '5');
 
         const settings = {
             model,
@@ -404,7 +533,9 @@ const SettingsManager = {
             system_prompt: document.getElementById('system-prompt').value || null,
             thinking_enabled: thinkingEnabled,
             thinking_budget: parseInt(document.getElementById('thinking-budget').value),
-            prune_threshold: parseInt(document.getElementById('prune-threshold').value) / 100
+            prune_threshold: parseInt(document.getElementById('prune-threshold').value) / 100,
+            web_search_enabled: webSearchEnabled,
+            web_search_max_uses: webSearchMaxUses
         };
 
         // Save to localStorage
@@ -416,6 +547,8 @@ const SettingsManager = {
         localStorage.setItem('claude-chat-thinking-enabled', settings.thinking_enabled);
         localStorage.setItem('claude-chat-thinking-budget', settings.thinking_budget);
         localStorage.setItem('claude-chat-prune-threshold', settings.prune_threshold * 100);
+        localStorage.setItem('claude-chat-web-search-enabled', settings.web_search_enabled);
+        localStorage.setItem('claude-chat-web-search-max-uses', settings.web_search_max_uses);
         if (settings.system_prompt) {
             localStorage.setItem('claude-chat-system-prompt', settings.system_prompt);
         }
@@ -495,6 +628,43 @@ const SettingsManager = {
         document.getElementById('prune-threshold').value = pruneThreshold;
         document.getElementById('prune-threshold-value').textContent = pruneThreshold;
 
+        // Web search
+        const webSearchEnabled = settings.web_search_enabled || false;
+        const webSearchToggle = document.getElementById('web-search-toggle');
+        if (webSearchToggle) {
+            webSearchToggle.checked = webSearchEnabled;
+            this.onWebSearchToggle(webSearchEnabled);
+        }
+
+        const webSearchMaxUses = settings.web_search_max_uses || 5;
+        const webSearchMaxUsesInput = document.getElementById('web-search-max-uses');
+        if (webSearchMaxUsesInput) {
+            webSearchMaxUsesInput.value = webSearchMaxUses;
+            document.getElementById('web-search-max-uses-value').textContent = webSearchMaxUses;
+        }
+
+        // Agent CWD (read-only display)
+        const agentCwdDisplay = document.getElementById('agent-cwd-display');
+        if (agentCwdDisplay) {
+            const cwdPath = agentCwdDisplay.querySelector('.cwd-path');
+            if (cwdPath) {
+                cwdPath.textContent = settings.agent_cwd || 'Default workspace';
+            }
+        }
+
+        // Agent tools (read-only badges)
+        const agentToolsDisplay = document.getElementById('agent-tools-display');
+        if (agentToolsDisplay) {
+            const agentTools = settings.agent_tools || {};
+            const toolNames = ['Read', 'Write', 'Edit', 'Bash', 'Glob', 'Grep', 'WebSearch', 'WebFetch', 'Task', 'GIF', 'Memory'];
+            agentToolsDisplay.innerHTML = toolNames
+                .map(name => {
+                    const enabled = agentTools[name] !== false;
+                    return `<span class="tool-badge ${enabled ? 'enabled' : 'disabled'}">${name}</span>`;
+                })
+                .join('');
+        }
+
         // Apply thinking toggle UI state
         this.onThinkingToggle(thinkingEnabled);
     },
@@ -503,15 +673,23 @@ const SettingsManager = {
      * Get current settings as object for saving to conversation
      */
     getConversationSettings() {
-        return {
+        const settings = {
             thinking_enabled: document.getElementById('thinking-toggle').checked,
             thinking_budget: parseInt(document.getElementById('thinking-budget').value),
             max_tokens: parseInt(document.getElementById('max-tokens').value),
             temperature: parseFloat(document.getElementById('temperature').value),
             top_p: parseFloat(document.getElementById('top-p').value),
             top_k: parseInt(document.getElementById('top-k').value),
-            prune_threshold: parseInt(document.getElementById('prune-threshold').value) / 100
+            prune_threshold: parseInt(document.getElementById('prune-threshold').value) / 100,
+            web_search_enabled: document.getElementById('web-search-toggle')?.checked || false,
+            web_search_max_uses: parseInt(document.getElementById('web-search-max-uses')?.value || '5')
         };
+
+        // Note: Agent CWD and tools are read-only in conversation settings
+        // They are set via project settings or default settings when the conversation is created
+        // So we don't include them here - they shouldn't be changed from the conversation panel
+
+        return settings;
     },
 
     /**
