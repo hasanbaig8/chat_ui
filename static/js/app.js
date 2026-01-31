@@ -324,21 +324,46 @@ window.addEventListener('beforeunload', (e) => {
     }
 });
 
-// Sidebar resize functionality
+// Sidebar resize functionality with snap-to-close
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
     const resizeHandle = document.getElementById('sidebar-resize-handle');
 
     if (!sidebar || !resizeHandle) return;
 
+    const MIN_WIDTH = 180;
+    const MAX_WIDTH = 500;
+    const SNAP_THRESHOLD = 80; // Below this, snap to closed
+
     let isResizing = false;
     let startX = 0;
     let startWidth = 0;
+    let wasCollapsed = false;
+
+    const collapseSidebar = () => {
+        sidebar.classList.add('collapsed');
+        sidebar.style.width = '0px';
+        localStorage.setItem('sidebarCollapsed', 'true');
+        localStorage.removeItem('sidebarWidth');
+    };
+
+    const expandSidebar = (width = MIN_WIDTH) => {
+        sidebar.classList.remove('collapsed');
+        sidebar.style.width = width + 'px';
+        localStorage.setItem('sidebarCollapsed', 'false');
+        localStorage.setItem('sidebarWidth', width);
+    };
 
     resizeHandle.addEventListener('mousedown', (e) => {
         isResizing = true;
         startX = e.clientX;
-        startWidth = sidebar.offsetWidth;
+        wasCollapsed = sidebar.classList.contains('collapsed');
+        // If collapsed, treat starting width as 0 for calculations
+        startWidth = wasCollapsed ? 0 : sidebar.offsetWidth;
+        // Temporarily expand if collapsed so we can see the drag
+        if (wasCollapsed) {
+            sidebar.classList.remove('collapsed');
+        }
         resizeHandle.classList.add('dragging');
         document.body.classList.add('sidebar-resizing');
         e.preventDefault();
@@ -347,9 +372,19 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mousemove', (e) => {
         if (!isResizing) return;
 
-        const delta = e.clientX - startX;
-        const newWidth = Math.max(180, Math.min(500, startWidth + delta));
-        sidebar.style.width = newWidth + 'px';
+        // Calculate new width based on mouse position (use absolute X position)
+        let newWidth = e.clientX;
+
+        // Visual feedback during drag
+        if (newWidth < SNAP_THRESHOLD) {
+            // Show collapsed state preview
+            sidebar.classList.add('collapsed');
+            sidebar.style.width = '0px';
+        } else {
+            // Show normal state - clamp between min and max
+            sidebar.classList.remove('collapsed');
+            sidebar.style.width = Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, newWidth)) + 'px';
+        }
     });
 
     document.addEventListener('mouseup', () => {
@@ -358,17 +393,54 @@ document.addEventListener('DOMContentLoaded', () => {
             resizeHandle.classList.remove('dragging');
             document.body.classList.remove('sidebar-resizing');
 
-            // Save to localStorage for persistence
-            localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
+            // Determine final state based on current width
+            const currentWidth = sidebar.offsetWidth;
+
+            if (sidebar.classList.contains('collapsed') || currentWidth < SNAP_THRESHOLD) {
+                // Snap to closed
+                collapseSidebar();
+            } else {
+                // Save normal width
+                const finalWidth = Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, currentWidth));
+                expandSidebar(finalWidth);
+            }
         }
     });
 
-    // Restore saved width
-    const savedWidth = localStorage.getItem('sidebarWidth');
-    if (savedWidth) {
-        const width = parseInt(savedWidth, 10);
-        if (width >= 180 && width <= 500) {
-            sidebar.style.width = width + 'px';
+    // Double-click on handle to toggle
+    resizeHandle.addEventListener('dblclick', () => {
+        if (sidebar.classList.contains('collapsed')) {
+            const savedWidth = localStorage.getItem('sidebarWidth');
+            expandSidebar(savedWidth ? parseInt(savedWidth, 10) : MIN_WIDTH);
+        } else {
+            collapseSidebar();
+        }
+    });
+
+    // Keyboard shortcut: Cmd+B (Mac) / Ctrl+B (Windows/Linux) to toggle sidebar
+    document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
+            e.preventDefault();
+            if (sidebar.classList.contains('collapsed')) {
+                const savedWidth = localStorage.getItem('sidebarWidth');
+                expandSidebar(savedWidth ? parseInt(savedWidth, 10) : MIN_WIDTH);
+            } else {
+                collapseSidebar();
+            }
+        }
+    });
+
+    // Restore saved state
+    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    if (isCollapsed) {
+        collapseSidebar();
+    } else {
+        const savedWidth = localStorage.getItem('sidebarWidth');
+        if (savedWidth) {
+            const width = parseInt(savedWidth, 10);
+            if (width >= MIN_WIDTH && width <= MAX_WIDTH) {
+                sidebar.style.width = width + 'px';
+            }
         }
     }
 });

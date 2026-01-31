@@ -33,6 +33,7 @@ class DefaultSettings(BaseModel):
     agent_system_prompt: Optional[str] = None
     agent_tools: Optional[dict] = None  # e.g., {"Read": True, "Write": True, ...}
     agent_cwd: Optional[str] = None  # Custom working directory for agent
+    agent_thinking_budget: Optional[int] = 32000  # Thinking budget for agent extended thinking
 
 
 def load_default_settings() -> dict:

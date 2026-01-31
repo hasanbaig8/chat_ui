@@ -168,105 +168,6 @@ const SettingsManager = {
             this.toggleTheme();
         });
 
-        // Compact context button (for agent chats)
-        const compactBtn = document.getElementById('compact-context-btn');
-        if (compactBtn) {
-            compactBtn.addEventListener('click', () => {
-                this.compactAgentContext();
-            });
-        }
-    },
-
-    /**
-     * Compact agent conversation context
-     */
-    async compactAgentContext() {
-        const conversationId = typeof ConversationsManager !== 'undefined'
-            ? ConversationsManager.currentConversationId
-            : null;
-
-        if (!conversationId) {
-            alert('No conversation selected');
-            return;
-        }
-
-        const compactBtn = document.getElementById('compact-context-btn');
-        const originalText = compactBtn.textContent;
-        compactBtn.textContent = 'Compacting...';
-        compactBtn.disabled = true;
-
-        try {
-            const response = await fetch('/api/agent-chat/compact', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    conversation_id: conversationId
-                })
-            });
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                const text = decoder.decode(value);
-                const lines = text.split('\n');
-
-                for (const line of lines) {
-                    if (line.startsWith('data: ')) {
-                        try {
-                            const event = JSON.parse(line.slice(6));
-                            if (event.type === 'error') {
-                                alert('Compact failed: ' + event.content);
-                            } else if (event.type === 'compact_complete') {
-                                compactBtn.textContent = 'Compacted!';
-                                setTimeout(() => {
-                                    compactBtn.textContent = originalText;
-                                }, 2000);
-                                // Insert compaction separator in chat
-                                this.insertCompactionSeparator();
-                            }
-                        } catch (e) {
-                            // Ignore parse errors
-                        }
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Compact failed:', error);
-            alert('Failed to compact context: ' + error.message);
-        } finally {
-            compactBtn.disabled = false;
-            if (compactBtn.textContent === 'Compacting...') {
-                compactBtn.textContent = originalText;
-            }
-        }
-    },
-
-    /**
-     * Insert a visual compaction separator in the chat
-     */
-    insertCompactionSeparator() {
-        const messagesContainer = document.getElementById('messages-container');
-        if (!messagesContainer) {
-            console.error('Messages container not found');
-            return;
-        }
-
-        const separator = document.createElement('div');
-        separator.className = 'compaction-separator';
-        separator.innerHTML = `
-            <div class="compaction-line"></div>
-            <span class="compaction-label">CONTEXT COMPACTED</span>
-            <div class="compaction-line"></div>
-        `;
-        messagesContainer.appendChild(separator);
-
-        // Scroll to show the separator
-        separator.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        console.log('Compaction separator inserted');
     },
 
     /**
@@ -656,7 +557,7 @@ const SettingsManager = {
         const agentToolsDisplay = document.getElementById('agent-tools-display');
         if (agentToolsDisplay) {
             const agentTools = settings.agent_tools || {};
-            const toolNames = ['Read', 'Write', 'Edit', 'Bash', 'Glob', 'Grep', 'WebSearch', 'WebFetch', 'Task', 'GIF', 'Memory'];
+            const toolNames = ['Read', 'Write', 'Edit', 'Bash', 'Glob', 'Grep', 'WebSearch', 'WebFetch', 'Task', 'GIF', 'Memory', 'Surface'];
             agentToolsDisplay.innerHTML = toolNames
                 .map(name => {
                     const enabled = agentTools[name] !== false;

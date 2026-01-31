@@ -1,23 +1,24 @@
 """Claude Agent SDK client wrapper with streaming support.
 
-This module provides integration with the Claude Code SDK for agent-based
+This module provides integration with the Claude Agent SDK for agent-based
 chat functionality with tool use (Read/Write file operations).
 
-Note: The claude-code-sdk package must be installed for agent chat to work.
+Note: The claude-agent-sdk package must be installed for agent chat to work.
 If not installed, agent conversations will show an error message.
 """
 
+import json
 import os
 from typing import AsyncIterator, Optional, List, Dict, Any
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Try to import the Claude Code SDK
+# Try to import the Claude Agent SDK
 SDK_AVAILABLE = False
 SDK_IMPORT_ERROR = None
 try:
-    from claude_code_sdk import query, ClaudeCodeOptions
+    from claude_agent_sdk import query, ClaudeAgentOptions
     SDK_AVAILABLE = True
 except ImportError as e:
     SDK_IMPORT_ERROR = str(e)
@@ -31,6 +32,9 @@ GIF_TOOL_AVAILABLE = GIF_MCP_SERVER_PATH.exists()
 
 MEMORY_MCP_SERVER_PATH = pathlib.Path(__file__).parent.parent / "tools" / "memory_mcp_server.py"
 MEMORY_TOOL_AVAILABLE = MEMORY_MCP_SERVER_PATH.exists()
+
+SURFACE_MCP_SERVER_PATH = pathlib.Path(__file__).parent.parent / "tools" / "surface_mcp_server.py"
+SURFACE_TOOL_AVAILABLE = SURFACE_MCP_SERVER_PATH.exists()
 
 
 class AgentClient:
@@ -50,7 +54,9 @@ class AgentClient:
         model: Optional[str] = None,
         session_id: Optional[str] = None,
         memory_path: Optional[str] = None,
-        enabled_tools: Optional[Dict[str, bool]] = None
+        enabled_tools: Optional[Dict[str, bool]] = None,
+        thinking_budget: Optional[int] = None,
+        conversation_id: Optional[str] = None
     ) -> AsyncIterator[Dict[str, Any]]:
         """
         Stream agent responses as SSE-compatible events.
@@ -62,8 +68,10 @@ class AgentClient:
             model: Optional model override
             session_id: Optional session ID to resume a previous conversation
             memory_path: Optional path to memory directory (for project-shared memories)
+            conversation_id: Optional conversation ID for workspace-aware tools
             enabled_tools: Optional dict of tool names to enabled state. If None, all tools are enabled.
                           Example: {"Read": True, "Write": False, "Bash": True}
+            thinking_budget: Optional thinking budget in tokens for extended thinking
 
         Yields:
             Events with types: 'session_id', 'text', 'tool_use', 'tool_result', 'done', 'error'
@@ -71,7 +79,7 @@ class AgentClient:
         if not SDK_AVAILABLE:
             yield {
                 "type": "error",
-                "content": f"Claude Code SDK not installed: {SDK_IMPORT_ERROR}"
+                "content": f"Claude Agent SDK not installed: {SDK_IMPORT_ERROR}"
             }
             return
 
@@ -131,10 +139,16 @@ class AgentClient:
                 print(f"[AGENT_CLIENT] Tool settings: {enabled_tools}")
                 print(f"[AGENT_CLIENT] Disallowed tools: {disallowed_tools}")
 
-            options = ClaudeCodeOptions(
+            # Capture stderr for debugging
+            def stderr_callback(line: str):
+                print(f"[AGENT_CLIENT STDERR] {line}")
+
+            options = ClaudeAgentOptions(
                 cwd=workspace_path,
                 disallowed_tools=disallowed_tools if disallowed_tools else [],
                 permission_mode="bypassPermissions",  # Auto-accept all permissions since user controls tools via UI
+                max_thinking_tokens=thinking_budget if thinking_budget and thinking_budget > 0 else None,
+                stderr=stderr_callback,
             )
 
             # Build MCP servers configuration
@@ -154,6 +168,19 @@ class AgentClient:
                     "args": [str(MEMORY_MCP_SERVER_PATH), "--memory-path", memory_path]
                 }
 
+            # Add surface MCP server if available (needs workspace and conversation_id)
+            if SURFACE_TOOL_AVAILABLE and conversation_id:
+                # Check if Surface tool is enabled
+                if enabled_tools is None or enabled_tools.get("Surface", True):
+                    mcp_servers["surface"] = {
+                        "command": "python3",
+                        "args": [
+                            str(SURFACE_MCP_SERVER_PATH),
+                            "--workspace-path", workspace_path,
+                            "--conversation-id", conversation_id
+                        ]
+                    }
+
             if mcp_servers:
                 options.mcp_servers = mcp_servers
 
@@ -168,10 +195,28 @@ class AgentClient:
                 options.resume = session_id
 
             # Stream responses from agent using the query function
-            async for message in query(prompt=user_message, options=options):
-                # Handle different message types from the SDK
-                for event in self._process_message(message):
-                    yield event
+            # If resumption fails, retry without session_id (start fresh)
+            try:
+                async for message in query(prompt=user_message, options=options):
+                    # Handle different message types from the SDK
+                    for event in self._process_message(message):
+                        yield event
+            except Exception as resume_error:
+                error_msg = str(resume_error).lower()
+                # Check if this is a session resumption failure
+                if session_id and ("exit code 1" in error_msg or "command failed" in error_msg):
+                    print(f"[AGENT_CLIENT] Session resumption failed, starting fresh session. Error: {resume_error}")
+                    # Retry without session resumption
+                    options.resume = None
+                    yield {
+                        "type": "info",
+                        "content": "Previous session expired. Starting fresh conversation."
+                    }
+                    async for message in query(prompt=user_message, options=options):
+                        for event in self._process_message(message):
+                            yield event
+                else:
+                    raise resume_error
 
             yield {"type": "done"}
 
@@ -195,6 +240,13 @@ class AgentClient:
                             events.append({
                                 "type": "text",
                                 "content": text
+                            })
+                    elif block_type == 'ThinkingBlock':
+                        thinking = getattr(block, 'thinking', '')
+                        if thinking:
+                            events.append({
+                                "type": "thinking",
+                                "content": thinking
                             })
                     elif block_type == 'ToolUseBlock':
                         events.append({
@@ -229,10 +281,17 @@ class AgentClient:
                                 elif isinstance(c, dict) and 'text' in c:
                                     text_parts.append(c['text'])
                             content = '\n'.join(text_parts)
+
+                        # Check if this is a surface_content result
+                        content_str = str(content) if content else ''
+                        surface_event = self._parse_surface_content(content_str)
+                        if surface_event:
+                            events.append(surface_event)
+
                         events.append({
                             "type": "tool_result",
                             "tool_use_id": tool_use_id,
-                            "content": str(content) if content else '',
+                            "content": content_str,
                             "is_error": bool(is_error)  # Convert None to False
                         })
 
@@ -275,6 +334,26 @@ class AgentClient:
 
         return events
 
+    def _parse_surface_content(self, content: str) -> Optional[Dict[str, Any]]:
+        """Check if content is surface_content JSON and parse it."""
+        try:
+            # Try to parse as JSON
+            data = json.loads(content)
+            # Check if it's a surface_content result
+            if isinstance(data, dict) and data.get("type") == "surface_content":
+                print(f"[Surface] Detected surface_content: id={data.get('content_id')}, title={data.get('title')}")
+                return {
+                    "type": "surface_content",
+                    "content_id": data.get("content_id", ""),
+                    "content": data.get("content", ""),
+                    "content_type": data.get("content_type", "markdown"),
+                    "title": data.get("title"),
+                    "saved_to": data.get("saved_to")
+                }
+        except (json.JSONDecodeError, TypeError):
+            pass
+        return None
+
 
 # Singleton instance
 _agent_client: Optional[AgentClient] = None
@@ -289,7 +368,7 @@ def get_agent_client() -> AgentClient:
 
 
 def is_sdk_available() -> bool:
-    """Check if the Claude Code SDK is available."""
+    """Check if the Claude Agent SDK is available."""
     return SDK_AVAILABLE
 
 

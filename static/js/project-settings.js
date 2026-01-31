@@ -96,6 +96,11 @@ const ProjectSettingsManager = {
                             <span class="setting-description">Custom directory where the agent will operate. Leave empty to use the default workspace.</span>
                         </div>
                         <div class="setting-group">
+                            <label>Thinking Budget: <span id="project-agent-thinking-budget-value">32000</span></label>
+                            <input type="range" id="project-agent-thinking-budget" min="1024" max="32000" step="1024" value="32000">
+                            <span class="setting-description">Token budget for agent's internal reasoning (extended thinking).</span>
+                        </div>
+                        <div class="setting-group">
                             <label>Available Tools</label>
                             <div class="tool-toggles" id="project-agent-tools">
                                 <label class="tool-toggle"><input type="checkbox" name="Read" checked> Read</label>
@@ -188,6 +193,14 @@ const ProjectSettingsManager = {
                 }
             }
         });
+
+        // Agent thinking budget slider
+        const agentThinkingBudget = modal.querySelector('#project-agent-thinking-budget');
+        if (agentThinkingBudget) {
+            agentThinkingBudget.addEventListener('input', (e) => {
+                modal.querySelector('#project-agent-thinking-budget-value').textContent = e.target.value;
+            });
+        }
     },
 
     /**
@@ -283,6 +296,16 @@ const ProjectSettingsManager = {
         modal.querySelector('#project-agent-system-prompt').value = s.agent_system_prompt || '';
         modal.querySelector('#project-agent-cwd').value = s.agent_cwd || '';
 
+        // Agent thinking budget
+        const agentThinkingBudget = modal.querySelector('#project-agent-thinking-budget');
+        if (agentThinkingBudget) {
+            agentThinkingBudget.value = s.agent_thinking_budget || 32000;
+            const valueDisplay = modal.querySelector('#project-agent-thinking-budget-value');
+            if (valueDisplay) {
+                valueDisplay.textContent = agentThinkingBudget.value;
+            }
+        }
+
         // Load tool toggles
         const toolToggles = modal.querySelectorAll('#project-agent-tools input[type="checkbox"]');
         const agentTools = s.agent_tools || {};
@@ -315,6 +338,7 @@ const ProjectSettingsManager = {
             agent_model: modal.querySelector('#project-agent-model').value,
             agent_system_prompt: modal.querySelector('#project-agent-system-prompt').value || null,
             agent_cwd: modal.querySelector('#project-agent-cwd').value || null,
+            agent_thinking_budget: parseInt(modal.querySelector('#project-agent-thinking-budget')?.value) || 8000,
             agent_tools: this.getToolToggles()
         };
 

@@ -106,6 +106,9 @@
                                 <button id="send-btn" class="send-btn" disabled>
                                     Send
                                 </button>
+                                <button id="stop-btn" class="stop-btn" style="display: none;" title="Stop generating">
+                                    Stop
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -252,13 +255,6 @@
                             <span class="setting-description">Tools are configured in Project Settings or Default Settings</span>
                         </div>
 
-                        <div class="setting-group">
-                            <label>Context Management</label>
-                            <button class="btn btn-secondary" id="compact-context-btn" title="Summarize conversation to free up context">
-                                Compact Context
-                            </button>
-                            <span class="setting-description">Summarize conversation history to free up context window</span>
-                        </div>
                     </div>
                 </div>
             </aside>
@@ -474,6 +470,12 @@
                             </button>
                         </div>
                         <span class="setting-description">Custom directory where the agent will operate. Leave empty to use the default workspace.</span>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="default-agent-thinking-budget">Thinking Budget: <span id="default-agent-thinking-budget-value">32000</span></label>
+                        <input type="range" id="default-agent-thinking-budget" min="1024" max="32000" step="1024" value="32000">
+                        <span class="setting-description">Token budget for agent's internal reasoning (extended thinking). Higher values allow deeper analysis.</span>
                     </div>
 
                     <div class="setting-group">

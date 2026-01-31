@@ -65,7 +65,8 @@ const DefaultSettingsManager = {
             agent_model: 'claude-opus-4-5-20251101',
             agent_system_prompt: '',
             agent_tools: null,
-            agent_cwd: null
+            agent_cwd: null,
+            agent_thinking_budget: 32000
         };
     },
 
@@ -198,6 +199,16 @@ const DefaultSettingsManager = {
             agentCwd.value = this.settings.agent_cwd || '';
         }
 
+        // Agent thinking budget
+        const agentThinkingBudget = document.getElementById('default-agent-thinking-budget');
+        const agentThinkingBudgetValue = document.getElementById('default-agent-thinking-budget-value');
+        if (agentThinkingBudget) {
+            agentThinkingBudget.value = this.settings.agent_thinking_budget || 8000;
+            if (agentThinkingBudgetValue) {
+                agentThinkingBudgetValue.textContent = agentThinkingBudget.value;
+            }
+        }
+
         // Agent tools
         const toolToggles = document.querySelectorAll('#default-agent-tools input[type="checkbox"]');
         const agentTools = this.settings.agent_tools || {};
@@ -316,7 +327,8 @@ const DefaultSettingsManager = {
             { id: 'default-normal-top-p', valueId: 'default-normal-top-p-value' },
             { id: 'default-normal-top-k', valueId: 'default-normal-top-k-value' },
             { id: 'default-normal-prune-threshold', valueId: 'default-normal-prune-threshold-value' },
-            { id: 'default-normal-web-search-max-uses', valueId: 'default-normal-web-search-max-uses-value' }
+            { id: 'default-normal-web-search-max-uses', valueId: 'default-normal-web-search-max-uses-value' },
+            { id: 'default-agent-thinking-budget', valueId: 'default-agent-thinking-budget-value' }
         ];
 
         sliders.forEach(({ id, valueId }) => {
@@ -432,6 +444,7 @@ const DefaultSettingsManager = {
             agent_model: document.getElementById('default-agent-model')?.value || null,
             agent_system_prompt: document.getElementById('default-agent-system-prompt')?.value || '',
             agent_cwd: document.getElementById('default-agent-cwd')?.value || null,
+            agent_thinking_budget: parseInt(document.getElementById('default-agent-thinking-budget')?.value) || 8000,
             agent_tools: this.getDefaultToolToggles()
         };
 
@@ -488,6 +501,7 @@ const DefaultSettingsManager = {
                 model: this.settings.agent_model,
                 system_prompt: this.settings.agent_system_prompt,
                 agent_cwd: this.settings.agent_cwd,
+                agent_thinking_budget: this.settings.agent_thinking_budget,
                 agent_tools: this.settings.agent_tools
             };
         }

@@ -149,6 +149,14 @@ const ChatManager = {
             this.sendMessage();
         });
 
+        // Stop button for agent chats
+        const stopBtn = document.getElementById('stop-btn');
+        if (stopBtn) {
+            stopBtn.addEventListener('click', () => {
+                this.stopAgentStream();
+            });
+        }
+
         messageInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -223,8 +231,46 @@ const ChatManager = {
     updateSendButton() {
         const messageInput = document.getElementById('message-input');
         const sendBtn = document.getElementById('send-btn');
+        const stopBtn = document.getElementById('stop-btn');
         const hasContent = messageInput.value.trim() || FilesManager.hasPendingFiles();
         sendBtn.disabled = !hasContent || this.isStreaming;
+
+        // Show stop button only during agent streaming
+        if (stopBtn) {
+            if (this.isStreaming && this.isAgentConversation) {
+                stopBtn.style.display = 'inline-block';
+                sendBtn.style.display = 'none';
+            } else {
+                stopBtn.style.display = 'none';
+                sendBtn.style.display = 'inline-block';
+            }
+        }
+    },
+
+    /**
+     * Stop an active agent stream
+     */
+    async stopAgentStream() {
+        const conversationId = ConversationsManager?.getCurrentConversationId();
+        if (!conversationId || !this.isAgentConversation) {
+            return;
+        }
+
+        try {
+            // First abort the local fetch
+            if (this.abortController) {
+                this.abortController.abort();
+            }
+
+            // Then signal the backend to stop
+            const response = await fetch(`/api/agent-chat/stop/${conversationId}`, {
+                method: 'POST'
+            });
+            const result = await response.json();
+            console.log('Stop agent stream result:', result);
+        } catch (error) {
+            console.error('Error stopping agent stream:', error);
+        }
     },
 
     /**
@@ -1637,6 +1683,10 @@ const ChatManager = {
         let currentTextBlock = null;
         let currentTextContent = '';  // Text for current block (reset when tool arrives)
 
+        // Track thinking block for extended thinking
+        let thinkingEl = null;
+        let thinkingContent = '';
+
         // Create abort controller for this stream
         const abortController = new AbortController();
         this.abortController = abortController;
@@ -1714,6 +1764,16 @@ const ChatManager = {
                                 // Store session ID for conversation resumption
                                 this.agentSessionId = event.session_id;
                                 console.log('Agent session ID:', event.session_id);
+                            } else if (event.type === 'thinking') {
+                                // Handle thinking blocks from extended thinking
+                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                    if (!thinkingEl) {
+                                        thinkingEl = this.createThinkingBlock();
+                                        contentEl.insertBefore(thinkingEl, contentEl.firstChild);
+                                    }
+                                    thinkingContent += event.content;
+                                    this.updateThinkingBlock(thinkingEl, thinkingContent);
+                                }
                             } else if (event.type === 'text') {
                                 currentTextContent += event.content;
 
@@ -1760,6 +1820,29 @@ const ChatManager = {
                                     finalizeTextBlock();
                                     this.showError(contentEl, event.content);
                                 }
+                            } else if (event.type === 'stopped') {
+                                // Stream was stopped by user - handled gracefully
+                                console.log('Agent stream stopped by user');
+                            } else if (event.type === 'surface_content') {
+                                // Surface content to user - render HTML/markdown in chat
+                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                    finalizeTextBlock();
+                                    const surfaceBlock = this.createSurfaceContentBlock(
+                                        event.content,
+                                        event.content_type,
+                                        event.title,
+                                        event.content_id
+                                    );
+                                    contentEl.insertBefore(surfaceBlock, indicator);
+                                }
+                                // Also track for saving
+                                accumulatedContent.push({
+                                    type: 'surface_content',
+                                    content: event.content,
+                                    content_type: event.content_type,
+                                    title: event.title,
+                                    content_id: event.content_id
+                                });
                             }
                         } catch (e) {
                             console.error('Error parsing event:', e);
@@ -1957,6 +2040,241 @@ const ChatManager = {
             }
             // If no content and no error, hide the result section (tool completed silently)
         }
+    },
+
+    /**
+     * Create a surface content block for displaying HTML/markdown to user
+     */
+    createSurfaceContentBlock(content, contentType, title, contentId) {
+        const el = document.createElement('div');
+        el.className = 'surface-content-block';
+        el.dataset.contentId = contentId || '';
+        el.dataset.content = content;
+        el.dataset.contentType = contentType;
+        el.dataset.title = title || '';
+
+        const headerHtml = title
+            ? `<div class="surface-header">
+                <span class="surface-icon">📊</span>
+                <span class="surface-title">${this.escapeHtml(title)}</span>
+                <span class="surface-expand-hint">Click to expand</span>
+               </div>`
+            : '<div class="surface-header surface-header-minimal"><span class="surface-expand-hint">Click to expand</span></div>';
+
+        if (contentType === 'html') {
+            // Render HTML content directly (sandboxed in iframe for security)
+            const iframe = document.createElement('iframe');
+            iframe.className = 'surface-iframe';
+            iframe.sandbox = 'allow-scripts allow-same-origin';
+            iframe.setAttribute('loading', 'lazy');
+
+            el.innerHTML = headerHtml;
+            el.appendChild(iframe);
+
+            // Write content to iframe
+            iframe.onload = () => {
+                const doc = iframe.contentDocument || iframe.contentWindow.document;
+                doc.open();
+                doc.write(this._getSurfaceIframeHtml(content));
+                doc.close();
+
+                // Auto-resize iframe to content
+                const resizeIframe = () => {
+                    if (iframe.contentDocument && iframe.contentDocument.body) {
+                        iframe.style.height = Math.min(iframe.contentDocument.body.scrollHeight + 20, 400) + 'px';
+                    }
+                };
+                resizeIframe();
+                // Also resize after images load
+                const images = iframe.contentDocument.querySelectorAll('img');
+                images.forEach(img => img.addEventListener('load', resizeIframe));
+            };
+
+            // Trigger load for already-loaded iframes
+            setTimeout(() => iframe.onload && iframe.onload(), 100);
+
+        } else {
+            // Render markdown content
+            el.innerHTML = headerHtml + '<div class="surface-markdown">' + this.renderMarkdownToHtml(content) + '</div>';
+        }
+
+        // Add click handler to header to expand
+        const header = el.querySelector('.surface-header');
+        if (header) {
+            header.style.cursor = 'pointer';
+            header.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.openSurfaceModal(content, contentType, title);
+            });
+        }
+
+        // Also allow clicking on the block border area (not iframe)
+        el.addEventListener('click', (e) => {
+            // Only expand if clicking directly on the block or markdown content
+            if (e.target === el || e.target.closest('.surface-markdown')) {
+                this.openSurfaceModal(content, contentType, title);
+            }
+        });
+
+        return el;
+    },
+
+    /**
+     * Create a placeholder for surface content while loading
+     */
+    createSurfaceContentPlaceholder(contentType, title, contentId) {
+        const el = document.createElement('div');
+        el.className = 'surface-content-block surface-loading';
+        el.dataset.contentId = contentId || '';
+
+        const headerHtml = title
+            ? `<div class="surface-header">
+                <span class="surface-icon">📊</span>
+                <span class="surface-title">${this.escapeHtml(title)}</span>
+                <span class="surface-expand-hint">Loading...</span>
+               </div>`
+            : '<div class="surface-header surface-header-minimal"><span class="surface-expand-hint">Loading...</span></div>';
+
+        el.innerHTML = headerHtml + '<div class="surface-loading-body">Loading content...</div>';
+        return el;
+    },
+
+    /**
+     * Load surface content from server and replace placeholder
+     */
+    async loadSurfaceContent(placeholderEl, filename, contentType, title, contentId) {
+        const conversationId = ConversationsManager?.getCurrentConversationId();
+        if (!conversationId) return;
+
+        try {
+            const response = await fetch(`/api/agent-chat/surface-content/${conversationId}/${encodeURIComponent(filename)}`);
+            if (!response.ok) throw new Error('Failed to load surface content');
+
+            const data = await response.json();
+            this.replaceSurfaceContentPlaceholder(placeholderEl, data.content, contentType, title, contentId);
+        } catch (error) {
+            console.error('Failed to load surface content:', error);
+            placeholderEl.querySelector('.surface-loading-body').textContent = 'Failed to load content';
+            placeholderEl.classList.add('surface-error');
+        }
+    },
+
+    /**
+     * Replace placeholder with actual surface content
+     */
+    replaceSurfaceContentPlaceholder(placeholderEl, content, contentType, title, contentId) {
+        // Create the real surface content block
+        const realBlock = this.createSurfaceContentBlock(content, contentType, title, contentId);
+
+        // Replace placeholder with real block
+        placeholderEl.parentNode.replaceChild(realBlock, placeholderEl);
+    },
+
+    /**
+     * Get the HTML template for surface iframe content
+     */
+    _getSurfaceIframeHtml(content) {
+        return `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    * { box-sizing: border-box; }
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                        margin: 0;
+                        padding: 12px;
+                        font-size: 14px;
+                        line-height: 1.5;
+                        color: #333;
+                        background: #fff;
+                    }
+                    table { border-collapse: collapse; width: 100%; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background: #f5f5f5; font-weight: 600; }
+                    tr:hover { background: #f9f9f9; }
+                    button, .btn { padding: 6px 12px; border-radius: 4px; cursor: pointer; border: 1px solid #ccc; background: #f5f5f5; }
+                    button:hover, .btn:hover { background: #e5e5e5; }
+                    input, select { padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
+                    .card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 8px 0; }
+                    .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+                    .badge-success { background: #d4edda; color: #155724; }
+                    .badge-warning { background: #fff3cd; color: #856404; }
+                    .badge-danger { background: #f8d7da; color: #721c24; }
+                    .progress { height: 20px; background: #e9ecef; border-radius: 4px; overflow: hidden; }
+                    .progress-bar { height: 100%; background: #007bff; transition: width 0.3s; }
+                </style>
+            </head>
+            <body>${content}</body>
+            </html>
+        `;
+    },
+
+    /**
+     * Open surface content in a fullscreen modal
+     */
+    openSurfaceModal(content, contentType, title) {
+        // Remove existing modal if any
+        const existingModal = document.getElementById('surface-modal');
+        if (existingModal) existingModal.remove();
+
+        // Create modal
+        const modal = document.createElement('div');
+        modal.id = 'surface-modal';
+        modal.className = 'surface-modal';
+        modal.innerHTML = `
+            <div class="surface-modal-backdrop"></div>
+            <div class="surface-modal-container">
+                <div class="surface-modal-header">
+                    <span class="surface-modal-title">${title ? this.escapeHtml(title) : 'Content'}</span>
+                    <button class="surface-modal-close" title="Close (Esc)">&times;</button>
+                </div>
+                <div class="surface-modal-body"></div>
+            </div>
+        `;
+
+        const bodyEl = modal.querySelector('.surface-modal-body');
+
+        if (contentType === 'html') {
+            const iframe = document.createElement('iframe');
+            iframe.className = 'surface-modal-iframe';
+            iframe.sandbox = 'allow-scripts allow-same-origin';
+            bodyEl.appendChild(iframe);
+
+            // Write content after appending to DOM
+            setTimeout(() => {
+                const doc = iframe.contentDocument || iframe.contentWindow.document;
+                doc.open();
+                doc.write(this._getSurfaceIframeHtml(content));
+                doc.close();
+            }, 50);
+        } else {
+            bodyEl.innerHTML = '<div class="surface-modal-markdown">' + this.renderMarkdownToHtml(content) + '</div>';
+        }
+
+        // Close handlers
+        const closeModal = () => {
+            modal.classList.add('closing');
+            setTimeout(() => modal.remove(), 200);
+        };
+
+        modal.querySelector('.surface-modal-close').addEventListener('click', closeModal);
+        modal.querySelector('.surface-modal-backdrop').addEventListener('click', closeModal);
+
+        // Escape key to close
+        const escHandler = (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.removeEventListener('keydown', escHandler);
+            }
+        };
+        document.addEventListener('keydown', escHandler);
+
+        document.body.appendChild(modal);
+
+        // Trigger animation
+        requestAnimationFrame(() => modal.classList.add('open'));
     },
 
     /**
@@ -2256,6 +2574,23 @@ const ChatManager = {
                     textEl.className = 'agent-text-block';
                     textEl.innerHTML = this.formatText(block.text);
                     contentEl.appendChild(textEl);
+                } else if (block.type === 'surface_content') {
+                    // Render surface content block from saved message
+                    // Content is stored on disk, need to fetch it
+                    const surfaceEl = this.createSurfaceContentPlaceholder(
+                        block.content_type,
+                        block.title,
+                        block.content_id
+                    );
+                    contentEl.appendChild(surfaceEl);
+
+                    // Load content from server if we have a filename reference
+                    if (block.filename) {
+                        this.loadSurfaceContent(surfaceEl, block.filename, block.content_type, block.title, block.content_id);
+                    } else if (block.content) {
+                        // Fallback: content might be inline (old format)
+                        this.replaceSurfaceContentPlaceholder(surfaceEl, block.content, block.content_type, block.title, block.content_id);
+                    }
                 }
             });
         } else if (typeof content === 'object' && content !== null && content.web_searches) {

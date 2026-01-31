@@ -88,3 +88,20 @@ Event types: `thinking`, `text`, `error`, `done`, `message_id`, `tool_use`, `too
 ## Configuration (config.py)
 
 Models with `supports_thinking=True` automatically omit temperature (API requirement). Default model: `claude-sonnet-4-5-20250929`. Thinking budget range: 1K-128K tokens (default 10K).
+
+## Surface Content Tool
+
+Agent conversations have access to the `surface_content` MCP tool for displaying rich HTML/markdown content to users. The content appears as an expandable artifact in the chat that persists across page reloads.
+
+**Available Tools:**
+- `surface_content` - Surface HTML/markdown content directly
+- `surface_from_file` - Read a file from workspace and surface it
+- `surface_from_script` - Execute a script and surface its stdout
+
+**IMPORTANT:** When creating HTML content to surface, use the `/surface-ui` skill which provides the design system matching this chat interface's warm color palette (rust-orange #C15F3C, cream #F4F3EE, etc.).
+
+## Skills
+
+This project includes custom skills in `.claude/skills/`:
+
+- **surface-ui** - Design system for creating HTML surfaces that match the chat UI aesthetic. Auto-invokes when creating data viewers, dashboards, tables, or any HTML content for the user.

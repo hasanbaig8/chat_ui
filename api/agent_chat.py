@@ -1,8 +1,9 @@
 """Agent chat streaming endpoints using Claude Agent SDK."""
 
+import asyncio
 import json
 import os
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Dict
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -17,6 +18,9 @@ router = APIRouter(prefix="/api/agent-chat", tags=["agent-chat"])
 # Initialize stores
 store = FileConversationStore()
 project_store = ProjectStore()
+
+# Track active streams for cancellation - map of conversation_id to asyncio.Event
+active_streams: Dict[str, asyncio.Event] = {}
 
 # Memory system prompt instruction
 MEMORY_SYSTEM_PROMPT = """
@@ -50,6 +54,11 @@ async def stream_agent_chat(request: AgentChatRequest):
         conversation_id = request.conversation_id
         branch = request.branch or [0]
 
+        # Create stop event for this stream
+        stop_event = asyncio.Event()
+        if conversation_id:
+            active_streams[conversation_id] = stop_event
+
         # Get workspace path, session_id, and memory path for this conversation
         workspace_path = None
         existing_session_id = None
@@ -58,6 +67,7 @@ async def stream_agent_chat(request: AgentChatRequest):
         enabled_tools = None
         custom_cwd = None
         project_id = None
+        thinking_budget = None
 
         if conversation_id:
             workspace_path = store.get_workspace_path(conversation_id)
@@ -112,6 +122,10 @@ async def stream_agent_chat(request: AgentChatRequest):
                 custom_cwd = settings.get("agent_cwd")
                 if custom_cwd and os.path.isdir(custom_cwd):
                     workspace_path = custom_cwd
+
+                # Get thinking budget from settings
+                thinking_budget = settings.get("agent_thinking_budget")
+                print(f"[AGENT] Thinking budget: {thinking_budget}")
             except Exception as e:
                 print(f"Warning: Could not load settings: {e}")
 
@@ -135,6 +149,7 @@ async def stream_agent_chat(request: AgentChatRequest):
         current_text = ""
         new_session_id = None
 
+        stopped = False
         try:
             # Build system prompt with memory instructions if memory is available
             system_prompt = request.system_prompt or ""
@@ -148,8 +163,16 @@ async def stream_agent_chat(request: AgentChatRequest):
                 model=request.model,
                 session_id=existing_session_id,  # Pass session_id for resumption
                 memory_path=memory_path,  # Pass memory path for project-shared memories
-                enabled_tools=enabled_tools  # Pass enabled tools from settings
+                enabled_tools=enabled_tools,  # Pass enabled tools from settings
+                thinking_budget=thinking_budget,  # Pass thinking budget from settings
+                conversation_id=conversation_id  # Pass conversation_id for workspace tools
             ):
+                # Check if stop was requested
+                if stop_event.is_set():
+                    stopped = True
+                    yield f"data: {json.dumps({'type': 'stopped', 'content': 'Stream stopped by user'})}\n\n"
+                    break
+
                 # Send event to client
                 yield f"data: {json.dumps(event)}\n\n"
 
@@ -190,6 +213,66 @@ async def stream_agent_chat(request: AgentChatRequest):
                         "content": event.get("content", ""),
                         "is_error": event.get("is_error", False)
                     })
+                elif event["type"] == "surface_content":
+                    # Save surface content to file and store reference
+                    content_id = event.get("content_id", "")
+                    content_type = event.get("content_type", "html")
+                    content = event.get("content", "")
+                    title = event.get("title")
+
+                    # Always save to conversation workspace (not agent CWD)
+                    # This ensures the API can find it when loading
+                    save_path = store.get_workspace_path(conversation_id) if conversation_id else None
+
+                    if save_path and conversation_id:
+                        ext = ".html" if content_type == "html" else ".md"
+                        filename = f"surface_{content_id}{ext}"
+                        filepath = os.path.join(save_path, filename)
+
+                        try:
+                            # Ensure directory exists
+                            os.makedirs(save_path, exist_ok=True)
+
+                            with open(filepath, 'w', encoding='utf-8') as f:
+                                f.write(content)
+                            print(f"Saved surface content to: {filepath}")
+
+                            # If we have accumulated text, save it first
+                            if current_text:
+                                accumulated_content.append({
+                                    "type": "text",
+                                    "text": current_text
+                                })
+                                current_text = ""
+
+                            # Store reference, not full content
+                            accumulated_content.append({
+                                "type": "surface_content",
+                                "content_id": content_id,
+                                "content_type": content_type,
+                                "title": title,
+                                "filename": filename  # Reference to file
+                            })
+                        except Exception as e:
+                            print(f"Failed to save surface content to {filepath}: {e}")
+                            # Fallback: store content inline if file save fails
+                            accumulated_content.append({
+                                "type": "surface_content",
+                                "content_id": content_id,
+                                "content_type": content_type,
+                                "title": title,
+                                "content": content  # Inline content as fallback
+                            })
+                    else:
+                        print(f"No workspace path available for surface content, storing inline")
+                        # Store inline if no workspace
+                        accumulated_content.append({
+                            "type": "surface_content",
+                            "content_id": content_id,
+                            "content_type": content_type,
+                            "title": title,
+                            "content": content
+                        })
 
             # Add any remaining text
             if current_text:
@@ -198,12 +281,26 @@ async def stream_agent_chat(request: AgentChatRequest):
                     "text": current_text
                 })
 
+            # Add stopped indicator to content if stopped
+            if stopped and accumulated_content:
+                accumulated_content.append({
+                    "type": "text",
+                    "text": "\n\n*[Response stopped by user]*"
+                })
+            elif stopped:
+                accumulated_content.append({
+                    "type": "text",
+                    "text": "*[Response stopped by user]*"
+                })
+
             # Final DB save
             if conversation_id and msg_record:
-                # Prepare final content
-                final_content = accumulated_content if len(accumulated_content) > 1 or any(
-                    c.get("type") == "tool_use" for c in accumulated_content
-                ) else (accumulated_content[0].get("text", "") if accumulated_content else "")
+                # Prepare final content - keep as array if it has tool_use or surface_content blocks
+                has_special_blocks = any(
+                    c.get("type") in ("tool_use", "surface_content") for c in accumulated_content
+                )
+                final_content = accumulated_content if len(accumulated_content) > 1 or has_special_blocks \
+                    else (accumulated_content[0].get("text", "") if accumulated_content else "")
 
                 await store.update_message_content(
                     conversation_id=conversation_id,
@@ -215,6 +312,10 @@ async def stream_agent_chat(request: AgentChatRequest):
 
         except Exception as e:
             yield f"data: {json.dumps({'type': 'error', 'content': str(e)})}\n\n"
+        finally:
+            # Clean up active stream tracking
+            if conversation_id and conversation_id in active_streams:
+                del active_streams[conversation_id]
 
     return StreamingResponse(
         event_generator(),
@@ -227,6 +328,23 @@ async def stream_agent_chat(request: AgentChatRequest):
     )
 
 
+@router.post("/stop/{conversation_id}")
+async def stop_agent_stream(conversation_id: str):
+    """Stop an active agent chat stream."""
+    if conversation_id in active_streams:
+        active_streams[conversation_id].set()
+        return {"success": True, "message": "Stop signal sent"}
+    return {"success": False, "message": "No active stream found for this conversation"}
+
+
+@router.get("/streaming/{conversation_id}")
+async def get_streaming_status(conversation_id: str):
+    """Check if a conversation has an active stream."""
+    return {
+        "streaming": conversation_id in active_streams
+    }
+
+
 @router.get("/status")
 async def get_agent_status():
     """Check if Agent SDK is available."""
@@ -236,6 +354,29 @@ async def get_agent_status():
         "message": "Claude Code SDK is ready" if is_sdk_available() else "Claude Code SDK not installed",
         "error": error
     }
+
+
+@router.get("/surface-content/{conversation_id}/{filename}")
+async def get_surface_content(conversation_id: str, filename: str):
+    """Get surface content file from workspace."""
+    workspace_path = store.get_workspace_path(conversation_id)
+    file_path = os.path.join(workspace_path, filename)
+
+    # Security check
+    real_workspace = os.path.realpath(workspace_path)
+    real_file = os.path.realpath(file_path)
+    if not real_file.startswith(real_workspace):
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Surface content not found")
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        return {"content": content}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/workspace/{conversation_id}")
@@ -319,126 +460,6 @@ async def upload_workspace_file(conversation_id: str, file: UploadFile = File(..
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
-
-
-class CompactRequest(BaseModel):
-    """Request to compact agent conversation context."""
-    conversation_id: str
-    instructions: Optional[str] = None  # Optional preservation instructions
-
-
-@router.post("/compact")
-async def compact_conversation(request: CompactRequest):
-    """
-    Compact the agent conversation context by summarizing history.
-    This helps manage the context window for long-running conversations.
-    """
-    async def event_generator():
-        conversation_id = request.conversation_id
-
-        # Get existing session_id and workspace for resumption
-        existing_session_id = None
-        workspace_path = None
-        try:
-            conv = await store.get_conversation(conversation_id)
-            if conv:
-                existing_session_id = conv.get("session_id")
-                # Get workspace path
-                workspace_path = store.get_workspace_path(conversation_id)
-                os.makedirs(workspace_path, exist_ok=True)
-
-                # Check for custom CWD in settings
-                conv_settings = conv.get("settings", {})
-                custom_cwd = conv_settings.get("agent_cwd")
-                if custom_cwd and os.path.isdir(custom_cwd):
-                    workspace_path = custom_cwd
-        except Exception as e:
-            yield f"data: {json.dumps({'type': 'error', 'content': f'Failed to load conversation: {str(e)}'})}\n\n"
-            return
-
-        if not existing_session_id:
-            yield f"data: {json.dumps({'type': 'error', 'content': 'No session to compact. Send a message first to create a session.'})}\n\n"
-            return
-
-        # Build compact command with optional instructions
-        compact_prompt = "/compact"
-        if request.instructions:
-            compact_prompt = f"/compact {request.instructions}"
-
-        try:
-            from claude_code_sdk import query, ClaudeCodeOptions
-
-            options = ClaudeCodeOptions(
-                cwd=workspace_path or os.getcwd(),
-                resume=existing_session_id,
-                permission_mode="acceptEdits",
-            )
-
-            print(f"[COMPACT] Sending compact command with session_id={existing_session_id}, cwd={workspace_path}")
-
-            # Send compact command
-            async for message in query(prompt=compact_prompt, options=options):
-                msg_type = type(message).__name__
-
-                if msg_type == 'SystemMessage':
-                    subtype = getattr(message, 'subtype', '')
-                    if subtype == 'init':
-                        # Capture new session_id after compact
-                        sid = getattr(message, 'session_id', None)
-                        if not sid and hasattr(message, 'data'):
-                            sid = message.data.get('session_id')
-                        if sid:
-                            # Update stored session_id
-                            await store.update_conversation_session_id(
-                                conversation_id=conversation_id,
-                                session_id=sid
-                            )
-                            yield f"data: {json.dumps({'type': 'session_id', 'session_id': sid})}\n\n"
-
-                elif msg_type == 'AssistantMessage':
-                    if hasattr(message, 'content') and message.content:
-                        for block in message.content:
-                            if type(block).__name__ == 'TextBlock':
-                                text = getattr(block, 'text', '')
-                                if text:
-                                    yield f"data: {json.dumps({'type': 'text', 'content': text})}\n\n"
-
-                elif msg_type == 'ResultMessage':
-                    subtype = getattr(message, 'subtype', '')
-                    if subtype == 'success':
-                        # Save compaction marker to conversation
-                        try:
-                            from datetime import datetime
-                            await store.add_message(
-                                conversation_id=conversation_id,
-                                role="system",
-                                content={"type": "compaction", "compacted_at": datetime.utcnow().isoformat()},
-                                branch=None  # Use current branch
-                            )
-                            print(f"[COMPACT] Saved compaction marker for conversation {conversation_id}")
-                        except Exception as e:
-                            print(f"[COMPACT] Failed to save compaction marker: {e}")
-                        yield f"data: {json.dumps({'type': 'compact_complete'})}\n\n"
-
-            yield f"data: {json.dumps({'type': 'done'})}\n\n"
-
-        except Exception as e:
-            error_msg = str(e)
-            print(f"[COMPACT] Error: {error_msg}")
-            # Provide more helpful error messages
-            if "exit code 1" in error_msg.lower() or "command failed" in error_msg.lower():
-                error_msg = "Compact failed. The session may have expired or the context is already minimal. Try sending a new message first."
-            yield f"data: {json.dumps({'type': 'error', 'content': error_msg})}\n\n"
-
-    return StreamingResponse(
-        event_generator(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no"
-        }
-    )
 
 
 @router.get("/memory/{conversation_id}")
