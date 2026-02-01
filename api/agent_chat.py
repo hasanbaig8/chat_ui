@@ -9,18 +9,12 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from services.agent_client import get_agent_client, is_sdk_available, get_sdk_import_error
-from services.file_conversation_store import FileConversationStore
-from services.project_store import ProjectStore
-from api.settings import get_project_settings, load_default_settings
+from services.settings_service import get_settings_service
+from services.streaming_service import get_streaming_service, StreamType
+from services.mock_streams import is_mock_mode, mock_agent_chat_stream
+from api.deps import get_store, get_project_store
 
 router = APIRouter(prefix="/api/agent-chat", tags=["agent-chat"])
-
-# Initialize stores
-store = FileConversationStore()
-project_store = ProjectStore()
-
-# Track active streams for cancellation - map of conversation_id to asyncio.Event
-active_streams: Dict[str, asyncio.Event] = {}
 
 # Memory system prompt instruction
 MEMORY_SYSTEM_PROMPT = """
@@ -50,14 +44,19 @@ async def stream_agent_chat(request: AgentChatRequest):
     """Stream agent chat responses using SSE."""
 
     async def event_generator():
+        # Get dependencies
+        store = get_store()
+        project_store = get_project_store()
         agent_client = get_agent_client()
+        streaming_service = get_streaming_service()
+
         conversation_id = request.conversation_id
         branch = request.branch or [0]
 
-        # Create stop event for this stream
-        stop_event = asyncio.Event()
+        # Register stream and get stop event
+        stop_event = None
         if conversation_id:
-            active_streams[conversation_id] = stop_event
+            stop_event = streaming_service.start_stream(conversation_id, StreamType.AGENT)
 
         # Get workspace path, session_id, and memory path for this conversation
         workspace_path = None
@@ -96,36 +95,24 @@ async def stream_agent_chat(request: AgentChatRequest):
             except Exception as e:
                 print(f"Warning: Could not determine memory path: {e}")
 
-            # Get settings for tool toggles and CWD
-            # Priority: conversation settings > project settings > default settings
+            # Resolve settings with unified service
+            # Priority: defaults < project < conversation
             try:
-                # Start with default settings
-                settings = load_default_settings()
-                print(f"[AGENT] Default settings agent_tools: {settings.get('agent_tools')}")
-
-                # Override with project settings if in a project
-                if project_id:
-                    project_settings = get_project_settings(project_id)
-                    print(f"[AGENT] Project {project_id} settings agent_tools: {project_settings.get('agent_tools')}")
-                    settings.update({k: v for k, v in project_settings.items() if v is not None})
-
-                # Override with conversation settings
+                settings_service = get_settings_service()
                 conv_settings = conv.get("settings", {}) if conv else {}
-                print(f"[AGENT] Conversation settings: {conv_settings}")
-                settings.update({k: v for k, v in conv_settings.items() if v is not None})
+                agent_settings = settings_service.resolve_agent_settings(
+                    project_id=project_id,
+                    conversation_settings=conv_settings
+                )
 
-                # Get enabled tools from settings
-                enabled_tools = settings.get("agent_tools")
-                print(f"[AGENT] Final enabled_tools: {enabled_tools}")
+                enabled_tools = agent_settings.get("tools")
+                thinking_budget = agent_settings.get("thinking_budget")
+                custom_cwd = agent_settings.get("cwd")
 
-                # Get custom CWD from settings
-                custom_cwd = settings.get("agent_cwd")
+                print(f"[AGENT] Resolved settings - tools: {enabled_tools}, thinking_budget: {thinking_budget}, cwd: {custom_cwd}")
+
                 if custom_cwd and os.path.isdir(custom_cwd):
                     workspace_path = custom_cwd
-
-                # Get thinking budget from settings
-                thinking_budget = settings.get("agent_thinking_budget")
-                print(f"[AGENT] Thinking budget: {thinking_budget}")
             except Exception as e:
                 print(f"Warning: Could not load settings: {e}")
 
@@ -144,9 +131,11 @@ async def stream_agent_chat(request: AgentChatRequest):
                 return
 
         # Track accumulated content for final DB save
+        # All blocks (thinking, text, tool_use, tool_result) go into this array in order
         accumulated_content = []
-        tool_results = []
         current_text = ""
+        current_thinking = ""
+        in_thinking = False
         new_session_id = None
 
         stopped = False
@@ -156,130 +145,196 @@ async def stream_agent_chat(request: AgentChatRequest):
             if memory_path:
                 system_prompt = MEMORY_SYSTEM_PROMPT + "\n\n" + system_prompt
 
-            async for event in agent_client.stream_agent_response(
-                messages=request.messages,
-                workspace_path=workspace_path or os.getcwd(),
-                system_prompt=system_prompt if system_prompt.strip() else None,
-                model=request.model,
-                session_id=existing_session_id,  # Pass session_id for resumption
-                memory_path=memory_path,  # Pass memory path for project-shared memories
-                enabled_tools=enabled_tools,  # Pass enabled tools from settings
-                thinking_budget=thinking_budget,  # Pass thinking budget from settings
-                conversation_id=conversation_id  # Pass conversation_id for workspace tools
-            ):
-                # Check if stop was requested
-                if stop_event.is_set():
-                    stopped = True
-                    yield f"data: {json.dumps({'type': 'stopped', 'content': 'Stream stopped by user'})}\n\n"
-                    break
+            # Get the user's latest message for multi-turn sessions
+            user_message = ""
+            if request.messages:
+                last_msg = request.messages[-1]
+                if isinstance(last_msg.get("content"), str):
+                    user_message = last_msg["content"]
+                elif isinstance(last_msg.get("content"), list):
+                    text_blocks = [
+                        b.get("text", "") for b in last_msg["content"]
+                        if b.get("type") == "text"
+                    ]
+                    user_message = "\n".join(text_blocks)
 
-                # Send event to client
-                yield f"data: {json.dumps(event)}\n\n"
+            # Use mock stream if MOCK_LLM=1
+            if is_mock_mode():
+                event_stream = mock_agent_chat_stream(
+                    conversation_id=conversation_id,
+                    stop_event=stop_event,
+                    include_tool_use=True,
+                    include_surface=True
+                )
 
-                # Capture session_id from init message
-                if event["type"] == "session_id":
-                    new_session_id = event["session_id"]
-                    # Save session_id to conversation metadata
-                    if conversation_id and new_session_id:
-                        try:
-                            await store.update_conversation_session_id(
-                                conversation_id=conversation_id,
-                                session_id=new_session_id
-                            )
-                        except Exception as e:
-                            # Log but don't fail the stream
-                            print(f"Failed to save session_id: {e}")
+                # Process mock events
+                async for event in event_stream:
+                    if stop_event and stop_event.is_set():
+                        stopped = True
+                        yield f"data: {json.dumps({'type': 'stopped', 'content': 'Stream stopped by user'})}\n\n"
+                        break
 
-                # Accumulate content for DB save
-                elif event["type"] == "text":
-                    current_text += event["content"]
-                elif event["type"] == "tool_use":
-                    # If we have accumulated text, save it first
-                    if current_text:
+                    yield f"data: {json.dumps(event)}\n\n"
+
+                    # Accumulate content for mock mode
+                    if event["type"] == "text":
+                        current_text += event.get("content", "")
+                    elif event["type"] == "tool_use":
+                        if current_text:
+                            accumulated_content.append({"type": "text", "text": current_text})
+                            current_text = ""
                         accumulated_content.append({
-                            "type": "text",
-                            "text": current_text
+                            "type": "tool_use",
+                            "id": event["id"],
+                            "name": event["name"],
+                            "input": event["input"]
                         })
-                        current_text = ""
-                    accumulated_content.append({
-                        "type": "tool_use",
-                        "id": event["id"],
-                        "name": event["name"],
-                        "input": event["input"]
-                    })
-                elif event["type"] == "tool_result":
-                    tool_results.append({
-                        "tool_use_id": event["tool_use_id"],
-                        "content": event.get("content", ""),
-                        "is_error": event.get("is_error", False)
-                    })
-                elif event["type"] == "surface_content":
-                    # Save surface content to file and store reference
-                    content_id = event.get("content_id", "")
-                    content_type = event.get("content_type", "html")
-                    content = event.get("content", "")
-                    title = event.get("title")
+                    elif event["type"] == "tool_result":
+                        accumulated_content.append({
+                            "type": "tool_result",
+                            "tool_use_id": event["tool_use_id"],
+                            "content": event.get("content", ""),
+                            "is_error": event.get("is_error", False)
+                        })
 
-                    # Always save to conversation workspace (not agent CWD)
-                    # This ensures the API can find it when loading
-                    save_path = store.get_workspace_path(conversation_id) if conversation_id else None
+            else:
+                # Use ClaudeSDKClient for agent streaming
+                # Build options for the SDK client
+                options = agent_client.build_options(
+                    workspace_path=workspace_path or os.getcwd(),
+                    system_prompt=system_prompt if system_prompt.strip() else None,
+                    model=request.model,
+                    session_id=existing_session_id,
+                    memory_path=memory_path,
+                    enabled_tools=enabled_tools,
+                    thinking_budget=thinking_budget,
+                    conversation_id=conversation_id
+                )
 
-                    if save_path and conversation_id:
-                        ext = ".html" if content_type == "html" else ".md"
-                        filename = f"surface_{content_id}{ext}"
-                        filepath = os.path.join(save_path, filename)
+                # Stream using ClaudeSDKClient
+                event_stream = agent_client.stream_with_options(
+                    options=options,
+                    prompt=user_message
+                )
 
-                        try:
-                            # Ensure directory exists
-                            os.makedirs(save_path, exist_ok=True)
+                async for event in event_stream:
+                    # Check if stop was requested
+                    if stop_event and stop_event.is_set():
+                        stopped = True
+                        yield f"data: {json.dumps({'type': 'stopped', 'content': 'Stream stopped by user'})}\n\n"
+                        break
 
-                            with open(filepath, 'w', encoding='utf-8') as f:
-                                f.write(content)
-                            print(f"Saved surface content to: {filepath}")
+                    # Send event to client
+                    yield f"data: {json.dumps(event)}\n\n"
 
-                            # If we have accumulated text, save it first
+                    # Capture session_id from init message
+                    if event["type"] == "session_id":
+                        new_session_id = event["session_id"]
+                        if new_session_id:
+                            try:
+                                await store.update_conversation_session_id(
+                                    conversation_id=conversation_id,
+                                    session_id=new_session_id
+                                )
+                            except Exception as e:
+                                print(f"Failed to save session_id: {e}")
+
+                    # Accumulate content for DB save
+                    elif event["type"] == "thinking":
+                        if not in_thinking:
                             if current_text:
-                                accumulated_content.append({
-                                    "type": "text",
-                                    "text": current_text
-                                })
+                                accumulated_content.append({"type": "text", "text": current_text})
                                 current_text = ""
-
-                            # Store reference, not full content
-                            accumulated_content.append({
-                                "type": "surface_content",
-                                "content_id": content_id,
-                                "content_type": content_type,
-                                "title": title,
-                                "filename": filename  # Reference to file
-                            })
-                        except Exception as e:
-                            print(f"Failed to save surface content to {filepath}: {e}")
-                            # Fallback: store content inline if file save fails
-                            accumulated_content.append({
-                                "type": "surface_content",
-                                "content_id": content_id,
-                                "content_type": content_type,
-                                "title": title,
-                                "content": content  # Inline content as fallback
-                            })
-                    else:
-                        print(f"No workspace path available for surface content, storing inline")
-                        # Store inline if no workspace
+                            in_thinking = True
+                        current_thinking += event.get("content", "")
+                    elif event["type"] == "text":
+                        if in_thinking:
+                            if current_thinking:
+                                accumulated_content.append({"type": "thinking", "content": current_thinking})
+                                current_thinking = ""
+                            in_thinking = False
+                        current_text += event.get("content", "")
+                    elif event["type"] == "tool_use":
+                        if in_thinking:
+                            if current_thinking:
+                                accumulated_content.append({"type": "thinking", "content": current_thinking})
+                                current_thinking = ""
+                            in_thinking = False
+                        if current_text:
+                            accumulated_content.append({"type": "text", "text": current_text})
+                            current_text = ""
                         accumulated_content.append({
-                            "type": "surface_content",
-                            "content_id": content_id,
-                            "content_type": content_type,
-                            "title": title,
-                            "content": content
+                            "type": "tool_use",
+                            "id": event["id"],
+                            "name": event["name"],
+                            "input": event["input"]
                         })
+                    elif event["type"] == "tool_result":
+                        accumulated_content.append({
+                            "type": "tool_result",
+                            "tool_use_id": event["tool_use_id"],
+                            "content": event.get("content", ""),
+                            "is_error": event.get("is_error", False)
+                        })
+                    elif event["type"] == "surface_content":
+                        if in_thinking:
+                            if current_thinking:
+                                accumulated_content.append({"type": "thinking", "content": current_thinking})
+                                current_thinking = ""
+                            in_thinking = False
+                        if current_text:
+                            accumulated_content.append({"type": "text", "text": current_text})
+                            current_text = ""
 
+                        content_id = event.get("content_id", "")
+                        content_type = event.get("content_type", "html")
+                        content = event.get("content", "")
+                        title = event.get("title")
+
+                        # Save surface content to file if we have a conversation
+                        if conversation_id:
+                            save_path = store.get_workspace_path(conversation_id)
+                            ext = ".html" if content_type == "html" else ".md"
+                            filename = f"surface_{content_id}{ext}"
+                            filepath = os.path.join(save_path, filename)
+
+                            try:
+                                os.makedirs(save_path, exist_ok=True)
+                                with open(filepath, 'w', encoding='utf-8') as f:
+                                    f.write(content)
+                                print(f"Saved surface content to: {filepath}")
+                                accumulated_content.append({
+                                    "type": "surface_content",
+                                    "content_id": content_id,
+                                    "content_type": content_type,
+                                    "title": title,
+                                    "filename": filename
+                                })
+                            except Exception as e:
+                                print(f"Failed to save surface content to {filepath}: {e}")
+                                accumulated_content.append({
+                                    "type": "surface_content",
+                                    "content_id": content_id,
+                                    "content_type": content_type,
+                                    "title": title,
+                                    "content": content
+                                })
+                        else:
+                            # No conversation - store inline
+                            accumulated_content.append({
+                                "type": "surface_content",
+                                "content_id": content_id,
+                                "content_type": content_type,
+                                "title": title,
+                                "content": content
+                            })
+
+            # Finalize any remaining thinking block
+            if in_thinking and current_thinking:
+                accumulated_content.append({"type": "thinking", "content": current_thinking})
             # Add any remaining text
             if current_text:
-                accumulated_content.append({
-                    "type": "text",
-                    "text": current_text
-                })
+                accumulated_content.append({"type": "text", "text": current_text})
 
             # Add stopped indicator to content if stopped
             if stopped and accumulated_content:
@@ -295,9 +350,9 @@ async def stream_agent_chat(request: AgentChatRequest):
 
             # Final DB save
             if conversation_id and msg_record:
-                # Prepare final content - keep as array if it has tool_use or surface_content blocks
                 has_special_blocks = any(
-                    c.get("type") in ("tool_use", "surface_content") for c in accumulated_content
+                    c.get("type") in ("tool_use", "tool_result", "surface_content", "thinking")
+                    for c in accumulated_content
                 )
                 final_content = accumulated_content if len(accumulated_content) > 1 or has_special_blocks \
                     else (accumulated_content[0].get("text", "") if accumulated_content else "")
@@ -306,16 +361,17 @@ async def stream_agent_chat(request: AgentChatRequest):
                     conversation_id=conversation_id,
                     message_id=msg_record["id"],
                     content=final_content,
-                    tool_results=tool_results if tool_results else None,
+                    thinking=None,
+                    tool_results=None,
                     branch=branch
                 )
 
         except Exception as e:
             yield f"data: {json.dumps({'type': 'error', 'content': str(e)})}\n\n"
         finally:
-            # Clean up active stream tracking
-            if conversation_id and conversation_id in active_streams:
-                del active_streams[conversation_id]
+            # Clean up stream tracking
+            if conversation_id:
+                streaming_service.end_stream(conversation_id)
 
     return StreamingResponse(
         event_generator(),
@@ -331,18 +387,21 @@ async def stream_agent_chat(request: AgentChatRequest):
 @router.post("/stop/{conversation_id}")
 async def stop_agent_stream(conversation_id: str):
     """Stop an active agent chat stream."""
-    if conversation_id in active_streams:
-        active_streams[conversation_id].set()
+    streaming_service = get_streaming_service()
+    if streaming_service.stop_stream(conversation_id):
         return {"success": True, "message": "Stop signal sent"}
-    return {"success": False, "message": "No active stream found for this conversation"}
+    return {"success": False, "message": "No active stream found or stream not stoppable"}
 
 
 @router.get("/streaming/{conversation_id}")
 async def get_streaming_status(conversation_id: str):
-    """Check if a conversation has an active stream."""
-    return {
-        "streaming": conversation_id in active_streams
-    }
+    """Check if a conversation has an active stream.
+
+    NOTE: This endpoint is kept for backwards compatibility but the unified
+    endpoint at /api/chat/streaming/{id} should be preferred.
+    """
+    streaming_service = get_streaming_service()
+    return streaming_service.get_status(conversation_id)
 
 
 @router.get("/status")
@@ -359,6 +418,7 @@ async def get_agent_status():
 @router.get("/surface-content/{conversation_id}/{filename}")
 async def get_surface_content(conversation_id: str, filename: str):
     """Get surface content file from workspace."""
+    store = get_store()
     workspace_path = store.get_workspace_path(conversation_id)
     file_path = os.path.join(workspace_path, filename)
 
@@ -382,6 +442,7 @@ async def get_surface_content(conversation_id: str, filename: str):
 @router.get("/workspace/{conversation_id}")
 async def get_workspace_files(conversation_id: str):
     """List files in conversation workspace."""
+    store = get_store()
     workspace_path = store.get_workspace_path(conversation_id)
 
     if not os.path.exists(workspace_path):
@@ -402,6 +463,7 @@ async def get_workspace_files(conversation_id: str):
 @router.delete("/workspace/{conversation_id}/{filename}")
 async def delete_workspace_file(conversation_id: str, filename: str):
     """Delete a file from conversation workspace."""
+    store = get_store()
     workspace_path = store.get_workspace_path(conversation_id)
     file_path = os.path.join(workspace_path, filename)
 
@@ -428,6 +490,7 @@ async def delete_workspace_file(conversation_id: str, filename: str):
 @router.post("/workspace/{conversation_id}/upload")
 async def upload_workspace_file(conversation_id: str, file: UploadFile = File(...)):
     """Upload a file to conversation workspace."""
+    store = get_store()
     workspace_path = store.get_workspace_path(conversation_id)
 
     # Create workspace directory if it doesn't exist
@@ -465,6 +528,7 @@ async def upload_workspace_file(conversation_id: str, file: UploadFile = File(..
 @router.get("/memory/{conversation_id}")
 async def get_memory_files(conversation_id: str):
     """List memory files for a conversation (or its project if in one)."""
+    project_store = get_project_store()
     # Determine memory path based on whether conversation is in a project
     try:
         project_id = await project_store.get_project_for_conversation(conversation_id)
@@ -506,6 +570,7 @@ async def get_memory_files(conversation_id: str):
 @router.get("/memory/{conversation_id}/{filename:path}")
 async def read_memory_file(conversation_id: str, filename: str):
     """Read a specific memory file."""
+    project_store = get_project_store()
     # Determine memory path
     try:
         project_id = await project_store.get_project_for_conversation(conversation_id)

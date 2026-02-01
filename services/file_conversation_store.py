@@ -19,6 +19,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 
+from services.content_normalizer import normalize_content
+
 
 class FileConversationStore:
     """File-based storage for conversations with branch-per-file model."""
@@ -423,15 +425,16 @@ class FileConversationStore:
         if not branch_data:
             branch_data = {"messages": []}
 
-        # Create message
+        # Create message with normalized content
         message_id = str(uuid.uuid4())
         now = datetime.utcnow().isoformat()
         position = len(branch_data["messages"])
+        normalized_content = normalize_content(content)
 
         message = {
             "id": message_id,
             "role": role,
-            "content": content,
+            "content": normalized_content,
             "thinking": thinking,
             "created_at": now
         }
@@ -452,7 +455,7 @@ class FileConversationStore:
             "id": message_id,
             "conversation_id": conversation_id,
             "role": role,
-            "content": content,
+            "content": normalized_content,
             "thinking": thinking,
             "tool_results": tool_results,
             "position": position,
@@ -485,10 +488,11 @@ class FileConversationStore:
         if not branch_data:
             return False
 
-        # Find and update the message
+        # Find and update the message with normalized content
+        normalized_content = normalize_content(content)
         for msg in branch_data["messages"]:
             if msg.get("id") == message_id:
-                msg["content"] = content
+                msg["content"] = normalized_content
                 if thinking is not None:
                     msg["thinking"] = thinking
                 if tool_results is not None:

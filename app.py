@@ -9,21 +9,18 @@ from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
 from dotenv import load_dotenv
 
-from api import chat_router, conversations_router, files_router, agent_chat_router, settings_router, projects_router, docs_router
-from services.file_conversation_store import FileConversationStore
+from api import chat_router, conversations_router, files_router, agent_chat_router, settings_router, projects_router, docs_router, dev_router
+from api.deps import initialize_all
 
 # Load environment variables
 load_dotenv()
-
-# Initialize store for startup
-store = FileConversationStore()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan handler."""
-    # Startup: Initialize database
-    await store.initialize()
+    # Startup: Initialize all services via DI
+    await initialize_all()
     yield
     # Shutdown: Nothing to clean up
 
@@ -50,6 +47,7 @@ app.include_router(agent_chat_router)
 app.include_router(settings_router)
 app.include_router(projects_router)
 app.include_router(docs_router)
+app.include_router(dev_router)
 
 
 @app.get("/")
@@ -66,4 +64,4 @@ async def health():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8079, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=8079, reload=True)

@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev UI - Fixture Harness</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <style>
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .harness-header {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+        .harness-header h1 {
+            margin: 0 0 10px 0;
+            color: var(--accent-color);
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-badge.mock {
+            background: #22c55e;
+            color: white;
+        }
+        .status-badge.live {
+            background: #ef4444;
+            color: white;
+        }
+        .section {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+        .section h2 {
+            margin: 0 0 15px 0;
+            color: var(--text-primary);
+            font-size: 18px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .fixture-grid {
+            display: grid;
+            gap: 20px;
+        }
+        .fixture {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+        }
+        .fixture-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .controls button {
+            padding: 10px 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .controls button:hover {
+            background: var(--accent-hover);
+        }
+        .controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #stream-output {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        .event {
+            padding: 4px 8px;
+            margin: 2px 0;
+            border-radius: 4px;
+        }
+        .event.thinking { background: rgba(168, 85, 247, 0.2); color: #a855f7; }
+        .event.text { background: rgba(34, 197, 94, 0.2); color: #22c55a; }
+        .event.tool_use { background: rgba(234, 179, 8, 0.2); color: #eab308; }
+        .event.tool_result { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .event.web_search_start,
+        .event.web_search_query,
+        .event.web_search_result { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
+        .event.done { background: rgba(34, 197, 94, 0.3); color: #22c55a; font-weight: bold; }
+        .event.error { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .event.message_id,
+        .event.session_id { background: rgba(156, 163, 175, 0.2); color: #9ca3af; }
+        .event.surface_content { background: rgba(99, 102, 241, 0.2); color: #6366f1; }
+
+        /* Message fixtures using actual app styles */
+        .messages-preview {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="harness-header">
+        <h1>Dev UI - Fixture Harness</h1>
+        <p>Visual regression testing fixtures for the Chat UI</p>
+        <span class="status-badge {{ 'mock' if mock_mode else 'live' }}">
+            {{ 'MOCK MODE' if mock_mode else 'LIVE MODE' }}
+        </span>
+    </div>
+
+    <!-- Stream Testing Section -->
+    <div class="section">
+        <h2>Stream Testing</h2>
+        <div class="controls">
+            <button id="btn-normal-stream" onclick="testNormalStream()">Normal Chat Stream</button>
+            <button id="btn-normal-thinking" onclick="testNormalStreamWithThinking()">With Thinking</button>
+            <button id="btn-normal-websearch" onclick="testNormalStreamWithWebSearch()">With Web Search</button>
+            <button id="btn-agent-stream" onclick="testAgentStream()">Agent Stream</button>
+            <button id="btn-clear" onclick="clearOutput()">Clear</button>
+        </div>
+        <div id="stream-output" data-testid="stream-output"></div>
+    </div>
+
+    <!-- User Message Fixtures -->
+    <div class="section">
+        <h2>User Message Fixtures</h2>
+        <div class="fixture-grid">
+            <div class="fixture" data-testid="fixture-user-simple">
+                <div class="fixture-label">Simple Text</div>
+                <div class="messages-preview">
+                    <div class="message user">
+                        <div class="version-nav"></div>
+                        <div class="message-content">Hello, how are you?</div>
+                        <div class="message-actions">
+                            <button class="action-btn copy-btn" title="Copy">&#128203;</button>
+                            <button class="action-btn edit-btn" title="Edit">&#9998;</button>
+                            <button class="action-btn delete-btn" title="Delete">&#128465;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fixture" data-testid="fixture-user-versioned">
+                <div class="fixture-label">With Version Navigation</div>
+                <div class="messages-preview">
+                    <div class="message user">
+                        <div class="version-nav">
+                            <button class="version-btn prev">&#9664;</button>
+                            <span class="version-counter">2/3</span>
+                            <button class="version-btn next">&#9654;</button>
+                        </div>
+                        <div class="message-content">This is the second version of my message</div>
+                        <div class="message-actions">
+                            <button class="action-btn copy-btn" title="Copy">&#128203;</button>
+                            <button class="action-btn edit-btn" title="Edit">&#9998;</button>
+                            <button class="action-btn delete-btn" title="Delete">&#128465;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fixture" data-testid="fixture-user-long">
+                <div class="fixture-label">Long Text</div>
+                <div class="messages-preview">
+                    <div class="message user">
+                        <div class="version-nav"></div>
+                        <div class="message-content">Can you explain the difference between synchronous and asynchronous programming? I'm trying to understand when I should use async/await versus regular function calls. Also, what are the performance implications of each approach?</div>
+                        <div class="message-actions">
+                            <button class="action-btn copy-btn" title="Copy">&#128203;</button>
+                            <button class="action-btn edit-btn" title="Edit">&#9998;</button>
+                            <button class="action-btn delete-btn" title="Delete">&#128465;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assistant Message Fixtures -->
+    <div class="section">
+        <h2>Assistant Message Fixtures</h2>
+        <div class="fixture-grid">
+            <div class="fixture" data-testid="fixture-assistant-simple">
+                <div class="fixture-label">Simple Text</div>
+                <div class="messages-preview">
+                    <div class="message assistant">
+                        <div class="message-content">
+                            <p>I'm doing well, thank you for asking! How can I help you today?</p>
+                        </div>
+                        <div class="message-actions">
+                            <button class="action-btn copy-btn" title="Copy">&#128203;</button>
+                            <button class="action-btn retry-btn" title="Retry">&#8635;</button>
+                            <button class="action-btn delete-btn" title="Delete">&#128465;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fixture" data-testid="fixture-assistant-markdown">
+                <div class="fixture-label">With Markdown</div>
+                <div class="messages-preview">
+                    <div class="message assistant">
+                        <div class="message-content" id="markdown-fixture">
+                            <!-- Will be rendered by marked.js -->
+                        </div>
+                        <div class="message-actions">
+                            <button class="action-btn copy-btn" title="Copy">&#128203;</button>
+                            <button class="action-btn retry-btn" title="Retry">&#8635;</button>
+                            <button class="action-btn delete-btn" title="Delete">&#128465;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fixture" data-testid="fixture-assistant-thinking">
+                <div class="fixture-label">With Thinking Block (Tool-like Style)</div>
+                <div class="messages-preview">
+                    <div class="message assistant">
+                        <div class="message-content">
+                            <div class="thinking-block">
+                                <div class="thinking-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                                    <span class="thinking-expand-icon">▼</span>
+                                    <span class="thinking-icon">💭</span>
+                                    <span class="thinking-label">Thinking</span>
+                                    <span class="thinking-status done">DONE</span>
+                                </div>
+                                <div class="thinking-content">
+                                    <div class="thinking-inner">Let me analyze this step by step.
+
+First, I need to understand what the user is asking for.
+The question seems to be about testing the chat interface.
+
+I should provide a helpful response that demonstrates
+the various rendering capabilities of the system.</div>
+                                </div>
+                            </div>
+                            <p>Based on my analysis, here's what I found...</p>
+                        </div>
+                        <div class="message-actions">
+                            <button class="action-btn copy-btn" title="Copy">&#128203;</button>
+                            <button class="action-btn retry-btn" title="Retry">&#8635;</button>
+                            <button class="action-btn delete-btn" title="Delete">&#128465;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fixture" data-testid="fixture-thinking-sequential">
+                <div class="fixture-label">Sequential Thinking Blocks</div>
+                <div class="messages-preview">
+                    <div class="message assistant">
+                        <div class="message-content">
+                            <div class="thinking-block collapsed">
+                                <div class="thinking-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                                    <span class="thinking-expand-icon">▶</span>
+                                    <span class="thinking-icon">💭</span>
+                                    <span class="thinking-label">Thinking</span>
+                                    <span class="thinking-status done">DONE</span>
+                                </div>
+                                <div class="thinking-content">
+                                    <div class="thinking-inner">First, I'll analyze the user's request...</div>
+                                </div>
+                            </div>
+                            <p>Let me check that file for you.</p>
+                            <div class="tool-use-block collapsed">
+                                <div class="tool-header">
+                                    <span class="tool-expand-icon">▶</span>
+                                    <span class="tool-icon">📖</span>
+                                    <span class="tool-name">Read</span>
+                                    <span class="tool-brief">/src/main.py</span>
+                                    <span class="tool-status done">DONE</span>
+                                </div>
+                                <div class="tool-content">
+                                    <div class="tool-input">
+                                        <div class="tool-section-label">INPUT</div>
+                                        <pre>{"file_path": "/src/main.py"}</pre>
+                                    </div>
+                                    <div class="tool-result success">
+                                        <div class="tool-section-label">RESULT</div>
+                                        <pre>def main(): print("Hello")</pre>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="thinking-block">
+                                <div class="thinking-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                                    <span class="thinking-expand-icon">▼</span>
+                                    <span class="thinking-icon">💭</span>
+                                    <span class="thinking-label">Thinking</span>
+                                    <span class="thinking-status done">DONE</span>
+                                </div>
+                                <div class="thinking-content">
+                                    <div class="thinking-inner">Now that I've seen the file, I understand the structure.
+The main function is simple and just prints "Hello".
+I should explain this to the user.</div>
+                                </div>
+                            </div>
+                            <p>I found the file. It contains a simple main function that prints "Hello".</p>
+                        </div>
+                        <div class="message-actions">
+                            <button class="action-btn copy-btn" title="Copy">&#128203;</button>
+                            <button class="action-btn retry-btn" title="Retry">&#8635;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fixture" data-testid="fixture-assistant-streaming">
+                <div class="fixture-label">Streaming State (Active Thinking)</div>
+                <div class="messages-preview">
+                    <div class="message assistant streaming">
+                        <div class="message-content">
+                            <div class="thinking-block">
+                                <div class="thinking-header">
+                                    <span class="thinking-expand-icon">▼</span>
+                                    <span class="thinking-icon">💭</span>
+                                    <span class="thinking-label">Thinking</span>
+                                    <span class="thinking-status thinking">THINKING</span>
+                                </div>
+                                <div class="thinking-content">
+                                    <div class="thinking-inner">Analyzing the request...</div>
+                                </div>
+                            </div>
+                            <span class="typing-indicator"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tool Use Fixtures -->
+    <div class="section">
+        <h2>Tool Use Fixtures (Agent Mode)</h2>
+        <div class="fixture-grid">
+            <div class="fixture" data-testid="fixture-tool-use-running">
+                <div class="fixture-label">Tool Use Block (Running)</div>
+                <div class="messages-preview">
+                    <div class="message assistant">
+                        <div class="message-content">
+                            <p>Let me check that file for you.</p>
+                            <div class="tool-use-block">
+                                <div class="tool-header">
+                                    <span class="tool-expand-icon">▼</span>
+                                    <span class="tool-icon">📖</span>
+                                    <span class="tool-name">Read</span>
+                                    <span class="tool-brief">/home/user/project/src/main.py</span>
+                                    <span class="tool-status running">RUNNING</span>
+                                </div>
+                                <div class="tool-content">
+                                    <div class="tool-input">
+                                        <div class="tool-section-label">INPUT</div>
+                                        <pre>{
+  "file_path": "/home/user/project/src/main.py"
+}</pre>
+                                    </div>
+                                    <div class="tool-result"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="message-actions">
+                            <button class="action-btn copy-btn" title="Copy">&#128203;</button>
+                            <button class="action-btn retry-btn" title="Retry">&#8635;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fixture" data-testid="fixture-tool-use-done">
+                <div class="fixture-label">Tool Use Block (Done)</div>
+                <div class="messages-preview">
+                    <div class="message assistant">
+                        <div class="message-content">
+                            <div class="tool-use-block">
+                                <div class="tool-header">
+                                    <span class="tool-expand-icon">▼</span>
+                                    <span class="tool-icon">📖</span>
+                                    <span class="tool-name">Read</span>
+                                    <span class="tool-brief">/home/user/project/src/main.py</span>
+                                    <span class="tool-status done">DONE</span>
+                                </div>
+                                <div class="tool-content">
+                                    <div class="tool-input">
+                                        <div class="tool-section-label">INPUT</div>
+                                        <pre>{
+  "file_path": "/home/user/project/src/main.py"
+}</pre>
+                                    </div>
+                                    <div class="tool-result success">
+                                        <div class="tool-section-label">RESULT</div>
+                                        <pre>def main():
+    print("Hello, World!")
+
+if __name__ == "__main__":
+    main()</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="message-actions">
+                            <button class="action-btn copy-btn" title="Copy">&#128203;</button>
+                            <button class="action-btn retry-btn" title="Retry">&#8635;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fixture" data-testid="fixture-tool-use-error">
+                <div class="fixture-label">Tool Use Block (Error)</div>
+                <div class="messages-preview">
+                    <div class="message assistant">
+                        <div class="message-content">
+                            <div class="tool-use-block">
+                                <div class="tool-header">
+                                    <span class="tool-expand-icon">▼</span>
+                                    <span class="tool-icon">💻</span>
+                                    <span class="tool-name">Bash</span>
+                                    <span class="tool-brief">npm install</span>
+                                    <span class="tool-status error">ERROR</span>
+                                </div>
+                                <div class="tool-content">
+                                    <div class="tool-input">
+                                        <div class="tool-section-label">INPUT</div>
+                                        <pre>{
+  "command": "npm install"
+}</pre>
+                                    </div>
+                                    <div class="tool-result error">
+                                        <div class="tool-section-label">RESULT</div>
+                                        <pre>npm ERR! code ENOENT
+npm ERR! syscall open
+npm ERR! path /home/user/package.json
+npm ERR! errno -2
+npm ERR! enoent ENOENT: no such file or directory</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="message-actions">
+                            <button class="action-btn copy-btn" title="Copy">&#128203;</button>
+                            <button class="action-btn retry-btn" title="Retry">&#8635;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fixture" data-testid="fixture-tool-collapsed">
+                <div class="fixture-label">Tool Use Block (Collapsed)</div>
+                <div class="messages-preview">
+                    <div class="message assistant">
+                        <div class="message-content">
+                            <div class="tool-use-block collapsed">
+                                <div class="tool-header">
+                                    <span class="tool-expand-icon">▶</span>
+                                    <span class="tool-icon">📖</span>
+                                    <span class="tool-name">Read</span>
+                                    <span class="tool-brief">/home/user/project/src/main.py</span>
+                                    <span class="tool-status done">DONE</span>
+                                </div>
+                                <div class="tool-content">
+                                    <div class="tool-input">
+                                        <div class="tool-section-label">INPUT</div>
+                                        <pre>{
+  "file_path": "/home/user/project/src/main.py"
+}</pre>
+                                    </div>
+                                    <div class="tool-result success">
+                                        <div class="tool-section-label">RESULT</div>
+                                        <pre>def main():
+    print("Hello, World!")</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Web Search Fixtures -->
+    <div class="section">
+        <h2>Web Search Fixtures</h2>
+        <div class="fixture-grid">
+            <div class="fixture" data-testid="fixture-web-search">
+                <div class="fixture-label">Web Search Results</div>
+                <div class="messages-preview">
+                    <div class="message assistant">
+                        <div class="message-content">
+                            <p>I found some relevant information:</p>
+                            <div class="web-searches">
+                                <div class="web-search-block">
+                                    <div class="web-search-header">
+                                        <span class="web-search-icon">&#128269;</span>
+                                        <span class="web-search-query">Python async await tutorial</span>
+                                    </div>
+                                    <div class="web-search-results">
+                                        <a class="web-search-result" href="https://example.com/1" target="_blank">
+                                            <div class="result-title">Python Asyncio Tutorial - Complete Guide</div>
+                                            <div class="result-url">https://example.com/asyncio-guide</div>
+                                        </a>
+                                        <a class="web-search-result" href="https://example.com/2" target="_blank">
+                                            <div class="result-title">Understanding Async/Await in Python</div>
+                                            <div class="result-url">https://example.com/async-await</div>
+                                        </a>
+                                        <a class="web-search-result" href="https://example.com/3" target="_blank">
+                                            <div class="result-title">Python Documentation - asyncio</div>
+                                            <div class="result-url">https://docs.python.org/3/library/asyncio.html</div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="message-actions">
+                            <button class="action-btn copy-btn" title="Copy">&#128203;</button>
+                            <button class="action-btn retry-btn" title="Retry">&#8635;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Surface Content Fixtures -->
+    <div class="section">
+        <h2>Surface Content Fixtures</h2>
+        <div class="fixture-grid">
+            <div class="fixture" data-testid="fixture-surface-content">
+                <div class="fixture-label">Surface Content Block</div>
+                <div class="messages-preview">
+                    <div class="message assistant">
+                        <div class="message-content">
+                            <p>Here's the dashboard I created:</p>
+                            <div class="surface-content-block">
+                                <div class="surface-header">
+                                    <span class="surface-icon">&#128202;</span>
+                                    <span class="surface-title">Mock Dashboard</span>
+                                    <button class="surface-toggle">&#9660;</button>
+                                </div>
+                                <div class="surface-content-container">
+                                    <div style="padding: 20px; background: #f5f5f5; border-radius: 8px;">
+                                        <h3 style="margin-top: 0;">Mock Surface Content</h3>
+                                        <p>This is a mock surface content block for testing.</p>
+                                        <ul>
+                                            <li>Item A</li>
+                                            <li>Item B</li>
+                                            <li>Item C</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="message-actions">
+                            <button class="action-btn copy-btn" title="Copy">&#128203;</button>
+                            <button class="action-btn retry-btn" title="Retry">&#8635;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        // Initialize marked with highlight.js
+        marked.setOptions({
+            highlight: function(code, lang) {
+                if (lang && hljs.getLanguage(lang)) {
+                    return hljs.highlight(code, { language: lang }).value;
+                }
+                return hljs.highlightAuto(code).value;
+            },
+            breaks: true,
+            gfm: true
+        });
+
+        // Render markdown fixture
+        const markdownSample = `Here's a helpful response with **bold** and *italic* text.
+
+## Code Example
+
+\`\`\`python
+async def fetch_data():
+    async with aiohttp.ClientSession() as session:
+        async with session.get('https://api.example.com') as resp:
+            return await resp.json()
+\`\`\`
+
+### Key Points
+- Async functions use \`async def\`
+- Use \`await\` to wait for async operations
+- Non-blocking I/O improves performance
+
+> Note: Always handle exceptions in async code.`;
+
+        document.getElementById('markdown-fixture').innerHTML = marked.parse(markdownSample);
+
+        // Stream testing functions
+        const output = document.getElementById('stream-output');
+
+        function clearOutput() {
+            output.innerHTML = '';
+        }
+
+        function addEvent(event) {
+            const div = document.createElement('div');
+            div.className = `event ${event.type}`;
+            div.textContent = JSON.stringify(event);
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        async function processStream(response) {
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        try {
+                            const event = JSON.parse(line.slice(6));
+                            addEvent(event);
+                        } catch (e) {
+                            console.error('Parse error:', e);
+                        }
+                    }
+                }
+            }
+        }
+
+        async function testNormalStream() {
+            clearOutput();
+            addEvent({ type: 'info', content: 'Starting normal chat stream...' });
+
+            try {
+                const response = await fetch('/api/chat/stream', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [{ role: 'user', content: 'Hello' }],
+                        thinking_enabled: false,
+                        web_search_enabled: false
+                    })
+                });
+                await processStream(response);
+            } catch (e) {
+                addEvent({ type: 'error', content: e.message });
+            }
+        }
+
+        async function testNormalStreamWithThinking() {
+            clearOutput();
+            addEvent({ type: 'info', content: 'Starting stream with thinking...' });
+
+            try {
+                const response = await fetch('/api/chat/stream', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [{ role: 'user', content: 'Think about this carefully' }],
+                        thinking_enabled: true,
+                        web_search_enabled: false
+                    })
+                });
+                await processStream(response);
+            } catch (e) {
+                addEvent({ type: 'error', content: e.message });
+            }
+        }
+
+        async function testNormalStreamWithWebSearch() {
+            clearOutput();
+            addEvent({ type: 'info', content: 'Starting stream with web search...' });
+
+            try {
+                const response = await fetch('/api/chat/stream', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [{ role: 'user', content: 'Search for something' }],
+                        thinking_enabled: false,
+                        web_search_enabled: true
+                    })
+                });
+                await processStream(response);
+            } catch (e) {
+                addEvent({ type: 'error', content: e.message });
+            }
+        }
+
+        async function testAgentStream() {
+            clearOutput();
+            addEvent({ type: 'info', content: 'Starting agent chat stream...' });
+
+            try {
+                const response = await fetch('/api/agent-chat/stream', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [{ role: 'user', content: 'Help me with something' }]
+                    })
+                });
+                await processStream(response);
+            } catch (e) {
+                addEvent({ type: 'error', content: e.message });
+            }
+        }
+
+        // Initialize highlight.js for code blocks
+        document.querySelectorAll('pre code').forEach((el) => {
+            hljs.highlightElement(el);
+        });
+    </script>
+</body>
+</html>

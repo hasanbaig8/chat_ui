@@ -1,29 +1,28 @@
 /**
- * Chat and streaming module with file-based branching support
+ * Chat module - Integrates with Store for state management
+ *
+ * This module handles UI interactions and rendering, delegating state
+ * management to Store and API calls to ApiClient where possible.
  */
 
 const ChatManager = {
-    messages: [],  // Array of {role, content, position, version, total_versions, user_msg_index}
-    currentBranch: [0],  // Current branch array
-    isStreaming: false,
-    isAgentConversation: false,  // Whether current conversation uses agent SDK
-    agentSessionId: null,  // Session ID for agent SDK conversation resumption
+    // UI state (not shared with other modules)
     abortController: null,
     editingPosition: null,
-    originalEditContent: null,  // Original content when editing
-    retryPosition: null,  // Position for retry operations
-    lastPrunedCount: 0,  // Track number of pruned messages
-    activeConversationId: null,  // Track which conversation is currently displayed
-    streamingMessageEl: null,  // Reference to current streaming message element
-    streamingMessageId: null,  // ID of message being streamed (for DB updates)
-    pollInterval: null,  // Interval for polling streaming updates
-    lastStreamingText: '',  // Track last known streaming text for smooth updates
-    streamingTextQueue: '',  // Queue of text waiting to be revealed
-    streamingDisplayedText: '',  // Text currently displayed during animated streaming
-    streamingAnimationFrame: null,  // Animation frame for smooth text reveal
-    userScrolledAway: false,  // Track if user has scrolled away during streaming
-    lastTabRefresh: 0,  // Timestamp of last tab refresh to debounce
-    toolBlocks: {},  // Map of tool_use_id to DOM elements for agent chats
+    originalEditContent: null,
+    retryPosition: null,
+    lastPrunedCount: 0,
+    streamingMessageEl: null,
+    streamingMessageId: null,
+    pollInterval: null,
+    lastStreamingText: '',
+    streamingTextQueue: '',
+    streamingDisplayedText: '',
+    streamingAnimationFrame: null,
+    userScrolledAway: false,
+    lastTabRefresh: 0,
+    toolBlocks: {},
+    agentSessionId: null,
 
     // Model context limits (in tokens)
     MODEL_LIMITS: {
@@ -34,17 +33,88 @@ const ChatManager = {
         'claude-3-haiku-20240307': 200000
     },
 
-    /**
-     * Initialize chat
-     */
+    // =========================================================================
+    // State accessors - delegate to Store
+    // =========================================================================
+
+    get messages() {
+        return Store.get('messages') || [];
+    },
+
+    set messages(value) {
+        Store.set({ messages: value });
+    },
+
+    get currentBranch() {
+        return Store.get('currentBranch') || [0];
+    },
+
+    set currentBranch(value) {
+        Store.set({ currentBranch: value });
+    },
+
+    get isStreaming() {
+        return Store.get('isStreaming') || false;
+    },
+
+    set isStreaming(value) {
+        if (value) {
+            Store.startStreaming();
+        } else {
+            Store.endStreaming();
+        }
+    },
+
+    get isAgentConversation() {
+        return Store.get('isAgent') || false;
+    },
+
+    set isAgentConversation(value) {
+        Store.set({ isAgent: value });
+    },
+
+    get activeConversationId() {
+        return Store.get('currentConversationId');
+    },
+
+    set activeConversationId(value) {
+        // Note: Use Store.setCurrentConversation for full state reset
+        Store.set({ currentConversationId: value });
+    },
+
+    // =========================================================================
+    // Initialization
+    // =========================================================================
+
+    _initialized: false,
+
     init() {
+        if (this._initialized) return;
+        this._initialized = true;
+
         this.bindEvents();
         this.configureMarked();
         this.bindTabVisibility();
+        this.subscribeToStore();
     },
 
     /**
-     * Handle tab visibility changes - refresh state when tab becomes visible
+     * Subscribe to Store changes for reactive updates
+     */
+    subscribeToStore() {
+        // Update send button when streaming state changes
+        Store.subscribe('isStreaming', () => {
+            this.updateSendButton();
+        });
+
+        // Update UI when messages change
+        Store.subscribe('messages', (messages) => {
+            // Could trigger re-render here if needed
+        });
+    },
+
+    /**
+     * Handle tab visibility changes
      */
     bindTabVisibility() {
         document.addEventListener('visibilitychange', async () => {
@@ -53,64 +123,39 @@ const ChatManager = {
             }
         });
 
-        // Also handle window focus for cases where visibilitychange doesn't fire
         window.addEventListener('focus', async () => {
             await this.refreshOnTabFocus();
         });
     },
 
-    /**
-     * Refresh conversation state when returning to tab
-     */
     async refreshOnTabFocus() {
-        // Debounce: don't refresh more than once per second
         const now = Date.now();
-        if (now - this.lastTabRefresh < 1000) {
-            return;
-        }
+        if (now - this.lastTabRefresh < 1000) return;
         this.lastTabRefresh = now;
 
-        // Don't refresh if we're actively streaming locally (would interrupt SSE)
-        if (this.abortController) {
-            return;
-        }
+        if (this.abortController) return;
 
-        // Refresh conversation list
         if (typeof ConversationsManager !== 'undefined') {
             await ConversationsManager.loadConversations();
         }
 
-        // Reload current conversation if one is selected
         const currentId = this.activeConversationId;
         if (currentId) {
             try {
-                // Check streaming status on server
-                const streamingResponse = await fetch(`/api/chat/streaming/${currentId}`);
-                const streamingData = await streamingResponse.json();
+                const status = await ApiClient.getStreamingStatus(currentId);
 
-                // Reload conversation from DB with current branch
-                const branchParam = this.currentBranch.join(',');
-                const convResponse = await fetch(`/api/conversations/${currentId}?branch=${branchParam}`);
-                if (convResponse.ok) {
-                    const conversation = await convResponse.json();
-
-                    // Update streaming tracker
-                    if (typeof StreamingTracker !== 'undefined') {
-                        StreamingTracker.setStreaming(currentId, streamingData.streaming);
-                    }
-
-                    // Reload the conversation UI
-                    await this.loadConversation(conversation);
+                if (typeof StreamingTracker !== 'undefined') {
+                    StreamingTracker.setStreaming(currentId, status);
                 }
+
+                const conversation = await ApiClient.getConversation(currentId, this.currentBranch);
+                await this.loadConversation(conversation);
             } catch (e) {
                 console.error('Error refreshing on tab focus:', e);
             }
         }
     },
 
-    /**
-     * Configure marked.js for markdown rendering
-     */
     configureMarked() {
         if (typeof marked !== 'undefined') {
             marked.setOptions({
@@ -133,9 +178,10 @@ const ChatManager = {
         }
     },
 
-    /**
-     * Bind DOM events
-     */
+    // =========================================================================
+    // Event Binding
+    // =========================================================================
+
     bindEvents() {
         const messageInput = document.getElementById('message-input');
         const sendBtn = document.getElementById('send-btn');
@@ -145,16 +191,11 @@ const ChatManager = {
             this.updateSendButton();
         });
 
-        sendBtn.addEventListener('click', () => {
-            this.sendMessage();
-        });
+        sendBtn.addEventListener('click', () => this.sendMessage());
 
-        // Stop button for agent chats
         const stopBtn = document.getElementById('stop-btn');
         if (stopBtn) {
-            stopBtn.addEventListener('click', () => {
-                this.stopAgentStream();
-            });
+            stopBtn.addEventListener('click', () => this.stopAgentStream());
         }
 
         messageInput.addEventListener('keydown', (e) => {
@@ -162,727 +203,407 @@ const ChatManager = {
                 e.preventDefault();
                 this.sendMessage();
             } else if (e.key === 'Enter' && e.shiftKey) {
-                // Auto-continue bullet points on Shift+Enter
-                const cursorPos = messageInput.selectionStart;
-                const text = messageInput.value;
-                const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
-                const currentLine = text.substring(lineStart, cursorPos);
-
-                // Check for bullet patterns: "- ", "* ", "1. ", "2. " etc.
-                const bulletMatch = currentLine.match(/^(\s*)([-*]|\d+\.)\s/);
-                if (bulletMatch) {
-                    e.preventDefault();
-                    const indent = bulletMatch[1];
-                    const bullet = bulletMatch[2];
-
-                    // If line only has the bullet (empty item), remove it
-                    if (currentLine.trim() === bullet) {
-                        // Remove the bullet line
-                        messageInput.value = text.substring(0, lineStart) + text.substring(cursorPos);
-                        messageInput.selectionStart = messageInput.selectionEnd = lineStart;
-                    } else {
-                        // Increment numbered list, or keep same bullet
-                        let nextBullet = bullet;
-                        const numMatch = bullet.match(/^(\d+)\.$/);
-                        if (numMatch) {
-                            nextBullet = (parseInt(numMatch[1], 10) + 1) + '.';
-                        }
-                        const insertion = '\n' + indent + nextBullet + ' ';
-                        messageInput.value = text.substring(0, cursorPos) + insertion + text.substring(cursorPos);
-                        const newPos = cursorPos + insertion.length;
-                        messageInput.selectionStart = messageInput.selectionEnd = newPos;
-                    }
-                    this.autoResizeTextarea(messageInput);
-                }
+                this.handleBulletContinuation(e, messageInput);
             }
         });
 
-        // Copy entire conversation button
-        const copyConversationBtn = document.getElementById('copy-conversation-btn');
-        if (copyConversationBtn) {
-            copyConversationBtn.addEventListener('click', () => {
-                this.copyEntireConversation();
-            });
+        // Copy entire conversation
+        const copyAllBtn = document.getElementById('copy-all-btn');
+        if (copyAllBtn) {
+            copyAllBtn.addEventListener('click', () => this.copyEntireConversation());
         }
 
-        // Track user scroll behavior during streaming
-        const messagesContainer = document.getElementById('messages-container');
-        messagesContainer.addEventListener('scroll', () => {
-            if (!this.isStreaming) return;
+        // Message actions (delegated)
+        document.getElementById('messages-container').addEventListener('click', (e) => {
+            this.handleMessageAction(e);
+        });
 
-            const container = messagesContainer;
-            const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
-
-            // If user scrolled more than 50px from bottom, they've scrolled away
-            if (distanceFromBottom > 50) {
-                this.userScrolledAway = true;
-            } else {
-                // User scrolled back to bottom
-                this.userScrolledAway = false;
+        // Version navigation
+        document.getElementById('messages-container').addEventListener('click', (e) => {
+            const versionBtn = e.target.closest('.version-btn');
+            if (versionBtn) {
+                const direction = parseInt(versionBtn.dataset.direction, 10);
+                const position = parseInt(versionBtn.dataset.position, 10);
+                this.switchVersion(position, direction);
             }
         });
     },
+
+    handleBulletContinuation(e, messageInput) {
+        const cursorPos = messageInput.selectionStart;
+        const text = messageInput.value;
+        const lineStart = text.lastIndexOf('\n', cursorPos - 1) + 1;
+        const currentLine = text.substring(lineStart, cursorPos);
+
+        const bulletMatch = currentLine.match(/^(\s*)([-*]|\d+\.)\s/);
+        if (bulletMatch) {
+            e.preventDefault();
+            const indent = bulletMatch[1];
+            const bullet = bulletMatch[2];
+
+            if (currentLine.trim() === bullet) {
+                messageInput.value = text.substring(0, lineStart) + text.substring(cursorPos);
+                messageInput.selectionStart = messageInput.selectionEnd = lineStart;
+            } else {
+                let nextBullet = bullet;
+                const numMatch = bullet.match(/^(\d+)\.$/);
+                if (numMatch) {
+                    nextBullet = (parseInt(numMatch[1], 10) + 1) + '.';
+                }
+                const insertion = '\n' + indent + nextBullet + ' ';
+                messageInput.value = text.substring(0, cursorPos) + insertion + text.substring(cursorPos);
+                const newPos = cursorPos + insertion.length;
+                messageInput.selectionStart = messageInput.selectionEnd = newPos;
+            }
+            this.autoResizeTextarea(messageInput);
+        }
+    },
+
+    handleMessageAction(e) {
+        const btn = e.target.closest('.action-btn');
+        if (!btn) return;
+
+        const messageEl = btn.closest('.message');
+        if (!messageEl) return;
+
+        const action = btn.dataset.action;
+        const position = parseInt(messageEl.dataset.position, 10);
+
+        switch (action) {
+            case 'copy':
+                this.copyMessage(messageEl);
+                break;
+            case 'edit':
+                this.editMessage(position);
+                break;
+            case 'retry':
+                this.retryMessage(position);
+                break;
+            case 'delete':
+                this.deleteMessagesFrom(position);
+                break;
+        }
+    },
+
+    // =========================================================================
+    // UI Helpers
+    // =========================================================================
 
     autoResizeTextarea(textarea) {
         textarea.style.height = 'auto';
-        textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+        textarea.style.height = textarea.scrollHeight + 'px';
     },
 
     updateSendButton() {
-        const messageInput = document.getElementById('message-input');
         const sendBtn = document.getElementById('send-btn');
         const stopBtn = document.getElementById('stop-btn');
-        const hasContent = messageInput.value.trim() || FilesManager.hasPendingFiles();
-        sendBtn.disabled = !hasContent || this.isStreaming;
+        const messageInput = document.getElementById('message-input');
+        const hasContent = messageInput.value.trim().length > 0 ||
+                          (typeof FilesManager !== 'undefined' && FilesManager.getContentBlocks().length > 0);
 
-        // Show stop button only during agent streaming
-        if (stopBtn) {
-            if (this.isStreaming && this.isAgentConversation) {
-                stopBtn.style.display = 'inline-block';
-                sendBtn.style.display = 'none';
-            } else {
+        if (this.isStreaming) {
+            sendBtn.disabled = true;
+            if (stopBtn && this.isAgentConversation) {
+                stopBtn.style.display = 'block';
+            }
+        } else {
+            sendBtn.disabled = !hasContent;
+            if (stopBtn) {
                 stopBtn.style.display = 'none';
-                sendBtn.style.display = 'inline-block';
             }
         }
     },
 
-    /**
-     * Stop an active agent stream
-     */
-    async stopAgentStream() {
-        const conversationId = ConversationsManager?.getCurrentConversationId();
-        if (!conversationId || !this.isAgentConversation) {
-            return;
-        }
+    scrollToBottom(force = false) {
+        const container = document.getElementById('messages-container');
+        if (!container) return;
 
-        try {
-            // First abort the local fetch
-            if (this.abortController) {
-                this.abortController.abort();
-            }
-
-            // Then signal the backend to stop
-            const response = await fetch(`/api/agent-chat/stop/${conversationId}`, {
-                method: 'POST'
-            });
-            const result = await response.json();
-            console.log('Stop agent stream result:', result);
-        } catch (error) {
-            console.error('Error stopping agent stream:', error);
+        if (force || !this.userScrolledAway) {
+            container.scrollTop = container.scrollHeight;
         }
     },
 
-    /**
-     * Estimate token count for content (rough approximation: ~4 chars per token)
-     */
+    getWelcomeMessage() {
+        return document.getElementById('welcome-message');
+    },
+
+    // =========================================================================
+    // Message Context Management
+    // =========================================================================
+
     estimateTokens(content) {
         if (typeof content === 'string') {
             return Math.ceil(content.length / 4);
-        } else if (Array.isArray(content)) {
-            let total = 0;
-            for (const block of content) {
+        }
+        if (Array.isArray(content)) {
+            return content.reduce((sum, block) => {
                 if (block.type === 'text') {
-                    total += Math.ceil((block.text || '').length / 4);
-                } else if (block.type === 'image') {
-                    // Images: rough estimate based on size, ~1000 tokens for base64 images
-                    total += 1000;
-                } else if (block.type === 'document') {
-                    // Documents: estimate based on content
-                    total += 500;
+                    return sum + Math.ceil((block.text || '').length / 4);
                 }
-            }
-            return total;
+                if (block.type === 'image' || block.type === 'document') {
+                    return sum + 1000;
+                }
+                return sum;
+            }, 0);
         }
         return 0;
     },
 
-    /**
-     * Get context limit for current model
-     */
     getContextLimit() {
-        const settings = SettingsManager?.getSettings() || {};
-        return this.MODEL_LIMITS[settings.model] || 200000;
+        const settings = typeof SettingsManager !== 'undefined' ? SettingsManager.getSettings() : {};
+        const model = settings.model || 'claude-3-5-sonnet-20241022';
+        return this.MODEL_LIMITS[model] || 200000;
     },
 
-    /**
-     * Prune messages to keep context under threshold
-     */
     pruneMessages(messages) {
-        const settings = SettingsManager?.getSettings() || {};
-        const pruneThreshold = settings.prune_threshold || 0.7;
+        const settings = typeof SettingsManager !== 'undefined' ? SettingsManager.getSettings() : {};
+        const thresholdPercent = settings.prune_threshold || 50;
         const contextLimit = this.getContextLimit();
-        const maxTokens = Math.floor(contextLimit * pruneThreshold);
+        const threshold = Math.floor(contextLimit * (thresholdPercent / 100));
 
-        // Calculate total tokens
-        let totalTokens = 0;
-        for (const msg of messages) {
-            totalTokens += this.estimateTokens(msg.content);
-        }
+        let totalTokens = messages.reduce((sum, m) => sum + this.estimateTokens(m.content), 0);
 
-        // If under limit, no pruning needed
-        if (totalTokens <= maxTokens) {
+        if (totalTokens <= threshold) {
+            this.lastPrunedCount = 0;
             return messages;
         }
 
-        // Prune from the beginning, but keep at least the last 2 messages (user + assistant)
-        const prunedMessages = [];
-        let currentTokens = 0;
+        const result = [...messages];
+        let pruned = 0;
 
-        // Start from the end and work backwards
-        for (let i = messages.length - 1; i >= 0; i--) {
-            const msg = messages[i];
-            const msgTokens = this.estimateTokens(msg.content);
-
-            if (currentTokens + msgTokens <= maxTokens || prunedMessages.length < 2) {
-                prunedMessages.unshift(msg);
-                currentTokens += msgTokens;
-            } else {
-                // Stop adding messages - we've hit the limit
-                break;
-            }
+        while (totalTokens > threshold && result.length > 2) {
+            const removed = result.shift();
+            totalTokens -= this.estimateTokens(removed.content);
+            pruned++;
         }
 
-        const prunedCount = messages.length - prunedMessages.length;
-        this.lastPrunedCount = prunedCount;
-
-        if (prunedCount > 0) {
-            const settings = SettingsManager?.getSettings() || {};
-            const pruneThreshold = settings.prune_threshold || 0.7;
-            console.log(`Pruned ${prunedCount} message(s) to keep context under ${pruneThreshold * 100}% (${totalTokens} -> ${currentTokens} tokens)`);
-        }
-
-        return prunedMessages;
+        this.lastPrunedCount = pruned;
+        return result;
     },
 
-    /**
-     * Load a conversation and its messages
-     */
+    // =========================================================================
+    // Conversation Management
+    // =========================================================================
+
     async loadConversation(conversation) {
-        console.log('[loadConversation] Starting load for:', conversation.id, 'Active ID:', this.activeConversationId);
+        // Update Store with conversation state
+        Store.setCurrentConversation(
+            conversation.id,
+            conversation.current_branch || [0],
+            conversation.is_agent || false
+        );
 
-        // Verify this is still the conversation we want to load
-        if (this.activeConversationId !== conversation.id) {
-            console.log('[loadConversation] SKIPPED - activeConversationId changed from', conversation.id, 'to', this.activeConversationId);
-            return;
-        }
+        this.agentSessionId = conversation.session_id || null;
 
-        // Stop any existing polling
-        this.stopPolling();
+        // Load messages into Store
+        const msgs = conversation.messages || [];
+        Store.set({ messages: msgs });
 
-        this.messages = [];
-        this.currentBranch = conversation.current_branch || [0];
-        this.isAgentConversation = conversation.is_agent || false;
-        this.agentSessionId = conversation.session_id || null;  // For agent SDK resumption
-        this.toolBlocks = {};
+        // Clear and render UI
         this.clearMessagesUI();
-
-        // Update settings mode based on conversation type
-        if (typeof SettingsManager !== 'undefined') {
-            SettingsManager.setMode(this.isAgentConversation ? 'agent' : 'normal');
+        const welcomeMessage = this.getWelcomeMessage();
+        if (welcomeMessage) {
+            welcomeMessage.style.display = msgs.length > 0 ? 'none' : 'block';
         }
 
-        // Update workspace visibility
-        if (typeof WorkspaceManager !== 'undefined') {
-            WorkspaceManager.updateVisibility(this.isAgentConversation);
-            WorkspaceManager.setConversation(conversation.id);
-        }
-        this.streamingMessageEl = null;
-        this.streamingMessageId = null;
+        // Check for active background stream FIRST (before rendering messages)
+        const activeStream = typeof BackgroundStreamManager !== 'undefined'
+            ? BackgroundStreamManager.getStream(conversation.id)
+            : null;
 
-        // Check if this conversation is streaming on the server FIRST
-        let isStreamingActive = false;
-        if (typeof StreamingTracker !== 'undefined') {
-            isStreamingActive = await StreamingTracker.checkServerStatus(conversation.id);
-            this.isStreaming = isStreamingActive;
-            console.log('[loadConversation] Streaming active:', isStreamingActive, 'Messages count:', conversation.messages?.length);
-        }
-
-        if (conversation.messages && conversation.messages.length > 0) {
-            console.log('[loadConversation] Branch:', conversation.current_branch, 'Message count:', conversation.messages.length);
-            console.log('[loadConversation] Rendering messages:', conversation.messages.map(m => ({
-                role: m.role,
-                position: m.position,
-                contentLength: typeof m.content === 'string' ? m.content.length : 'array',
-                content: typeof m.content === 'string' ? m.content.substring(0, 100) : m.content,
-                id: m.id
-            })));
-            document.getElementById('welcome-message').style.display = 'none';
-
-            // First, populate all messages with IDs for parent tracking
-            conversation.messages.forEach(msg => {
-                this.messages.push({
-                    id: msg.id,
-                    role: msg.role,
-                    content: msg.content,
-                    tool_results: msg.tool_results,
-                    position: msg.position,
-                    version: msg.current_version || msg.version || 1,
-                    total_versions: msg.total_versions || 1,
-                    user_msg_index: msg.user_msg_index
-                });
-            });
-
-            // Then render all messages
-            conversation.messages.forEach(msg => {
-                this.renderMessage({
-                    id: msg.id,
-                    role: msg.role,
-                    content: msg.content,
-                    thinking: msg.thinking,
-                    tool_results: msg.tool_results,
-                    position: msg.position,
-                    version: msg.current_version || msg.version || 1,
-                    total_versions: msg.total_versions || 1,
-                    user_msg_index: msg.user_msg_index
-                });
-            });
-
-            // Force scroll to bottom when loading a conversation
-            this.scrollToBottom(true);
-            this.updateContextStats();
-        } else if (!isStreamingActive) {
-            // Only show welcome message if NOT streaming (streaming might have in-progress message)
-            const welcomeEl = document.getElementById('welcome-message');
-            welcomeEl.innerHTML = this.getWelcomeMessage();
-            welcomeEl.style.display = '';
-        }
-
-        // Set up streaming if active
-        if (isStreamingActive) {
-            // Initialize streaming state with current content for smooth animation
-            if (conversation.messages && conversation.messages.length > 0) {
-                const lastMsg = conversation.messages[conversation.messages.length - 1];
-                if (lastMsg.role === 'assistant') {
-                    this.lastStreamingText = lastMsg.content || '';
-                    this.streamingDisplayedText = lastMsg.content || '';
-                    this.streamingTextQueue = '';
-                }
+        // Check for any streaming messages and render
+        let lastStreamingMsg = null;
+        for (const msg of msgs) {
+            if (msg.streaming) {
+                lastStreamingMsg = msg;
             }
+            // Skip rendering the streaming message if we have an active background stream
+            // (StreamingDisplay will handle rendering it)
+            if (activeStream && !activeStream.isComplete && msg.id === activeStream.messageId) {
+                continue;
+            }
+            this.renderMessage(msg);
+        }
+
+        // Handle streaming state - check BackgroundStreamManager first
+        if (activeStream && !activeStream.isComplete) {
+            // Reconnect StreamingDisplay to background stream
+            console.log('[ChatManager] Reconnecting to background stream:', conversation.id);
+            Store.startStreaming();
+
+            // Create message element for the streaming message
+            const position = activeStream.position;
+            const messageEl = this.createMessageElement('assistant', position, 1, 1);
+            if (activeStream.messageId) {
+                messageEl.dataset.messageId = activeStream.messageId;
+            }
+            document.getElementById('messages-container').appendChild(messageEl);
+
+            // Connect StreamingDisplay to render accumulated content and subscribe to updates
+            StreamingDisplay.connect(conversation.id, messageEl);
+            this.updateSendButton();
+        } else if (lastStreamingMsg) {
+            // Message marked as streaming but no background stream - poll for completion
             this.startPolling(conversation.id);
-        } else {
-            this.lastStreamingText = '';
-            this.stopStreamingAnimation();
-            this.isStreaming = false;
+        } else if (conversation.is_agent && typeof StreamingTracker !== 'undefined') {
+            // Check server for streams we don't know about (page reload case)
+            const status = await StreamingTracker.checkServerStatus(conversation.id);
+            if (status.streaming && status.type === 'agent') {
+                console.log('[ChatManager] Found server-side stream, starting polling:', conversation.id);
+                this.startPolling(conversation.id);
+                Store.startStreaming();
+                this.updateSendButton();
+            }
         }
 
-        this.updateSendButton();
-    },
-
-    /**
-     * Start polling for streaming updates
-     */
-    startPolling(conversationId) {
-        this.stopPolling();  // Clear any existing interval
-
-        this.isStreaming = true;
-        this.updateSendButton();
-
-        // Poll every 500ms for updates
-        this.pollInterval = setInterval(async () => {
-            if (this.activeConversationId !== conversationId) {
-                this.stopPolling();
-                return;
-            }
-
-            try {
-                // Check if still streaming
-                const streamingResponse = await fetch(`/api/chat/streaming/${conversationId}`);
-                const streamingData = await streamingResponse.json();
-
-                if (!streamingData.streaming) {
-                    // Streaming finished, reload conversation to get final content
-                    this.stopPolling();
-                    if (typeof StreamingTracker !== 'undefined') {
-                        StreamingTracker.setStreaming(conversationId, false);
-                    }
-
-                    // Reload the conversation from DB with current branch
-                    const branchParam = this.currentBranch.join(',');
-                    const convResponse = await fetch(`/api/conversations/${conversationId}?branch=${branchParam}`);
-                    const conversation = await convResponse.json();
-
-                    if (this.activeConversationId === conversationId) {
-                        this.loadConversation(conversation);
-                    }
-                    return;
-                }
-
-                // Still streaming - reload to get latest content
-                const branchParam = this.currentBranch.join(',');
-                const convResponse = await fetch(`/api/conversations/${conversationId}?branch=${branchParam}`);
-                const conversation = await convResponse.json();
-
-                if (this.activeConversationId === conversationId) {
-                    this.updateFromConversation(conversation);
-                }
-            } catch (e) {
-                console.error('Polling error:', e);
-            }
-        }, 500);
-    },
-
-    /**
-     * Stop polling for updates
-     */
-    stopPolling() {
-        if (this.pollInterval) {
-            clearInterval(this.pollInterval);
-            this.pollInterval = null;
-        }
-    },
-
-    /**
-     * Update UI from conversation data (used during polling)
-     */
-    updateFromConversation(conversation) {
-        console.log('[updateFromConversation] Messages:', conversation.messages?.length, 'Last message content length:', conversation.messages?.[conversation.messages.length - 1]?.content?.length);
-        if (!conversation.messages || conversation.messages.length === 0) return;
-
-        const container = document.getElementById('messages-container');
-        const lastMsg = conversation.messages[conversation.messages.length - 1];
-
-        // Find or create the message element
-        let messageEl = container.querySelector(`.message[data-position="${lastMsg.position}"]`);
-
-        if (!messageEl && lastMsg.role === 'assistant') {
-            // Create new message element
-            messageEl = this.createMessageElement('assistant', lastMsg.position, 1, 1);
-            container.appendChild(messageEl);
-            document.getElementById('welcome-message').style.display = 'none';
-        }
-
-        if (messageEl && lastMsg.role === 'assistant') {
-            const contentEl = messageEl.querySelector('.message-content');
-
-            // Add streaming indicator if streaming
-            let indicator = contentEl.querySelector('.streaming-indicator');
-            if (!indicator && this.isStreaming) {
-                indicator = document.createElement('span');
-                indicator.className = 'streaming-indicator';
-            }
-
-            // Update thinking block if present
-            if (lastMsg.thinking) {
-                let thinkingEl = contentEl.querySelector('.thinking-block');
-                if (!thinkingEl) {
-                    thinkingEl = this.createThinkingBlock();
-                    contentEl.insertBefore(thinkingEl, contentEl.firstChild);
-                }
-                this.updateThinkingBlock(thinkingEl, lastMsg.thinking);
-            }
-
-            // Update text content with smooth streaming
-            if (lastMsg.content) {
-                // For streaming, use incremental updates
-                if (this.isStreaming) {
-                    this.updateStreamingContent(contentEl, lastMsg.content, indicator);
-                } else {
-                    this.updateMessageContent(contentEl, lastMsg.content, indicator);
-                }
-            }
-
-            this.scrollToBottom();
-        }
-
-        // Update messages array
-        this.messages = conversation.messages.map(msg => ({
-            id: msg.id,
-            role: msg.role,
-            content: msg.content,
-            position: msg.position,
-            version: msg.current_version || msg.version || 1,
-            total_versions: msg.total_versions || 1,
-            user_msg_index: msg.user_msg_index
-        }));
-
+        this.scrollToBottom(true);
         this.updateContextStats();
-    },
-
-    /**
-     * Update streaming content smoothly with animated character reveal
-     * When polling returns chunks of text, we animate them character by character
-     */
-    updateStreamingContent(contentEl, newText, indicator) {
-        // If new text is an extension of what we know about, queue the new chars
-        const oldText = this.lastStreamingText || '';
-
-        if (newText.length > oldText.length && newText.startsWith(oldText)) {
-            // Queue the new characters for animated reveal
-            const newChars = newText.slice(oldText.length);
-            this.streamingTextQueue += newChars;
-            this.lastStreamingText = newText;
-        } else if (newText !== oldText) {
-            // Text changed differently - reset and show immediately
-            this.streamingTextQueue = '';
-            this.streamingDisplayedText = newText;
-            this.lastStreamingText = newText;
-            this.renderStreamingText(contentEl, newText, indicator);
-            return;
-        }
-
-        // Start animation if not already running
-        if (!this.streamingAnimationFrame && this.streamingTextQueue.length > 0) {
-            this.animateStreamingText(contentEl, indicator);
-        }
-    },
-
-    /**
-     * Animate revealing queued text character by character
-     */
-    animateStreamingText(contentEl, indicator) {
-        const charsPerFrame = 3;  // Reveal multiple chars per frame for speed
-        const frameDelay = 16;    // ~60fps
-
-        const animate = () => {
-            if (this.streamingTextQueue.length === 0) {
-                this.streamingAnimationFrame = null;
-                return;
-            }
-
-            // Take chars from queue
-            const chars = this.streamingTextQueue.slice(0, charsPerFrame);
-            this.streamingTextQueue = this.streamingTextQueue.slice(charsPerFrame);
-            this.streamingDisplayedText += chars;
-
-            // Render current displayed text
-            this.renderStreamingText(contentEl, this.streamingDisplayedText, indicator);
-
-            // Continue animation
-            this.streamingAnimationFrame = setTimeout(() => {
-                requestAnimationFrame(() => animate());
-            }, frameDelay);
-        };
-
-        this.streamingAnimationFrame = requestAnimationFrame(() => animate());
-    },
-
-    /**
-     * Render the streaming text to the DOM
-     */
-    renderStreamingText(contentEl, text, indicator) {
-        const thinkingBlock = contentEl.querySelector('.thinking-block');
-        const wasExpanded = thinkingBlock?.classList.contains('expanded');
-
-        // Get or create text container
-        let textContainer = contentEl.querySelector('.message-text');
-        if (!textContainer) {
-            // Clear existing content (from renderMessage) but preserve thinking block
-            // Remove all children except thinking block
-            Array.from(contentEl.children).forEach(child => {
-                if (!child.classList.contains('thinking-block') &&
-                    !child.classList.contains('streaming-indicator')) {
-                    child.remove();
-                }
-            });
-
-            textContainer = document.createElement('div');
-            textContainer.className = 'message-text';
-            contentEl.appendChild(textContainer);
-        }
-
-        textContainer.innerHTML = this.formatText(text);
-        this.addCodeCopyButtons(textContainer);
-        textContainer.dataset.rawText = text;
-
-        // Re-add thinking block at the beginning
-        if (thinkingBlock) {
-            contentEl.insertBefore(thinkingBlock, contentEl.firstChild);
-            if (wasExpanded) {
-                thinkingBlock.classList.add('expanded');
-            }
-        }
-
-        // Ensure indicator is at end
-        if (indicator && indicator.parentNode !== contentEl) {
-            contentEl.appendChild(indicator);
-        }
-
-        // Note: Don't call scrollToBottom here - it's called too frequently
-        // Let updateFromConversation handle scrolling at a reasonable rate
-    },
-
-    /**
-     * Stop streaming text animation
-     */
-    stopStreamingAnimation() {
-        if (this.streamingAnimationFrame) {
-            cancelAnimationFrame(this.streamingAnimationFrame);
-            clearTimeout(this.streamingAnimationFrame);
-            this.streamingAnimationFrame = null;
-        }
-        this.streamingTextQueue = '';
-        this.streamingDisplayedText = '';
     },
 
     clearChat() {
+        Store.clearCurrentConversation();
+        this.clearMessagesUI();
+        this.agentSessionId = null;
+        this.toolBlocks = {};
         this.stopPolling();
         this.stopStreamingAnimation();
-        this.messages = [];
-        this.currentBranch = [0];
-        // Don't reset isAgentConversation here - let the caller set it appropriately
-        this.clearMessagesUI();
-        this.streamingMessageEl = null;
-        this.streamingMessageId = null;
-        this.isStreaming = false;
-        this.agentSessionId = null;
-        this.userScrolledAway = false;
-        this.abortController = null;
-        this.lastStreamingText = '';
-        this.toolBlocks = {};
-        document.getElementById('welcome-message').style.display = '';
-        this.updateContextStats();
-        this.updateSendButton();
 
-        // Update workspace visibility
-        if (typeof WorkspaceManager !== 'undefined') {
-            WorkspaceManager.updateVisibility(this.isAgentConversation);
+        const welcomeMessage = this.getWelcomeMessage();
+        if (welcomeMessage) {
+            welcomeMessage.style.display = 'block';
         }
+
+        this.updateContextStats();
     },
 
-    /**
-     * Prepare UI for a conversation switch - call this immediately when switching
-     */
     prepareForConversationSwitch(newConversationId) {
-        // Stop polling and animation for the old conversation
+        const oldId = this.activeConversationId;
+
+        // Check if there's a background stream (active OR just completed)
+        // We use getStream() instead of isStreaming() to also catch streams that
+        // just completed but haven't been cleaned up yet
+        const hasBackgroundStream = typeof BackgroundStreamManager !== 'undefined' &&
+            oldId && BackgroundStreamManager.getStream(oldId) !== null;
+
+        const isAgentWithStream = this.isAgentConversation && hasBackgroundStream;
+
+        // Disconnect StreamingDisplay from current stream (but keep stream data)
+        if (typeof StreamingDisplay !== 'undefined') {
+            StreamingDisplay.disconnect();
+        }
+
+        // For agent streams, NEVER clean up here - let the finally block handle it
+        // This avoids race conditions between stream completion and conversation switching
+        if (isAgentWithStream && oldId) {
+            console.log('[ChatManager] Detaching from agent stream:', oldId);
+            // DON'T abort - let the fetch loop continue reading and accumulating data
+            // Just clear our reference so we know we've "detached"
+            this.abortController = null;
+            // Keep StreamingTracker state
+            // Keep BackgroundStreamManager state - cleanup happens in finally block
+        } else if (this.isAgentConversation && this.abortController) {
+            // Agent stream started but not yet in BackgroundStreamManager (very early)
+            console.log('[ChatManager] Detaching from early agent stream:', oldId);
+            this.abortController = null;
+        } else {
+            // Normal chat - full cleanup
+            if (this.abortController) {
+                this.abortController.abort();
+                this.abortController = null;
+            }
+            if (oldId) {
+                if (typeof StreamingTracker !== 'undefined') {
+                    StreamingTracker.setStreaming(oldId, { streaming: false });
+                }
+                // Clean up BackgroundStreamManager for non-agent streams only
+                if (typeof BackgroundStreamManager !== 'undefined' && !this.isAgentConversation) {
+                    BackgroundStreamManager.removeStream(oldId);
+                }
+            }
+        }
+
+        // Invalidate SSE streams
+        if (typeof SSEClient !== 'undefined') {
+            SSEClient.invalidateStreams();
+        }
+
         this.stopPolling();
         this.stopStreamingAnimation();
-
-        // Update active conversation ID immediately
-        this.activeConversationId = newConversationId;
-
-        // Clear UI immediately to prevent showing stale messages
-        this.messages = [];
-        this.currentBranch = [0];
-        // Note: isAgentConversation should be set by caller before calling this
-        this.clearMessagesUI();
-        this.streamingMessageEl = null;
-        this.streamingMessageId = null;
-        this.lastStreamingText = '';
+        // Note: toolBlocks is now managed in BackgroundStreamManager and StreamingDisplay
         this.toolBlocks = {};
-
-        // Show loading state or welcome message
-        document.getElementById('welcome-message').style.display = '';
-
-        // Reset streaming state - will be updated when conversation loads
-        this.isStreaming = false;
-        // Don't reset isAgentConversation here - it's set by the caller
-        this.agentSessionId = null;
-        this.userScrolledAway = false;
-        this.updateSendButton();
-        this.updateContextStats();
-
-        // Update workspace visibility based on conversation type
-        if (typeof WorkspaceManager !== 'undefined') {
-            WorkspaceManager.updateVisibility(this.isAgentConversation);
-            WorkspaceManager.setConversation(newConversationId);
-        }
     },
 
     clearMessagesUI() {
         const container = document.getElementById('messages-container');
-        const welcomeHtml = this.getWelcomeMessage();
-        container.innerHTML = `<div class="welcome-message" id="welcome-message" style="display: none;">${welcomeHtml}</div>`;
-    },
-
-    /**
-     * Get welcome message based on conversation type
-     */
-    getWelcomeMessage() {
-        if (this.isAgentConversation) {
-            return `
-                <h2>Welcome to Claude Agent Chat</h2>
-                <p>This is an agentic conversation where Claude can:</p>
-                <ul style="text-align: left; display: inline-block; margin-top: 10px;">
-                    <li>Read and write files in your workspace</li>
-                    <li>Execute bash commands</li>
-                    <li>Search for GIFs to enhance responses</li>
-                    <li>Maintain context across multiple turns</li>
-                </ul>
-                <p style="margin-top: 15px;">Start by asking Claude to help with coding tasks!</p>
-            `;
-        } else {
-            return '<h2>Welcome to Claude Chat</h2><p>Start a conversation by typing a message below.</p>';
+        if (container) {
+            // Remove only message elements, preserve welcome-message
+            const messages = container.querySelectorAll('.message');
+            messages.forEach(msg => msg.remove());
         }
     },
 
-    /**
-     * Handle slash commands for agent conversations
-     * Returns true if command was handled, false otherwise
-     */
+    // =========================================================================
+    // Slash Commands
+    // =========================================================================
+
     async handleSlashCommand(text) {
-        if (!this.isAgentConversation || !text.startsWith('/')) {
-            return false;
+        if (!text.startsWith('/')) return false;
+
+        const parts = text.split(/\s+/);
+        const command = parts[0].toLowerCase();
+
+        if (this.isAgentConversation) {
+            if (command === '/compact') {
+                await this.compactConversation();
+                return true;
+            }
         }
 
-        const parts = text.split(' ');
-        const command = parts[0].toLowerCase();
-        const args = parts.slice(1);
+        return false;
+    },
 
-        switch (command) {
-            case '/ls':
-                // Show workspace files
-                if (typeof WorkspaceManager !== 'undefined') {
-                    WorkspaceManager.togglePanel();
-                    if (!WorkspaceManager.isOpen) {
-                        // If was closed, open it
-                        WorkspaceManager.togglePanel();
-                    }
-                }
-                return true;
+    async compactConversation() {
+        const conversationId = this.activeConversationId;
+        if (!conversationId) return;
 
-            case '/delete':
-                // Delete a file
-                if (args.length === 0) {
-                    this.showSystemMessage('Usage: /delete <filename>');
-                    return true;
-                }
-                const filename = args.join(' ');
-                if (typeof WorkspaceManager !== 'undefined') {
-                    await WorkspaceManager.deleteFile(filename);
-                }
-                return true;
+        try {
+            const response = await fetch(`/api/agent-chat/compact/${conversationId}`, {
+                method: 'POST'
+            });
 
-            default:
-                return false;
+            if (response.ok) {
+                const result = await response.json();
+                this.showSystemMessage(`Compacted ${result.messages_removed} messages`);
+
+                const conversation = await ApiClient.getConversation(conversationId, this.currentBranch);
+                await this.loadConversation(conversation);
+            }
+        } catch (e) {
+            console.error('Error compacting conversation:', e);
         }
     },
 
-    /**
-     * Show system message in chat
-     */
     showSystemMessage(text) {
         const container = document.getElementById('messages-container');
         const msgEl = document.createElement('div');
-        msgEl.className = 'system-message';
-        msgEl.textContent = text;
-        msgEl.style.cssText = `
-            padding: 8px 12px;
-            margin: 8px auto;
-            max-width: 600px;
-            background-color: var(--color-bg);
-            border: 1px solid var(--color-border);
-            border-radius: 6px;
-            color: var(--color-text-secondary);
-            font-size: 13px;
-            text-align: center;
-        `;
+        msgEl.className = 'message system-message';
+        msgEl.innerHTML = `<div class="message-content">${this.escapeHtml(text)}</div>`;
         container.appendChild(msgEl);
         this.scrollToBottom(true);
     },
 
-    /**
-     * Send a new message
-     */
+    // =========================================================================
+    // Send Message
+    // =========================================================================
+
     async sendMessage() {
         const messageInput = document.getElementById('message-input');
         const text = messageInput.value.trim();
-        const fileBlocks = FilesManager.getContentBlocks();
+        const fileBlocks = typeof FilesManager !== 'undefined' ? FilesManager.getContentBlocks() : [];
 
         if (!text && fileBlocks.length === 0) return;
         if (this.isStreaming) return;
 
-        // Handle slash commands for agent conversations
         if (await this.handleSlashCommand(text)) {
             messageInput.value = '';
             messageInput.style.height = 'auto';
@@ -902,18 +623,19 @@ const ChatManager = {
 
         messageInput.value = '';
         messageInput.style.height = 'auto';
-        FilesManager.clearPendingFiles();
+        if (typeof FilesManager !== 'undefined') {
+            FilesManager.clearPendingFiles();
+        }
         this.updateSendButton();
 
         let conversationId = ConversationsManager.getCurrentConversationId();
         if (!conversationId) {
             const conversation = await ConversationsManager.createConversation(
                 ConversationsManager.generateTitle(content),
-                false  // Don't clear UI - we're about to add the user's message
+                false
             );
             conversationId = conversation.id;
-            // Set activeConversationId since createConversation didn't (clearUI=false)
-            this.activeConversationId = conversationId;
+            Store.set({ currentConversationId: conversationId });
             this.currentBranch = [0];
         } else if (this.messages.length === 0) {
             await ConversationsManager.updateConversationTitle(
@@ -924,10 +646,10 @@ const ChatManager = {
 
         document.getElementById('welcome-message').style.display = 'none';
 
-        // Add user message to backend first to get ID
+        // Add user message via API
         const savedMsg = await ConversationsManager.addMessage('user', content, null, this.currentBranch);
 
-        // Add user message to local state with ID
+        // Add to Store
         const userMsg = {
             id: savedMsg?.id,
             role: 'user',
@@ -936,476 +658,32 @@ const ChatManager = {
             version: 1,
             total_versions: 1
         };
-        this.messages.push(userMsg);
-        this.renderMessage(userMsg, true); // Force scroll to bottom for new message
+        Store.addMessage(userMsg);
+        this.renderMessage(userMsg, true);
 
         await this.streamResponse();
     },
 
-    /**
-     * Edit a message at a position - inline editing
-     */
-    async editMessage(position) {
-        const msg = this.messages.find(m => m.position === position);
-        if (!msg || msg.role !== 'user') return;
-        if (this.isStreaming) return;
-        if (this.editingPosition !== null) return; // Already editing
+    // =========================================================================
+    // Streaming
+    // =========================================================================
 
-        // Get the text content
-        let textContent = '';
-        if (typeof msg.content === 'string') {
-            textContent = msg.content;
-        } else if (Array.isArray(msg.content)) {
-            const textBlock = msg.content.find(b => b.type === 'text' && !b.text?.startsWith('File: '));
-            textContent = textBlock?.text || '';
-        }
-
-        const container = document.getElementById('messages-container');
-        const userMsgEl = container.querySelector(`.message.user[data-position="${position}"]`);
-        if (!userMsgEl) return;
-
-        const contentEl = userMsgEl.querySelector('.message-content');
-        if (!contentEl) return;
-
-        // Store original content and mark as editing
-        this.editingPosition = position;
-        this.originalEditContent = textContent;
-
-        // Add editing class for expanded styling
-        userMsgEl.classList.add('editing');
-
-        // Replace content with editable textarea
-        const textarea = document.createElement('textarea');
-        textarea.className = 'edit-textarea';
-        textarea.value = textContent;
-        textarea.style.cssText = `
-            width: 100%;
-            min-height: 80px;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            background: transparent;
-            color: var(--color-text);
-            font-family: inherit;
-            font-size: inherit;
-            line-height: 1.5;
-            resize: vertical;
-            outline: none;
-        `;
-
-        // Create button container
-        const buttonContainer = document.createElement('div');
-        buttonContainer.className = 'edit-buttons';
-        buttonContainer.style.cssText = `
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-            justify-content: flex-end;
-        `;
-
-        const saveBtn = document.createElement('button');
-        saveBtn.textContent = 'Save';
-        saveBtn.className = 'edit-save-btn';
-        saveBtn.style.cssText = `
-            padding: 6px 12px;
-            background: var(--color-primary);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-        `;
-
-        const cancelBtn = document.createElement('button');
-        cancelBtn.textContent = 'Cancel';
-        cancelBtn.className = 'edit-cancel-btn';
-        cancelBtn.style.cssText = `
-            padding: 6px 12px;
-            background: var(--color-border);
-            color: var(--color-text);
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-        `;
-
-        buttonContainer.appendChild(cancelBtn);
-        buttonContainer.appendChild(saveBtn);
-
-        // Clear content and add edit UI
-        contentEl.innerHTML = '';
-        contentEl.appendChild(textarea);
-        contentEl.appendChild(buttonContainer);
-
-        // Hide the action buttons while editing
-        const actionsEl = userMsgEl.querySelector('.message-actions');
-        if (actionsEl) actionsEl.style.display = 'none';
-
-        // Focus and select text
-        textarea.focus();
-        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
-
-        // Auto-resize textarea
-        const autoResize = () => {
-            textarea.style.height = 'auto';
-            textarea.style.height = Math.min(textarea.scrollHeight, 300) + 'px';
-        };
-        autoResize();
-        textarea.addEventListener('input', autoResize);
-
-        // Handle save
-        const saveEdit = async () => {
-            const newContent = textarea.value.trim();
-            if (!newContent) {
-                cancelEdit();
-                return;
-            }
-            await this.confirmEdit(position, newContent);
-        };
-
-        // Handle cancel
-        const cancelEdit = () => {
-            this.cancelEdit(position);
-        };
-
-        // Event listeners
-        saveBtn.addEventListener('click', saveEdit);
-        cancelBtn.addEventListener('click', cancelEdit);
-
-        textarea.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                e.preventDefault();
-                saveEdit();
-            } else if (e.key === 'Escape') {
-                e.preventDefault();
-                cancelEdit();
-            }
-        });
-    },
-
-    /**
-     * Confirm and save the edit - creates a new branch
-     */
-    async confirmEdit(position, newContent) {
-        if (this.editingPosition !== position) return;
-
-        const conversationId = ConversationsManager.getCurrentConversationId();
-        if (!conversationId) return;
-
-        // Find the user message index for the edited position
-        const msg = this.messages.find(m => m.position === position);
-        const userMsgIndex = msg?.user_msg_index ?? Math.floor(position / 2);
-
-        // Clear editing state
-        this.editingPosition = null;
-        this.originalEditContent = null;
-
-        // Create new branch via API
-        const response = await fetch(`/api/conversations/${conversationId}/edit`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_msg_index: userMsgIndex,
-                content: newContent,
-                branch: this.currentBranch
-            })
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            // Update current branch
-            this.currentBranch = result.branch;
-
-            // Reload conversation with new branch
-            await ConversationsManager.selectConversation(conversationId, this.currentBranch);
-
-            // Stream new response
-            await this.streamResponse();
-        }
-    },
-
-    /**
-     * Cancel the edit and restore original content
-     */
-    cancelEdit(position) {
-        if (this.editingPosition !== position) return;
-
-        const container = document.getElementById('messages-container');
-        const userMsgEl = container.querySelector(`.message.user[data-position="${position}"]`);
-
-        if (userMsgEl) {
-            // Remove editing class
-            userMsgEl.classList.remove('editing');
-
-            const contentEl = userMsgEl.querySelector('.message-content');
-            if (contentEl) {
-                contentEl.innerHTML = this.formatText(this.originalEditContent || '');
-            }
-            // Show action buttons again
-            const actionsEl = userMsgEl.querySelector('.message-actions');
-            if (actionsEl) actionsEl.style.display = '';
-        }
-
-        // Clear editing state
-        this.editingPosition = null;
-        this.originalEditContent = null;
-    },
-
-    /**
-     * Copy message content to clipboard
-     */
-    async copyMessage(messageEl) {
-        const contentEl = messageEl.querySelector('.message-content');
-        if (!contentEl) return;
-
-        // Extract text content, skipping thinking blocks
-        let textToCopy = '';
-
-        // Get all text nodes, but skip thinking content
-        const thinkingBlock = contentEl.querySelector('.thinking-block');
-        if (thinkingBlock) {
-            // Clone the content element and remove thinking block from clone
-            const clone = contentEl.cloneNode(true);
-            const thinkingClone = clone.querySelector('.thinking-block');
-            if (thinkingClone) thinkingClone.remove();
-            textToCopy = clone.textContent.trim();
-        } else {
-            textToCopy = contentEl.textContent.trim();
-        }
-
-        if (!textToCopy) return;
-
-        try {
-            await navigator.clipboard.writeText(textToCopy);
-
-            // Show visual feedback
-            const copyBtn = messageEl.querySelector('.copy-btn');
-            if (copyBtn) {
-                const originalText = copyBtn.textContent;
-                copyBtn.textContent = 'Copied';
-                copyBtn.style.color = '#4CAF50';
-                setTimeout(() => {
-                    copyBtn.textContent = originalText;
-                    copyBtn.style.color = '';
-                }, 1000);
-            }
-        } catch (error) {
-            console.error('Failed to copy:', error);
-            alert('Failed to copy to clipboard');
-        }
-    },
-
-    /**
-     * Copy entire conversation to clipboard
-     */
-    async copyEntireConversation() {
-        if (this.messages.length === 0) {
-            return;
-        }
-
-        // Format all messages as text
-        const formatted = this.messages.map(msg => {
-            const role = msg.role === 'user' ? 'User' : 'Assistant';
-
-            // Extract text content from message
-            let content = '';
-            if (typeof msg.content === 'string') {
-                content = msg.content;
-            } else if (Array.isArray(msg.content)) {
-                // Get text blocks, excluding file metadata
-                const textBlocks = msg.content.filter(b => b.type === 'text' && !b.text?.startsWith('File: '));
-                content = textBlocks.map(b => b.text).join('\n');
-
-                // If there are files, add a note
-                const fileBlocks = msg.content.filter(b => b.type === 'image' || b.type === 'document');
-                if (fileBlocks.length > 0) {
-                    const fileNote = `[${fileBlocks.length} file${fileBlocks.length > 1 ? 's' : ''} attached]`;
-                    content = fileNote + (content ? '\n' + content : '');
-                }
-            }
-
-            return `${role}: ${content}`;
-        }).join('\n\n');
-
-        try {
-            await navigator.clipboard.writeText(formatted);
-
-            // Show visual feedback
-            const copyBtn = document.getElementById('copy-conversation-btn');
-            if (copyBtn) {
-                // Clear any existing timeout to prevent race conditions
-                if (copyBtn._copyTimeout) {
-                    clearTimeout(copyBtn._copyTimeout);
-                }
-                copyBtn.textContent = 'Copied';
-                copyBtn.style.color = '#4CAF50';
-                copyBtn._copyTimeout = setTimeout(() => {
-                    copyBtn.textContent = '📋';
-                    copyBtn.style.color = '';
-                    copyBtn._copyTimeout = null;
-                }, 2000);
-            }
-        } catch (error) {
-            console.error('Failed to copy conversation:', error);
-            alert('Failed to copy conversation to clipboard');
-        }
-    },
-
-    /**
-     * Retry an assistant message (called from assistant message)
-     */
-    async retryMessage(assistantPosition) {
-        if (this.isStreaming) return;
-
-        const conversationId = ConversationsManager.getCurrentConversationId();
-        if (!conversationId) return;
-
-        // Remove messages from this position onwards in UI FIRST
-        this.removeMessagesFromPosition(assistantPosition);
-
-        // Force a repaint to ensure UI is cleared before streaming
-        await new Promise(resolve => requestAnimationFrame(resolve));
-
-        // Set retry position for the streaming handler
-        this.retryPosition = assistantPosition;
-
-        // Stream new response
-        await this.streamResponse(true);
-
-        // Reload conversation to ensure UI is in sync
-        await ConversationsManager.selectConversation(conversationId, this.currentBranch);
-    },
-
-    /**
-     * Switch to a different branch at a user message position
-     */
-    async switchVersion(position, direction) {
-        const msg = this.messages.find(m => m.position === position);
-        if (!msg || msg.total_versions <= 1) return;
-
-        const conversationId = ConversationsManager.getCurrentConversationId();
-        if (!conversationId) return;
-
-        // Get the user_msg_index for this position
-        const userMsgIndex = msg.user_msg_index ?? Math.floor(position / 2);
-
-        // Call the switch-branch API
-        const response = await fetch(`/api/conversations/${conversationId}/switch-branch`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_msg_index: userMsgIndex,
-                direction: direction,
-                branch: this.currentBranch
-            })
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            this.currentBranch = result.branch;
-
-            // Reload with new branch
-            await this.loadConversation(result.conversation);
-        }
-    },
-
-    /**
-     * Remove messages from UI starting at position
-     */
-    removeMessagesFromPosition(position) {
-        const container = document.getElementById('messages-container');
-        const messageEls = container.querySelectorAll('.message');
-
-        messageEls.forEach(el => {
-            const pos = parseInt(el.dataset.position);
-            if (pos >= position) {
-                el.remove();
-            }
-        });
-
-        // Update internal messages array
-        this.messages = this.messages.filter(m => m.position < position);
-    },
-
-    /**
-     * Delete messages from a position onwards (inclusive)
-     * This removes them from the backend storage as well
-     */
-    async deleteMessagesFrom(position) {
-        if (this.isStreaming) return;
-
-        const conversationId = ConversationsManager.getCurrentConversationId();
-        if (!conversationId) return;
-
-        console.log('Delete request - Position:', position, 'Total messages:', this.messages.length, 'Branch:', this.currentBranch);
-
-        // Confirm deletion
-        const msgCount = this.messages.filter(m => m.position >= position).length;
-        if (!confirm(`Delete ${msgCount} message${msgCount > 1 ? 's' : ''}? This cannot be undone.`)) {
-            return;
-        }
-
-        try {
-            // Call API to delete messages
-            const response = await fetch(`/api/conversations/${conversationId}/delete-from/${position}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ branch: this.currentBranch })
-            });
-
-            console.log('Delete response status:', response.status);
-
-            if (response.ok) {
-                console.log('Delete successful, removing from UI');
-                // Remove from UI
-                this.removeMessagesFromPosition(position);
-                this.updateContextStats();
-
-                // Show welcome message if no messages left
-                if (this.messages.length === 0) {
-                    const welcomeEl = document.getElementById('welcome-message');
-                    welcomeEl.innerHTML = this.getWelcomeMessage();
-                    welcomeEl.style.display = '';
-                }
-            } else {
-                const errorText = await response.text();
-                console.error('Delete failed - Status:', response.status, 'Response:', errorText);
-                try {
-                    const error = JSON.parse(errorText);
-                    alert(`Failed to delete messages: ${error.detail || 'Unknown error'}`);
-                } catch (e) {
-                    alert(`Failed to delete messages: ${errorText || response.status}`);
-                }
-            }
-        } catch (error) {
-            console.error('Delete exception:', error);
-            alert(`Failed to delete messages: ${error.message}`);
-        }
-    },
-
-    /**
-     * Stream response from API
-     * Backend saves streaming content directly to DB
-     */
     async streamResponse(isRetry = false) {
-        // Use agent streaming for agent conversations
         if (this.isAgentConversation) {
             return this.streamAgentResponse(isRetry);
         }
 
-        this.isStreaming = true;
-        this.lastStreamingText = '';  // Reset for fresh stream
-        this.stopStreamingAnimation();  // Clear any pending animation
-        this.userScrolledAway = false;  // Reset scroll tracking for new response
+        Store.startStreaming();
+        this.lastStreamingText = '';
+        this.stopStreamingAnimation();
+        this.userScrolledAway = false;
         this.updateSendButton();
 
         const conversationId = ConversationsManager.getCurrentConversationId();
-        const settings = SettingsManager.getSettings();
+        const settings = typeof SettingsManager !== 'undefined' ? SettingsManager.getSettings() : {};
 
-        // Mark conversation as streaming
         if (typeof StreamingTracker !== 'undefined') {
-            StreamingTracker.setStreaming(conversationId, true);
+            StreamingTracker.setStreaming(conversationId, { streaming: true, type: 'normal', stoppable: false });
         }
 
         // Create assistant message element
@@ -1415,41 +693,34 @@ const ChatManager = {
         container.appendChild(messageEl);
         this.streamingMessageEl = messageEl;
 
-        // Force scroll to bottom when starting a new response
         this.scrollToBottom(true);
 
-        let thinkingContent = '';
-        let textContent = '';
-        let thinkingEl = null;
+        // Track all content blocks in order (like agent mode does)
+        let accumulatedContent = [];
+        let currentText = '';
+        let currentThinkingEl = null;
+        let currentThinkingContent = '';
 
         const indicator = document.createElement('span');
         indicator.className = 'streaming-indicator';
 
-        // Create abort controller for this stream
         const abortController = new AbortController();
         this.abortController = abortController;
 
         try {
-            // Build messages for API
             const allMessages = this.messages.map(m => ({
                 role: m.role,
                 content: m.content
             }));
 
-            // Debug: Log messages being sent
-            console.log('[streamResponse] this.messages:', this.messages.map(m => ({ role: m.role, position: m.position, contentPreview: typeof m.content === 'string' ? m.content.substring(0, 50) : 'array' })));
-            console.log('[streamResponse] allMessages for API:', allMessages.map(m => ({ role: m.role, contentPreview: typeof m.content === 'string' ? m.content.substring(0, 50) : 'array' })));
-
-            // Prune messages to keep context under threshold
             const apiMessages = this.pruneMessages(allMessages);
 
-            // Pass conversation_id and branch so backend can save streaming content to DB
             const response = await fetch('/api/chat/stream', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     messages: apiMessages,
-                    conversation_id: isRetry ? null : conversationId,  // Don't auto-save for retries
+                    conversation_id: isRetry ? null : conversationId,
                     branch: isRetry ? null : this.currentBranch,
                     model: settings.model,
                     system_prompt: settings.system_prompt,
@@ -1489,142 +760,152 @@ const ChatManager = {
                         try {
                             const event = JSON.parse(line.slice(6));
 
+                            // Check if still on same conversation
+                            if (this.activeConversationId !== conversationId) {
+                                return;
+                            }
+
                             if (event.type === 'message_id') {
-                                // Backend created the message, store the ID
                                 this.streamingMessageId = event.id;
                                 messageEl.dataset.messageId = event.id;
                             } else if (event.type === 'thinking') {
-                                thinkingContent += event.content;
-
-                                // Only update UI if this conversation is still active and element is in DOM
-                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
-                                    if (!thinkingEl) {
-                                        thinkingEl = this.createThinkingBlock();
-                                        contentEl.insertBefore(thinkingEl, contentEl.firstChild);
+                                // Thinking is like a tool block - accumulate then finalize
+                                if (!currentThinkingEl) {
+                                    // Finalize any pending text first
+                                    if (currentText) {
+                                        accumulatedContent.push({ type: 'text', text: currentText });
+                                        currentText = '';
                                     }
-                                    this.updateThinkingBlock(thinkingEl, thinkingContent);
+                                    // Start new thinking block
+                                    currentThinkingEl = this.createThinkingBlock(true);
+                                    currentThinkingContent = '';
+                                    if (document.contains(messageEl)) {
+                                        contentEl.insertBefore(currentThinkingEl, indicator);
+                                    }
+                                }
+                                currentThinkingContent += event.content;
+                                if (document.contains(messageEl) && currentThinkingEl) {
+                                    this.updateThinkingBlock(currentThinkingEl, currentThinkingContent);
                                 }
                             } else if (event.type === 'text') {
-                                textContent += event.content;
-
-                                // Only update UI if this conversation is still active and element is in DOM
-                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
-                                    this.updateMessageContent(contentEl, textContent, indicator);
+                                // Finalize any active thinking block before text
+                                if (currentThinkingEl) {
+                                    this.finalizeThinkingBlock(currentThinkingEl);
+                                    accumulatedContent.push({ type: 'thinking', content: currentThinkingContent });
+                                    currentThinkingEl = null;
+                                    currentThinkingContent = '';
+                                }
+                                currentText += event.content;
+                                if (document.contains(messageEl)) {
+                                    this.updateMessageContent(contentEl, currentText, indicator);
                                 }
                             } else if (event.type === 'web_search_start') {
-                                // Web search started - show indicator
-                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                // Finalize any active thinking block
+                                if (currentThinkingEl) {
+                                    this.finalizeThinkingBlock(currentThinkingEl);
+                                    accumulatedContent.push({ type: 'thinking', content: currentThinkingContent });
+                                    currentThinkingEl = null;
+                                    currentThinkingContent = '';
+                                }
+                                // Finalize any pending text
+                                if (currentText) {
+                                    accumulatedContent.push({ type: 'text', text: currentText });
+                                    currentText = '';
+                                }
+                                if (document.contains(messageEl)) {
                                     const searchBlock = this.createWebSearchBlock(event.id, event.name);
                                     contentEl.insertBefore(searchBlock, indicator);
                                     this.toolBlocks[event.id] = searchBlock;
                                 }
                             } else if (event.type === 'web_search_query') {
-                                // Web search query being streamed
-                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                if (document.contains(messageEl)) {
                                     const searchBlock = this.toolBlocks[event.id];
                                     if (searchBlock) {
                                         this.updateWebSearchQuery(searchBlock, event.partial_query);
                                     }
                                 }
                             } else if (event.type === 'web_search_result') {
-                                // Web search completed - show results
-                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                if (document.contains(messageEl)) {
                                     const searchBlock = this.toolBlocks[event.tool_use_id];
                                     if (searchBlock) {
                                         this.updateWebSearchBlock(searchBlock, event.results);
                                     }
                                 }
                             } else if (event.type === 'error') {
-                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
+                                if (document.contains(messageEl)) {
                                     this.showError(contentEl, event.content);
                                 }
+                            } else if (event.type === 'done') {
+                                // Stream complete
                             }
-                        } catch (e) {}
+                        } catch (e) {
+                            console.error('Error parsing SSE event:', e);
+                        }
                     }
                 }
+            }
 
-                // Only scroll if this conversation is still active and element is in DOM
-                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
-                    this.scrollToBottom();
+            // Finalize message
+            indicator.remove();
+            // Remove the streaming-text container and replace with final content
+            const streamingText = contentEl.querySelector('.streaming-text');
+            if (streamingText) {
+                // Move children out of streaming-text container
+                while (streamingText.firstChild) {
+                    contentEl.insertBefore(streamingText.firstChild, streamingText);
                 }
+                streamingText.remove();
+            }
+            this.addCodeCopyButtons(contentEl);
+
+            // Finalize any remaining thinking block
+            if (currentThinkingEl) {
+                this.finalizeThinkingBlock(currentThinkingEl);
+                accumulatedContent.push({ type: 'thinking', content: currentThinkingContent });
+            }
+            // Finalize any remaining text
+            if (currentText) {
+                accumulatedContent.push({ type: 'text', text: currentText });
             }
 
-        } catch (error) {
-            if (error.name !== 'AbortError') {
-                console.error('Streaming error:', error);
-                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
-                    const contentEl = messageEl.querySelector('.message-content');
-                    this.showError(contentEl, error.message);
-                }
-            }
-        } finally {
-            // Mark streaming as complete
-            if (typeof StreamingTracker !== 'undefined') {
-                StreamingTracker.setStreaming(conversationId, false);
-            }
+            // Re-render the message from saved data to ensure consistency
+            // This unifies the "live streaming" and "load from file" code paths
+            const messageId = this.streamingMessageId;
+            if (conversationId && messageId) {
+                try {
+                    // Small delay to ensure backend has finished saving
+                    await new Promise(resolve => setTimeout(resolve, 100));
 
-            // Only update UI state if this conversation is still active
-            if (this.activeConversationId === conversationId && document.contains(messageEl)) {
-                const indicatorEl = messageEl.querySelector('.streaming-indicator');
-                if (indicatorEl) indicatorEl.remove();
+                    // Fetch the saved message from API
+                    const response = await fetch(`/api/conversations/${conversationId}?branch=${encodeURIComponent(JSON.stringify(this.currentBranch))}`);
+                    if (response.ok) {
+                        const conv = await response.json();
+                        const savedMsg = conv.messages?.find(m => m.id === messageId);
+                        if (savedMsg) {
+                            // Clear and re-render content from saved data
+                            contentEl.innerHTML = '';
+                            this.renderContent(contentEl, savedMsg.content, 'assistant');
+                            this.addCodeCopyButtons(contentEl);
 
-                this.isStreaming = false;
-                this.abortController = null;
-                this.streamingMessageEl = null;
-                this.streamingMessageId = null;
-                this.updateSendButton();
-                this.updateContextStats();
-            }
-
-            // Handle saving for retry case
-            if (textContent && conversationId && isRetry) {
-                const retryPos = this.retryPosition;
-
-                if (retryPos !== null) {
-                    const retryResponse = await fetch(`/api/conversations/${conversationId}/retry`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            position: retryPos,
-                            content: textContent,
-                            thinking: thinkingContent || null,
-                            branch: this.currentBranch
-                        })
-                    });
-
-                    if (retryResponse.ok) {
-                        const retryData = await retryResponse.json();
-
-                        // Update UI only if this conversation is active
-                        if (this.activeConversationId === conversationId) {
-                            // Update local messages
-                            this.messages = this.messages.filter(m => m.position !== retryPos);
-                            this.messages.push({
-                                id: retryData.id,
+                            // Update Store with saved content
+                            Store.addMessage({
+                                id: messageId,
                                 role: 'assistant',
-                                content: textContent,
-                                position: retryPos,
+                                content: savedMsg.content,
+                                position: position,
                                 version: 1,
                                 total_versions: 1
                             });
-
-                            // Update the message element
-                            if (document.contains(messageEl)) {
-                                messageEl.dataset.position = retryPos;
-                                messageEl.dataset.messageId = retryData.id;
-                            }
                         }
                     }
-
-                    this.retryPosition = null;
-                }
-            } else if (textContent && !isRetry) {
-                // Non-retry: backend already saved during streaming, just update local state
-                if (this.activeConversationId === conversationId) {
-                    this.messages.push({
-                        id: this.streamingMessageId,
+                } catch (e) {
+                    console.error('Error re-fetching message:', e);
+                    // Fall back to accumulated content
+                    let finalContent = accumulatedContent.length > 0 ? accumulatedContent : (currentText || '');
+                    Store.addMessage({
+                        id: messageId,
                         role: 'assistant',
-                        content: textContent,
+                        content: finalContent,
                         position: position,
                         version: 1,
                         total_versions: 1
@@ -1632,85 +913,92 @@ const ChatManager = {
                 }
             }
 
-            // Clean up from BackgroundStreams
-            if (typeof StreamingTracker !== 'undefined') {
-                StreamingTracker.setStreaming(conversationId, false);
-            }
+            // Add actions
+            const actionsDiv = this.createMessageActions('assistant');
+            messageEl.appendChild(actionsDiv);
 
-            // Scroll if still on same conversation
-            if (this.activeConversationId === conversationId) {
-                this.scrollToBottom();
+        } catch (e) {
+            if (e.name === 'AbortError') {
+                console.log('Stream aborted');
+            } else {
+                console.error('Stream error:', e);
+                const contentEl = messageEl.querySelector('.message-content');
+                if (contentEl) {
+                    this.showError(contentEl, e.message);
+                }
+            }
+        } finally {
+            Store.endStreaming();
+            this.abortController = null;
+            this.streamingMessageEl = null;
+            this.streamingMessageId = null;
+            this.updateSendButton();
+            this.updateContextStats();
+
+            if (typeof StreamingTracker !== 'undefined') {
+                StreamingTracker.setStreaming(conversationId, { streaming: false });
             }
         }
     },
 
-    /**
-     * Stream response from Agent API (Claude Agent SDK)
-     */
     async streamAgentResponse(isRetry = false) {
-        this.isStreaming = true;
+        Store.startStreaming();
         this.lastStreamingText = '';
         this.stopStreamingAnimation();
         this.userScrolledAway = false;
-        this.toolBlocks = {};
         this.updateSendButton();
 
         const conversationId = ConversationsManager.getCurrentConversationId();
-        const settings = SettingsManager.getSettings();
+        const settings = typeof SettingsManager !== 'undefined' ? SettingsManager.getSettings() : {};
 
-        // Mark conversation as streaming
         if (typeof StreamingTracker !== 'undefined') {
-            StreamingTracker.setStreaming(conversationId, true);
+            StreamingTracker.setStreaming(conversationId, { streaming: true, type: 'agent', stoppable: true });
         }
 
-        // Create assistant message element
         const position = this.messages.length;
+
+        // Initialize stream in BackgroundStreamManager
+        if (typeof BackgroundStreamManager !== 'undefined') {
+            BackgroundStreamManager.startStream(conversationId, 'agent', position);
+        }
+
+        // Create message element
         const messageEl = this.createMessageElement('assistant', position, 1, 1);
         const container = document.getElementById('messages-container');
         container.appendChild(messageEl);
         this.streamingMessageEl = messageEl;
 
-        // Force scroll to bottom when starting a new response
+        // Connect StreamingDisplay for rendering
+        if (typeof StreamingDisplay !== 'undefined') {
+            StreamingDisplay.connect(conversationId, messageEl);
+        }
+
         this.scrollToBottom(true);
 
-        const accumulatedContent = [];  // Content blocks in chronological order
-        const toolResults = [];
-
+        // Add streaming indicator
+        const contentEl = messageEl.querySelector('.message-content');
         const indicator = document.createElement('span');
         indicator.className = 'streaming-indicator';
+        contentEl.appendChild(indicator);
 
-        // Track current text block for chronological rendering
-        let currentTextBlock = null;
-        let currentTextContent = '';  // Text for current block (reset when tool arrives)
-
-        // Track thinking block for extended thinking
-        let thinkingEl = null;
-        let thinkingContent = '';
-
-        // Create abort controller for this stream
         const abortController = new AbortController();
         this.abortController = abortController;
 
         try {
-            // Build messages for API
             const allMessages = this.messages.map(m => ({
                 role: m.role,
                 content: m.content
             }));
 
-            // Prune messages
-            const apiMessages = this.pruneMessages(allMessages);
-
-            // Use agent streaming endpoint
             const response = await fetch('/api/agent-chat/stream', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    messages: apiMessages,
+                    messages: allMessages,
                     conversation_id: isRetry ? null : conversationId,
                     branch: isRetry ? null : this.currentBranch,
-                    system_prompt: settings.system_prompt,
-                    model: settings.model
+                    model: settings.model,
+                    system_prompt: settings.system_prompt
                 }),
                 signal: abortController.signal
             });
@@ -1722,27 +1010,6 @@ const ChatManager = {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let buffer = '';
-
-            const contentEl = messageEl.querySelector('.message-content');
-            contentEl.appendChild(indicator);
-
-            // Helper to finalize current text block
-            const finalizeTextBlock = () => {
-                if (currentTextBlock && currentTextContent.trim()) {
-                    this.renderMarkdownContent(currentTextBlock, currentTextContent);
-                }
-                currentTextBlock = null;
-                currentTextContent = '';
-            };
-
-            // Helper to ensure we have a text block for text content
-            const ensureTextBlock = () => {
-                if (!currentTextBlock) {
-                    currentTextBlock = document.createElement('div');
-                    currentTextBlock.className = 'agent-text-block';
-                    contentEl.insertBefore(currentTextBlock, indicator);
-                }
-            };
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -1757,1274 +1024,1265 @@ const ChatManager = {
                         try {
                             const event = JSON.parse(line.slice(6));
 
+                            // Route event through BackgroundStreamManager
+                            // It handles accumulation and notifies StreamingDisplay
+                            if (typeof BackgroundStreamManager !== 'undefined') {
+                                BackgroundStreamManager.handleEvent(conversationId, event);
+                            }
+
+                            // Track message ID and session ID locally for cleanup
                             if (event.type === 'message_id') {
                                 this.streamingMessageId = event.id;
-                                messageEl.dataset.messageId = event.id;
                             } else if (event.type === 'session_id') {
-                                // Store session ID for conversation resumption
                                 this.agentSessionId = event.session_id;
-                                console.log('Agent session ID:', event.session_id);
-                            } else if (event.type === 'thinking') {
-                                // Handle thinking blocks from extended thinking
-                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
-                                    if (!thinkingEl) {
-                                        thinkingEl = this.createThinkingBlock();
-                                        contentEl.insertBefore(thinkingEl, contentEl.firstChild);
-                                    }
-                                    thinkingContent += event.content;
-                                    this.updateThinkingBlock(thinkingEl, thinkingContent);
-                                }
-                            } else if (event.type === 'text') {
-                                currentTextContent += event.content;
-
-                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
-                                    ensureTextBlock();
-                                    // Update current text block with streaming content
-                                    currentTextBlock.innerHTML = this.renderMarkdownToHtml(currentTextContent);
-                                }
-                            } else if (event.type === 'tool_use') {
-                                // Push any pending text to accumulated content before the tool
-                                if (currentTextContent.trim()) {
-                                    accumulatedContent.push({ type: 'text', text: currentTextContent });
-                                }
-                                // Finalize text block for display
-                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
-                                    finalizeTextBlock();
-                                    const toolBlock = this.createToolUseBlock(event.name, event.input, event.id);
-                                    // Insert before the indicator
-                                    contentEl.insertBefore(toolBlock, indicator);
-                                    this.toolBlocks[event.id] = toolBlock;
-                                }
-                                // Reset text tracking for next text block
-                                currentTextContent = '';
-                                currentTextBlock = null;
-
-                                accumulatedContent.push({
-                                    type: 'tool_use',
-                                    id: event.id,
-                                    name: event.name,
-                                    input: event.input
-                                });
-                            } else if (event.type === 'tool_result') {
-                                // Update tool block with result
-                                if (this.activeConversationId === conversationId) {
-                                    this.updateToolResult(event.tool_use_id, event.content, event.is_error);
-                                }
-                                toolResults.push({
-                                    tool_use_id: event.tool_use_id,
-                                    content: event.content,
-                                    is_error: event.is_error || false
-                                });
-                            } else if (event.type === 'error') {
-                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
-                                    finalizeTextBlock();
-                                    this.showError(contentEl, event.content);
-                                }
-                            } else if (event.type === 'stopped') {
-                                // Stream was stopped by user - handled gracefully
-                                console.log('Agent stream stopped by user');
-                            } else if (event.type === 'surface_content') {
-                                // Surface content to user - render HTML/markdown in chat
-                                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
-                                    finalizeTextBlock();
-                                    const surfaceBlock = this.createSurfaceContentBlock(
-                                        event.content,
-                                        event.content_type,
-                                        event.title,
-                                        event.content_id
-                                    );
-                                    contentEl.insertBefore(surfaceBlock, indicator);
-                                }
-                                // Also track for saving
-                                accumulatedContent.push({
-                                    type: 'surface_content',
-                                    content: event.content,
-                                    content_type: event.content_type,
-                                    title: event.title,
-                                    content_id: event.content_id
-                                });
                             }
                         } catch (e) {
-                            console.error('Error parsing event:', e);
+                            console.error('Error parsing SSE event:', e);
                         }
                     }
                 }
+            }
 
-                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
-                    this.scrollToBottom();
+            // Stream completed normally - finalize through BackgroundStreamManager
+            if (typeof BackgroundStreamManager !== 'undefined') {
+                BackgroundStreamManager.endStream(conversationId);
+            }
+
+            // Re-render the message from saved data to ensure consistency
+            // This unifies the "live streaming" and "load from file" code paths
+            const messageId = this.streamingMessageId;
+            if (conversationId && messageId) {
+                try {
+                    // Small delay to ensure backend has finished saving
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    // Fetch the saved message from API
+                    const savedResponse = await fetch(`/api/conversations/${conversationId}?branch=${encodeURIComponent(JSON.stringify(this.currentBranch))}`);
+                    if (savedResponse.ok) {
+                        const conv = await savedResponse.json();
+                        const savedMsg = conv.messages?.find(m => m.id === messageId);
+                        if (savedMsg) {
+                            // Only re-render if we're still viewing this conversation
+                            if (this.activeConversationId === conversationId) {
+                                const contentEl = messageEl.querySelector('.message-content');
+                                if (contentEl) {
+                                    // Clear and re-render content from saved data
+                                    contentEl.innerHTML = '';
+                                    this.renderContent(contentEl, savedMsg.content, 'assistant');
+
+                                    // Backwards compatibility: render thinking from separate field
+                                    if (savedMsg.thinking && !this.contentHasThinkingBlocks(savedMsg.content)) {
+                                        const thinkingSegments = savedMsg.thinking.split('\n\n---\n\n');
+                                        for (let i = thinkingSegments.length - 1; i >= 0; i--) {
+                                            const segment = thinkingSegments[i];
+                                            if (segment.trim()) {
+                                                const thinkingEl = this.createThinkingBlock(false);
+                                                this.updateThinkingBlock(thinkingEl, segment);
+                                                thinkingEl.classList.add('collapsed');
+                                                contentEl.insertBefore(thinkingEl, contentEl.firstChild);
+                                            }
+                                        }
+                                    }
+
+                                    // Backwards compatibility: apply tool results from separate field
+                                    if (savedMsg.tool_results && Array.isArray(savedMsg.tool_results) && !this.contentHasToolResultBlocks(savedMsg.content)) {
+                                        for (const result of savedMsg.tool_results) {
+                                            const toolBlock = contentEl.querySelector(`.tool-use-block[data-tool-use-id="${result.tool_use_id}"]`);
+                                            if (toolBlock) {
+                                                this.applyToolResult(toolBlock, result.content, result.is_error);
+                                            }
+                                        }
+                                    }
+                                    this.addCodeCopyButtons(contentEl);
+
+                                    // Add actions if not present
+                                    if (!messageEl.querySelector('.message-actions')) {
+                                        const actionsDiv = this.createMessageActions('assistant');
+                                        messageEl.appendChild(actionsDiv);
+                                    }
+                                }
+                            }
+
+                            // Update Store with saved content
+                            Store.addMessage({
+                                id: messageId,
+                                role: 'assistant',
+                                content: savedMsg.content,
+                                thinking: savedMsg.thinking,
+                                position: position,
+                                version: 1,
+                                total_versions: 1
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error re-fetching agent message:', e);
+                    // Fall back to accumulated content from BackgroundStreamManager
+                    if (typeof BackgroundStreamManager !== 'undefined') {
+                        const stream = BackgroundStreamManager.getStream(conversationId);
+                        if (stream) {
+                            const finalContent = BackgroundStreamManager.buildFinalContent(stream);
+                            Store.addMessage({
+                                id: messageId,
+                                role: 'assistant',
+                                content: finalContent,
+                                position: position,
+                                version: 1,
+                                total_versions: 1
+                            });
+                        }
+                    }
                 }
             }
 
-        } catch (error) {
-            if (error.name !== 'AbortError') {
-                console.error('Agent streaming error:', error);
-                if (this.activeConversationId === conversationId && document.contains(messageEl)) {
-                    const contentEl = messageEl.querySelector('.message-content');
-                    this.showError(contentEl, error.message);
+        } catch (e) {
+            if (e.name === 'AbortError') {
+                // Check if this is from a conversation switch or an explicit stop
+                // If we're still on this conversation, it's an explicit stop
+                // If we're on a different conversation, it's a switch
+                if (this.activeConversationId !== conversationId) {
+                    // Conversation switch - stream will continue being processed by finally block
+                    console.log('[ChatManager] Agent stream detached (conversation switch)');
+                    // Note: finally block will handle cleanup
+                } else {
+                    // Explicit stop (user clicked stop button)
+                    console.log('[ChatManager] Agent stream stopped by user');
+                }
+            } else {
+                console.error('Agent stream error:', e);
+                if (typeof BackgroundStreamManager !== 'undefined') {
+                    BackgroundStreamManager.handleEvent(conversationId, { type: 'error', content: e.message });
+                    BackgroundStreamManager.endStream(conversationId);
                 }
             }
         } finally {
-            // Mark streaming as complete
+            // Always clean up BackgroundStreamManager and StreamingTracker for this conversation
+            // These are per-conversation, so they should always be cleaned up when stream ends
             if (typeof StreamingTracker !== 'undefined') {
-                StreamingTracker.setStreaming(conversationId, false);
+                StreamingTracker.setStreaming(conversationId, { streaming: false });
+            }
+            if (typeof BackgroundStreamManager !== 'undefined') {
+                BackgroundStreamManager.removeStream(conversationId);
             }
 
-            if (this.activeConversationId === conversationId && document.contains(messageEl)) {
-                const indicatorEl = messageEl.querySelector('.streaming-indicator');
-                if (indicatorEl) indicatorEl.remove();
-
-                this.isStreaming = false;
+            // Only do UI updates if we're still on this conversation
+            if (this.activeConversationId === conversationId) {
+                Store.endStreaming();
                 this.abortController = null;
                 this.streamingMessageEl = null;
                 this.streamingMessageId = null;
                 this.updateSendButton();
                 this.updateContextStats();
-            }
 
-            // Push any remaining text to accumulated content
-            if (currentTextContent.trim()) {
-                accumulatedContent.push({ type: 'text', text: currentTextContent });
-            }
-
-            // Update local messages array
-            if (accumulatedContent.length > 0) {
-                // Build final content - could be just text or mixed
-                let finalContent;
-                // Check if it's only a single text block
-                if (accumulatedContent.length === 1 && accumulatedContent[0].type === 'text') {
-                    finalContent = accumulatedContent[0].text;
-                } else {
-                    finalContent = accumulatedContent;
-                }
-
-                if (this.activeConversationId === conversationId) {
-                    this.messages.push({
-                        id: this.streamingMessageId,
-                        role: 'assistant',
-                        content: finalContent,
-                        tool_results: toolResults.length > 0 ? toolResults : undefined,
-                        position: position,
-                        version: 1,
-                        total_versions: 1
-                    });
+                // Disconnect StreamingDisplay if it's connected to this conversation
+                if (typeof StreamingDisplay !== 'undefined' &&
+                    StreamingDisplay.getConnectedConversationId() === conversationId) {
+                    StreamingDisplay.disconnect();
                 }
             }
-
-            // Clean up from BackgroundStreams
-            if (typeof StreamingTracker !== 'undefined') {
-                StreamingTracker.setStreaming(conversationId, false);
-            }
-
-            if (this.activeConversationId === conversationId) {
-                this.scrollToBottom();
-            }
         }
     },
 
-    /**
-     * Create a tool use block element
-     */
-    createToolUseBlock(toolName, input, toolUseId) {
-        const el = document.createElement('div');
-        el.className = 'tool-use-block collapsed';
-        el.dataset.toolUseId = toolUseId;
-
-        // Check if this is a subagent (Task) tool
-        const isSubagent = toolName === 'Task' || toolName.toLowerCase().includes('task');
-
-        const icon = this.getToolIcon(toolName);
-        const displayName = this.getToolDisplayName(toolName);
-        const inputPreview = typeof input === 'object' ? JSON.stringify(input, null, 2) : String(input);
-
-        // Get a brief description for the collapsed state
-        let briefDesc = '';
-        if (typeof input === 'object') {
-            if (input.command) briefDesc = input.command.substring(0, 50) + (input.command.length > 50 ? '...' : '');
-            else if (input.file_path) briefDesc = input.file_path;
-            else if (input.pattern) briefDesc = input.pattern;
-            else if (input.query) briefDesc = input.query.substring(0, 50) + (input.query.length > 50 ? '...' : '');
-            else if (input.prompt) briefDesc = input.prompt.substring(0, 50) + (input.prompt.length > 50 ? '...' : '');
-            else if (input.description) briefDesc = input.description;
-        }
-
-        el.innerHTML = `
-            <div class="tool-header" role="button" tabindex="0" aria-expanded="false">
-                <span class="tool-expand-icon">▶</span>
-                <span class="tool-icon">${icon}</span>
-                <span class="tool-name">${this.escapeHtml(displayName)}</span>
-                ${briefDesc ? `<span class="tool-brief">${this.escapeHtml(briefDesc)}</span>` : ''}
-                <span class="tool-status running">Running...</span>
-            </div>
-            <div class="tool-details" style="display: none;">
-                <div class="tool-input">
-                    <div class="tool-section-label">Input</div>
-                    <pre>${this.escapeHtml(inputPreview)}</pre>
-                </div>
-                ${isSubagent ? '<div class="subagent-transcript" style="display: none;"><div class="tool-section-label">Subagent Transcript</div><div class="subagent-content"></div></div>' : ''}
-                <div class="tool-result" style="display: none;"></div>
-            </div>
-        `;
-
-        // Add click handler to toggle collapsed state
-        const header = el.querySelector('.tool-header');
-        header.addEventListener('click', () => {
-            const isCollapsed = el.classList.contains('collapsed');
-            el.classList.toggle('collapsed');
-            header.setAttribute('aria-expanded', isCollapsed);
-            const expandIcon = el.querySelector('.tool-expand-icon');
-            expandIcon.textContent = isCollapsed ? '▼' : '▶';
-            const details = el.querySelector('.tool-details');
-            details.style.display = isCollapsed ? 'block' : 'none';
-        });
-
-        // Keyboard accessibility
-        header.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                header.click();
-            }
-        });
-
-        return el;
-    },
-
-    /**
-     * Update a tool block with its result
-     */
-    updateToolResult(toolUseId, content, isError) {
-        const toolBlock = this.toolBlocks[toolUseId] ||
-            document.querySelector(`[data-tool-use-id="${toolUseId}"]`);
-
-        if (!toolBlock) return;
-
-        const statusEl = toolBlock.querySelector('.tool-status');
-        if (statusEl) {
-            statusEl.textContent = isError ? 'Error' : 'Done';
-            statusEl.classList.remove('running');
-            statusEl.classList.add(isError ? 'error' : 'success');
-        }
-
-        const resultEl = toolBlock.querySelector('.tool-result');
-        if (resultEl) {
-            // Check if the result is a GIF from gif_search.py
-            const gifResult = this.parseGifResult(content);
-            if (gifResult && gifResult.url) {
-                // Render as GIF image
-                resultEl.innerHTML = '<div class="tool-section-label">Result</div>';
-                const gifContainer = document.createElement('div');
-                gifContainer.className = 'gif-result';
-                gifContainer.innerHTML = `
-                    <img src="${this.escapeHtml(gifResult.url)}"
-                         alt="${this.escapeHtml(gifResult.title || 'GIF')}"
-                         class="gif-image"
-                         loading="lazy">
-                    ${gifResult.title ? `<div class="gif-title">${this.escapeHtml(gifResult.title)}</div>` : ''}
-                `;
-                resultEl.appendChild(gifContainer);
-                resultEl.style.display = 'block';
-                resultEl.classList.add('gif-result-container');
-                return;
-            }
-
-            // Only show result section if there's content or an error
-            if (content || isError) {
-                // Truncate long results for display
-                const displayContent = content && content.length > 1000
-                    ? content.substring(0, 1000) + '... (truncated)'
-                    : content;
-                resultEl.innerHTML = `<div class="tool-section-label">Result</div><pre>${this.escapeHtml(displayContent || (isError ? 'Tool execution failed' : 'Success'))}</pre>`;
-                resultEl.style.display = 'block';
-                if (isError) {
-                    resultEl.classList.add('error');
-                }
-            }
-            // If no content and no error, hide the result section (tool completed silently)
-        }
-    },
-
-    /**
-     * Create a surface content block for displaying HTML/markdown to user
-     */
-    createSurfaceContentBlock(content, contentType, title, contentId) {
-        const el = document.createElement('div');
-        el.className = 'surface-content-block';
-        el.dataset.contentId = contentId || '';
-        el.dataset.content = content;
-        el.dataset.contentType = contentType;
-        el.dataset.title = title || '';
-
-        const headerHtml = title
-            ? `<div class="surface-header">
-                <span class="surface-icon">📊</span>
-                <span class="surface-title">${this.escapeHtml(title)}</span>
-                <span class="surface-expand-hint">Click to expand</span>
-               </div>`
-            : '<div class="surface-header surface-header-minimal"><span class="surface-expand-hint">Click to expand</span></div>';
-
-        if (contentType === 'html') {
-            // Render HTML content directly (sandboxed in iframe for security)
-            const iframe = document.createElement('iframe');
-            iframe.className = 'surface-iframe';
-            iframe.sandbox = 'allow-scripts allow-same-origin';
-            iframe.setAttribute('loading', 'lazy');
-
-            el.innerHTML = headerHtml;
-            el.appendChild(iframe);
-
-            // Write content to iframe
-            iframe.onload = () => {
-                const doc = iframe.contentDocument || iframe.contentWindow.document;
-                doc.open();
-                doc.write(this._getSurfaceIframeHtml(content));
-                doc.close();
-
-                // Auto-resize iframe to content
-                const resizeIframe = () => {
-                    if (iframe.contentDocument && iframe.contentDocument.body) {
-                        iframe.style.height = Math.min(iframe.contentDocument.body.scrollHeight + 20, 400) + 'px';
-                    }
-                };
-                resizeIframe();
-                // Also resize after images load
-                const images = iframe.contentDocument.querySelectorAll('img');
-                images.forEach(img => img.addEventListener('load', resizeIframe));
-            };
-
-            // Trigger load for already-loaded iframes
-            setTimeout(() => iframe.onload && iframe.onload(), 100);
-
-        } else {
-            // Render markdown content
-            el.innerHTML = headerHtml + '<div class="surface-markdown">' + this.renderMarkdownToHtml(content) + '</div>';
-        }
-
-        // Add click handler to header to expand
-        const header = el.querySelector('.surface-header');
-        if (header) {
-            header.style.cursor = 'pointer';
-            header.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.openSurfaceModal(content, contentType, title);
-            });
-        }
-
-        // Also allow clicking on the block border area (not iframe)
-        el.addEventListener('click', (e) => {
-            // Only expand if clicking directly on the block or markdown content
-            if (e.target === el || e.target.closest('.surface-markdown')) {
-                this.openSurfaceModal(content, contentType, title);
-            }
-        });
-
-        return el;
-    },
-
-    /**
-     * Create a placeholder for surface content while loading
-     */
-    createSurfaceContentPlaceholder(contentType, title, contentId) {
-        const el = document.createElement('div');
-        el.className = 'surface-content-block surface-loading';
-        el.dataset.contentId = contentId || '';
-
-        const headerHtml = title
-            ? `<div class="surface-header">
-                <span class="surface-icon">📊</span>
-                <span class="surface-title">${this.escapeHtml(title)}</span>
-                <span class="surface-expand-hint">Loading...</span>
-               </div>`
-            : '<div class="surface-header surface-header-minimal"><span class="surface-expand-hint">Loading...</span></div>';
-
-        el.innerHTML = headerHtml + '<div class="surface-loading-body">Loading content...</div>';
-        return el;
-    },
-
-    /**
-     * Load surface content from server and replace placeholder
-     */
-    async loadSurfaceContent(placeholderEl, filename, contentType, title, contentId) {
-        const conversationId = ConversationsManager?.getCurrentConversationId();
+    async stopAgentStream() {
+        const conversationId = this.activeConversationId;
         if (!conversationId) return;
 
-        try {
-            const response = await fetch(`/api/agent-chat/surface-content/${conversationId}/${encodeURIComponent(filename)}`);
-            if (!response.ok) throw new Error('Failed to load surface content');
-
-            const data = await response.json();
-            this.replaceSurfaceContentPlaceholder(placeholderEl, data.content, contentType, title, contentId);
-        } catch (error) {
-            console.error('Failed to load surface content:', error);
-            placeholderEl.querySelector('.surface-loading-body').textContent = 'Failed to load content';
-            placeholderEl.classList.add('surface-error');
+        if (this.abortController) {
+            this.abortController.abort();
         }
-    },
-
-    /**
-     * Replace placeholder with actual surface content
-     */
-    replaceSurfaceContentPlaceholder(placeholderEl, content, contentType, title, contentId) {
-        // Create the real surface content block
-        const realBlock = this.createSurfaceContentBlock(content, contentType, title, contentId);
-
-        // Replace placeholder with real block
-        placeholderEl.parentNode.replaceChild(realBlock, placeholderEl);
-    },
-
-    /**
-     * Get the HTML template for surface iframe content
-     */
-    _getSurfaceIframeHtml(content) {
-        return `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <style>
-                    * { box-sizing: border-box; }
-                    body {
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                        margin: 0;
-                        padding: 12px;
-                        font-size: 14px;
-                        line-height: 1.5;
-                        color: #333;
-                        background: #fff;
-                    }
-                    table { border-collapse: collapse; width: 100%; }
-                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                    th { background: #f5f5f5; font-weight: 600; }
-                    tr:hover { background: #f9f9f9; }
-                    button, .btn { padding: 6px 12px; border-radius: 4px; cursor: pointer; border: 1px solid #ccc; background: #f5f5f5; }
-                    button:hover, .btn:hover { background: #e5e5e5; }
-                    input, select { padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
-                    .card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 8px 0; }
-                    .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
-                    .badge-success { background: #d4edda; color: #155724; }
-                    .badge-warning { background: #fff3cd; color: #856404; }
-                    .badge-danger { background: #f8d7da; color: #721c24; }
-                    .progress { height: 20px; background: #e9ecef; border-radius: 4px; overflow: hidden; }
-                    .progress-bar { height: 100%; background: #007bff; transition: width 0.3s; }
-                </style>
-            </head>
-            <body>${content}</body>
-            </html>
-        `;
-    },
-
-    /**
-     * Open surface content in a fullscreen modal
-     */
-    openSurfaceModal(content, contentType, title) {
-        // Remove existing modal if any
-        const existingModal = document.getElementById('surface-modal');
-        if (existingModal) existingModal.remove();
-
-        // Create modal
-        const modal = document.createElement('div');
-        modal.id = 'surface-modal';
-        modal.className = 'surface-modal';
-        modal.innerHTML = `
-            <div class="surface-modal-backdrop"></div>
-            <div class="surface-modal-container">
-                <div class="surface-modal-header">
-                    <span class="surface-modal-title">${title ? this.escapeHtml(title) : 'Content'}</span>
-                    <button class="surface-modal-close" title="Close (Esc)">&times;</button>
-                </div>
-                <div class="surface-modal-body"></div>
-            </div>
-        `;
-
-        const bodyEl = modal.querySelector('.surface-modal-body');
-
-        if (contentType === 'html') {
-            const iframe = document.createElement('iframe');
-            iframe.className = 'surface-modal-iframe';
-            iframe.sandbox = 'allow-scripts allow-same-origin';
-            bodyEl.appendChild(iframe);
-
-            // Write content after appending to DOM
-            setTimeout(() => {
-                const doc = iframe.contentDocument || iframe.contentWindow.document;
-                doc.open();
-                doc.write(this._getSurfaceIframeHtml(content));
-                doc.close();
-            }, 50);
-        } else {
-            bodyEl.innerHTML = '<div class="surface-modal-markdown">' + this.renderMarkdownToHtml(content) + '</div>';
-        }
-
-        // Close handlers
-        const closeModal = () => {
-            modal.classList.add('closing');
-            setTimeout(() => modal.remove(), 200);
-        };
-
-        modal.querySelector('.surface-modal-close').addEventListener('click', closeModal);
-        modal.querySelector('.surface-modal-backdrop').addEventListener('click', closeModal);
-
-        // Escape key to close
-        const escHandler = (e) => {
-            if (e.key === 'Escape') {
-                closeModal();
-                document.removeEventListener('keydown', escHandler);
-            }
-        };
-        document.addEventListener('keydown', escHandler);
-
-        document.body.appendChild(modal);
-
-        // Trigger animation
-        requestAnimationFrame(() => modal.classList.add('open'));
-    },
-
-    /**
-     * Add a child tool call to a subagent's transcript
-     */
-    addSubagentToolCall(parentToolUseId, childToolBlock) {
-        const parentBlock = this.toolBlocks[parentToolUseId] ||
-            document.querySelector(`[data-tool-use-id="${parentToolUseId}"]`);
-
-        if (!parentBlock) return;
-
-        const transcriptEl = parentBlock.querySelector('.subagent-transcript');
-        if (transcriptEl) {
-            transcriptEl.style.display = 'block';
-            const contentEl = transcriptEl.querySelector('.subagent-content');
-            if (contentEl) {
-                contentEl.appendChild(childToolBlock);
-            }
-        }
-    },
-
-    /**
-     * Try to parse content as a GIF result from gif_search.py
-     */
-    parseGifResult(content) {
-        if (!content || typeof content !== 'string') return null;
 
         try {
-            const parsed = JSON.parse(content);
-            if (parsed.type === 'gif' && parsed.url) {
-                return parsed;
-            }
+            await fetch(`/api/agent-chat/stop/${conversationId}`, { method: 'POST' });
         } catch (e) {
-            // Not JSON, check if content contains GIF URL inline
-            // Look for giphy.com URLs in the content
-            const giphyMatch = content.match(/https:\/\/[^\s"]*giphy\.com[^\s"]*/i);
-            if (giphyMatch) {
-                return { url: giphyMatch[0], title: '' };
-            }
-        }
-        return null;
-    },
-
-    /**
-     * Get icon for a tool
-     */
-    getToolIcon(toolName) {
-        const icons = {
-            'Read': '&#128214;',    // Open book
-            'Write': '&#9997;',     // Writing hand
-            'Edit': '&#9997;',      // Writing hand
-            'Bash': '&#128187;',    // Computer
-            'Glob': '&#128269;',    // Magnifying glass
-            'Grep': '&#128270;',    // Magnifying glass right
-            'mcp__gif-tools__search_gif': '&#127912;',  // Film frames (GIF)
-            'search_gif': '&#127912;',  // Film frames (GIF)
-        };
-        return icons[toolName] || '&#128295;';  // Wrench as default
-    },
-
-    /**
-     * Get display name for a tool (handles MCP tool name format)
-     */
-    getToolDisplayName(toolName) {
-        // Handle MCP tool format: mcp__server-name__tool_name
-        if (toolName.startsWith('mcp__')) {
-            const parts = toolName.split('__');
-            if (parts.length >= 3) {
-                // Return just the tool name part, formatted nicely
-                return parts[2].replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-            }
-        }
-        return toolName;
-    },
-
-    /**
-     * Update the version nav badge on any message
-     */
-    updateMessageVersionNav(position, currentVersion, totalVersions) {
-        const container = document.getElementById('messages-container');
-        const msgEl = container.querySelector(`.message[data-position="${position}"]`);
-
-        if (!msgEl) return;
-
-        // Update data attributes
-        msgEl.dataset.version = currentVersion;
-        msgEl.dataset.totalVersions = totalVersions;
-
-        const versionBadge = msgEl.querySelector('.version-badge');
-        if (versionBadge) {
-            if (totalVersions > 1) {
-                versionBadge.style.display = '';
-                const indicator = versionBadge.querySelector('.version-indicator');
-                if (indicator) {
-                    indicator.textContent = `${currentVersion}/${totalVersions}`;
-                }
-            } else {
-                versionBadge.style.display = 'none';
-            }
-        }
-    },
-
-    /**
-     * Create a message element with action buttons
-     * For user messages: Copy + Edit + Version Nav (branches off user messages)
-     * For assistant messages: Copy + Retry
-     */
-    createMessageElement(role, position = 0, version = 1, totalVersions = 1, nextVersionInfo = null, timestamp = null) {
-        const el = document.createElement('div');
-        el.className = `message ${role}`;
-        el.dataset.position = position;
-        el.dataset.version = version;
-        el.dataset.totalVersions = totalVersions;
-
-        let actionsHtml = '';
-        if (role === 'user') {
-            // User messages get Copy, Edit, Delete, and Version Nav (branching happens at user messages)
-            const showVersionNav = totalVersions > 1;
-            actionsHtml = `
-                <div class="message-actions">
-                    <button class="action-btn copy-btn" title="Copy">📋</button>
-                    <button class="action-btn edit-btn" title="Edit">✏️</button>
-                    <button class="action-btn delete-btn" title="Delete this and all following messages">🗑️</button>
-                    <div class="version-badge" style="${showVersionNav ? '' : 'display: none;'}">
-                        <button class="version-nav-btn prev-btn" title="Previous version">◀</button>
-                        <span class="version-indicator">${version}/${totalVersions}</span>
-                        <button class="version-nav-btn next-btn" title="Next version">▶</button>
-                    </div>
-                </div>
-            `;
-        } else {
-            // Assistant messages get Copy and Retry
-            actionsHtml = `
-                <div class="message-actions">
-                    <button class="action-btn copy-btn" title="Copy">📋</button>
-                    <button class="action-btn retry-btn" title="Regenerate response">🔄</button>
-                </div>
-            `;
+            console.warn('Error stopping agent stream:', e);
         }
 
-        // Format timestamp if provided
-        let timestampHtml = '';
-        if (timestamp) {
-            const time = this.formatTimestamp(timestamp);
-            timestampHtml = `<div class="message-timestamp">${time}</div>`;
-        }
-
-        el.innerHTML = `
-            <div class="message-content"></div>
-            ${timestampHtml}
-            ${actionsHtml}
-        `;
-
-        // Bind action buttons
-        const copyBtn = el.querySelector('.copy-btn');
-        const editBtn = el.querySelector('.edit-btn');
-        const retryBtn = el.querySelector('.retry-btn');
-        const deleteBtn = el.querySelector('.delete-btn');
-        const prevBtn = el.querySelector('.prev-btn');
-        const nextBtn = el.querySelector('.next-btn');
-
-        if (copyBtn) {
-            copyBtn.addEventListener('click', () => this.copyMessage(el));
-        }
-        if (editBtn) {
-            editBtn.addEventListener('click', () => this.editMessage(position));
-        }
-        if (retryBtn) {
-            // Retry regenerates the assistant response at this position
-            retryBtn.addEventListener('click', () => this.retryMessage(position));
-        }
-        if (deleteBtn) {
-            // Delete this message and all following messages
-            deleteBtn.addEventListener('click', () => this.deleteMessagesFrom(position));
-        }
-        if (prevBtn) {
-            // Version nav - switches branch at this position
-            prevBtn.addEventListener('click', () => this.switchVersion(position, -1));
-        }
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => this.switchVersion(position, 1));
-        }
-
-        return el;
-    },
-
-    /**
-     * Format timestamp for display
-     */
-    formatTimestamp(timestamp) {
-        if (!timestamp) return '';
-
-        const date = new Date(timestamp);
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
-
-        // Less than 1 minute: "Just now"
-        if (diffMins < 1) return 'Just now';
-        // Less than 1 hour: "X mins ago"
-        if (diffHours < 1) return `${diffMins} ${diffMins === 1 ? 'min' : 'mins'} ago`;
-        // Less than 24 hours: "X hours ago"
-        if (diffDays < 1) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
-        // Less than 7 days: "X days ago"
-        if (diffDays < 7) return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
-        // Older: show date
-        return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
-    },
-
-    /**
-     * Render a message to the UI
-     */
-    renderMessage(msg, forceScroll = false) {
-        const { role, content, thinking, tool_results, position = 0, version = 1, total_versions = 1, created_at } = msg;
-        console.log('[renderMessage]', {role, position, contentLength: typeof content === 'string' ? content.length : 'array', content: typeof content === 'string' ? content.substring(0, 100) : content});
-
-        // Check for compaction marker (system message with compaction type)
-        if (role === 'system' && typeof content === 'object' && content?.type === 'compaction') {
-            this.renderCompactionSeparator();
-            return;
-        }
-
-        // Version info is now passed directly for user messages
-        const el = this.createMessageElement(role, position, version, total_versions, null, created_at);
-        const contentEl = el.querySelector('.message-content');
-
-        if (thinking) {
-            const thinkingEl = this.createThinkingBlock();
-            this.updateThinkingBlock(thinkingEl, thinking);
-            contentEl.appendChild(thinkingEl);
-        }
-
-        if (Array.isArray(content)) {
-            // Separate files from other content (files always go first)
-            const files = content.filter(b => b.type === 'image' || b.type === 'document');
-            const textFiles = content.filter(b => b.type === 'text' && b.text?.startsWith('File: '));
-            const otherContent = content.filter(b =>
-                b.type !== 'image' && b.type !== 'document' &&
-                !(b.type === 'text' && b.text?.startsWith('File: '))
-            );
-
-            if (files.length > 0 || textFiles.length > 0) {
-                const filesEl = document.createElement('div');
-                filesEl.className = 'message-files';
-
-                files.forEach(file => {
-                    const fileEl = document.createElement('div');
-                    fileEl.className = 'message-file';
-                    if (file.type === 'image' && file.source?.data) {
-                        fileEl.innerHTML = `<img src="data:${file.source.media_type};base64,${file.source.data}" alt="Image">`;
-                    } else if (file.type === 'document') {
-                        fileEl.innerHTML = '<span class="message-file-icon">PDF</span><span>PDF Document</span>';
-                    }
-                    filesEl.appendChild(fileEl);
-                });
-
-                textFiles.forEach(tf => {
-                    const fileEl = document.createElement('div');
-                    fileEl.className = 'message-file';
-                    const match = tf.text.match(/^File: (.+?)\n/);
-                    const filename = match ? match[1] : 'Text file';
-                    fileEl.innerHTML = `<span class="message-file-icon">TXT</span><span>${this.escapeHtml(filename)}</span>`;
-                    filesEl.appendChild(fileEl);
-                });
-
-                contentEl.appendChild(filesEl);
-            }
-
-            // Build a map of tool results by tool_use_id
-            const toolResultsMap = {};
-            if (tool_results) {
-                tool_results.forEach(tr => {
-                    toolResultsMap[tr.tool_use_id] = tr;
-                });
-            }
-
-            // Render content blocks in order (chronologically)
-            otherContent.forEach(block => {
-                if (block.type === 'tool_use') {
-                    const toolEl = this.createToolUseBlock(block.name, block.input, block.id);
-                    contentEl.appendChild(toolEl);
-                    // Store reference for later status update
-                    this.toolBlocks[block.id] = toolEl;
-
-                    // Update tool status - mark as done for loaded messages
-                    const result = toolResultsMap[block.id];
-                    if (result) {
-                        this.updateToolResult(block.id, result.content, result.is_error);
-                    } else {
-                        // No explicit result - assume success for loaded messages
-                        this.updateToolResult(block.id, null, false);
-                    }
-                } else if (block.type === 'text' && block.text) {
-                    const textEl = document.createElement('div');
-                    textEl.className = 'agent-text-block';
-                    textEl.innerHTML = this.formatText(block.text);
-                    contentEl.appendChild(textEl);
-                } else if (block.type === 'surface_content') {
-                    // Render surface content block from saved message
-                    // Content is stored on disk, need to fetch it
-                    const surfaceEl = this.createSurfaceContentPlaceholder(
-                        block.content_type,
-                        block.title,
-                        block.content_id
-                    );
-                    contentEl.appendChild(surfaceEl);
-
-                    // Load content from server if we have a filename reference
-                    if (block.filename) {
-                        this.loadSurfaceContent(surfaceEl, block.filename, block.content_type, block.title, block.content_id);
-                    } else if (block.content) {
-                        // Fallback: content might be inline (old format)
-                        this.replaceSurfaceContentPlaceholder(surfaceEl, block.content, block.content_type, block.title, block.content_id);
-                    }
-                }
-            });
-        } else if (typeof content === 'object' && content !== null && content.web_searches) {
-            // Content with web search results - restore web search blocks first
-            if (Array.isArray(content.web_searches)) {
-                content.web_searches.forEach(ws => {
-                    const searchBlock = this.createWebSearchBlock(ws.id, 'web_search');
-                    this.updateWebSearchBlock(searchBlock, ws.results);
-                    contentEl.appendChild(searchBlock);
-                });
-            }
-            // Then render text content
-            if (content.text) {
-                const textEl = document.createElement('div');
-                textEl.className = 'message-text';
-                textEl.innerHTML = this.formatText(content.text);
-                contentEl.appendChild(textEl);
-            }
-        } else {
-            contentEl.innerHTML += this.formatText(content);
-        }
-
-        // Add copy buttons to code blocks
-        this.addCodeCopyButtons(contentEl);
-
-        const container = document.getElementById('messages-container');
-        container.appendChild(el);
-        this.scrollToBottom(forceScroll);
-    },
-
-    createThinkingBlock() {
-        const el = document.createElement('div');
-        el.className = 'thinking-block';
-        el.innerHTML = `
-            <div class="thinking-header" onclick="this.parentElement.classList.toggle('expanded')">
-                <span class="thinking-toggle">></span>
-                <span class="thinking-label">Thinking...</span>
-            </div>
-            <div class="thinking-content"></div>
-        `;
-
-        return el;
-    },
-
-    updateThinkingBlock(el, content) {
-        const contentEl = el.querySelector('.thinking-content');
-        contentEl.textContent = content;
-
-        const label = el.querySelector('.thinking-label');
-        const lines = content.split('\n').length;
-        label.textContent = `Thinking (${lines} lines)`;
-    },
-
-    /**
-     * Create a web search indicator block
-     */
-    createWebSearchBlock(id, name) {
-        const el = document.createElement('div');
-        el.className = 'web-search-block';
-        el.dataset.toolUseId = id;
-        el.innerHTML = `
-            <div class="web-search-header" onclick="this.parentElement.classList.toggle('expanded')">
-                <span class="web-search-toggle">▶</span>
-                <span class="web-search-icon">🔍</span>
-                <span class="web-search-label">Searching the web...</span>
-                <span class="web-search-status searching">searching</span>
-            </div>
-            <div class="web-search-content">
-                <div class="web-search-results"></div>
-            </div>
-        `;
-        return el;
-    },
-
-    /**
-     * Update web search block with results
-     */
-    /**
-     * Update web search block with query being streamed
-     */
-    updateWebSearchQuery(el, partialQuery) {
-        const label = el.querySelector('.web-search-label');
-        // Try to extract query from the partial JSON
-        try {
-            // The partial_query might be incomplete JSON like {"query":"weather in london
-            const match = partialQuery.match(/"query"\s*:\s*"([^"]*)(")?/);
-            if (match && match[1]) {
-                label.textContent = `Searching: "${match[1]}..."`;
-            }
-        } catch (e) {
-            // Ignore parse errors
-        }
-    },
-
-    /**
-     * Update web search block with results
-     */
-    updateWebSearchBlock(el, results) {
-        const label = el.querySelector('.web-search-label');
-        const status = el.querySelector('.web-search-status');
-        const resultsContainer = el.querySelector('.web-search-results');
-
-        // Update status
-        status.className = 'web-search-status complete';
-        status.textContent = 'done';
-
-        // Update label with result count
-        const resultCount = Array.isArray(results) ? results.length : 0;
-        label.textContent = `Web search (${resultCount} results)`;
-
-        // Auto-expand to show results
-        el.classList.add('expanded');
-
-        // Render results
-        if (Array.isArray(results) && results.length > 0) {
-            let html = '';
-            for (const result of results) {
-                // Handle both direct objects and objects with type field
-                const url = result.url || '';
-                const title = result.title || 'Untitled';
-                const snippet = result.snippet || result.page_age || '';
-
-                html += `
-                    <div class="web-search-result-item">
-                        <a href="${this.escapeHtml(url)}" target="_blank" class="web-search-result-title">
-                            ${this.escapeHtml(title)}
-                        </a>
-                        <div class="web-search-result-url">${this.escapeHtml(url)}</div>
-                        ${snippet ? `<div class="web-search-result-snippet">${this.escapeHtml(snippet)}</div>` : ''}
-                    </div>
-                `;
-            }
-            resultsContainer.innerHTML = html || '<p>No results found</p>';
-        } else {
-            resultsContainer.innerHTML = '<p>No results found</p>';
-        }
-    },
-
-    /**
-     * Escape HTML to prevent XSS
-     */
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    },
-
-    /**
-     * Update message content with smooth streaming appearance
-     * Instead of replacing all HTML at once, we try to preserve existing content
-     * and only update what changed for smoother visual feedback
-     */
-    updateMessageContent(contentEl, text, indicator) {
-        const thinkingBlock = contentEl.querySelector('.thinking-block');
-        const wasExpanded = thinkingBlock?.classList.contains('expanded');
-
-        // Get the current text container or create one
-        let textContainer = contentEl.querySelector('.message-text');
-        if (!textContainer) {
-            // Clear existing content but preserve thinking block and indicator
-            Array.from(contentEl.children).forEach(child => {
-                if (!child.classList.contains('thinking-block') &&
-                    !child.classList.contains('streaming-indicator')) {
-                    child.remove();
-                }
-            });
-
-            textContainer = document.createElement('div');
-            textContainer.className = 'message-text';
-            contentEl.appendChild(textContainer);
-        }
-
-        // For streaming, we want smooth character-by-character appearance
-        // Check if this is an incremental update (new text starts with old text)
-        const currentText = textContainer.dataset.rawText || '';
-
-        if (text.startsWith(currentText) && currentText.length > 0) {
-            // Incremental update - only add new characters
-            const newChars = text.slice(currentText.length);
-            if (newChars) {
-                // Append new content smoothly
-                this.appendFormattedText(textContainer, currentText, text);
-            }
-        } else {
-            // Full replacement (initial render or content changed significantly)
-            textContainer.innerHTML = this.formatText(text);
-            this.addCodeCopyButtons(textContainer);
-        }
-
-        // Store raw text for comparison
-        textContainer.dataset.rawText = text;
-
-        // Re-add thinking block at the beginning if it existed
-        if (thinkingBlock) {
-            contentEl.insertBefore(thinkingBlock, contentEl.firstChild);
-            if (wasExpanded) {
-                thinkingBlock.classList.add('expanded');
-            }
-        }
-
-        // Ensure indicator is at the end
-        if (indicator && indicator.parentNode !== contentEl) {
-            contentEl.appendChild(indicator);
-        }
-    },
-
-    /**
-     * Append new text to existing content smoothly
-     * Re-renders if markdown structure might have changed, otherwise just appends
-     */
-    appendFormattedText(container, oldText, newText) {
-        // Check if we're in the middle of a markdown structure that needs re-rendering
-        const needsRerender =
-            // In the middle of a code block
-            (newText.match(/```/g) || []).length % 2 !== 0 ||
-            // In the middle of bold/italic
-            (newText.match(/\*\*/g) || []).length % 2 !== 0 ||
-            // In the middle of a list or heading (last line starts with special char)
-            /\n[#\-\*\d]/.test(newText.slice(-50));
-
-        if (needsRerender || !container.lastChild) {
-            // Full re-render needed
-            container.innerHTML = this.formatText(newText);
-            this.addCodeCopyButtons(container);
-        } else {
-            // Try to append smoothly - re-render last paragraph/element
-            // This is a simplified approach: just re-render but browser will diff efficiently
-            const html = this.formatText(newText);
-            if (container.innerHTML !== html) {
-                container.innerHTML = html;
-                this.addCodeCopyButtons(container);
-            }
-        }
-    },
-
-    showError(contentEl, message) {
-        const errorEl = document.createElement('div');
-        errorEl.style.color = 'var(--color-error)';
-        errorEl.textContent = `Error: ${message}`;
-        contentEl.appendChild(errorEl);
-    },
-
-    /**
-     * Render a compaction separator in the chat
-     */
-    renderCompactionSeparator() {
-        const container = document.getElementById('messages-container');
-        if (!container) return;
-
-        const separator = document.createElement('div');
-        separator.className = 'compaction-separator';
-        separator.innerHTML = `
-            <div class="compaction-line"></div>
-            <span class="compaction-label">CONTEXT COMPACTED</span>
-            <div class="compaction-line"></div>
-        `;
-        container.appendChild(separator);
-    },
-
-    formatText(text) {
-        if (!text) return '';
-
-        if (typeof marked !== 'undefined') {
-            try {
-                let html = marked.parse(text);
-                // Auto-embed Giphy URLs as images
-                html = this.embedGiphyUrls(html);
-                return html;
-            } catch (e) {
-                console.error('Markdown parsing error:', e);
-            }
-        }
-
-        let html = this.escapeHtml(text);
-        html = html.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
-        html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-        html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-        html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-        html = html.replace(/\n/g, '<br>');
-        // Auto-embed Giphy URLs as images
-        html = this.embedGiphyUrls(html);
-        return html;
-    },
-
-    /**
-     * Render markdown text to HTML string
-     */
-    renderMarkdownToHtml(text) {
-        return this.formatText(text);
-    },
-
-    /**
-     * Render markdown content into an element
-     */
-    renderMarkdownContent(element, text) {
-        if (element && text) {
-            element.innerHTML = this.formatText(text);
-            // Highlight code blocks if available
-            if (typeof hljs !== 'undefined') {
-                element.querySelectorAll('pre code').forEach(block => {
-                    hljs.highlightElement(block);
-                });
-            }
-        }
-    },
-
-    /**
-     * Replace Giphy URLs with embedded GIF images
-     */
-    embedGiphyUrls(html) {
-        // Match Giphy gif URLs (both in links and standalone)
-        // Pattern for URLs ending in .gif from giphy.com
-        const giphyGifPattern = /(https:\/\/media[0-9]*\.giphy\.com\/[^\s"<>]+\.gif)/gi;
-
-        return html.replace(giphyGifPattern, (match, url) => {
-            // If it's already in an img tag, leave it
-            const imgPattern = new RegExp(`<img[^>]*src=["']${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["']`, 'i');
-            if (imgPattern.test(html)) {
-                return match;
-            }
-            // Replace the URL with an embedded GIF
-            return `<div class="embedded-gif"><img src="${url}" alt="GIF" class="gif-image" loading="lazy"></div>`;
-        });
-    },
-
-    /**
-     * Add copy buttons to code blocks in a container
-     */
-    addCodeCopyButtons(container) {
-        const codeBlocks = container.querySelectorAll('pre');
-
-        codeBlocks.forEach(pre => {
-            // Skip if already wrapped
-            if (pre.parentElement?.classList.contains('code-block-wrapper')) {
-                return;
-            }
-
-            // Create wrapper
-            const wrapper = document.createElement('div');
-            wrapper.className = 'code-block-wrapper';
-
-            // Wrap the pre element
-            pre.parentNode.insertBefore(wrapper, pre);
-            wrapper.appendChild(pre);
-
-            // Create copy button
-            const copyBtn = document.createElement('button');
-            copyBtn.className = 'code-copy-btn';
-            copyBtn.textContent = 'Copy';
-            copyBtn.addEventListener('click', async () => {
-                const codeEl = pre.querySelector('code');
-                const code = codeEl ? codeEl.textContent : pre.textContent;
-
-                try {
-                    await navigator.clipboard.writeText(code);
-                    copyBtn.textContent = 'Copied!';
-                    copyBtn.classList.add('copied');
-
-                    setTimeout(() => {
-                        copyBtn.textContent = 'Copy';
-                        copyBtn.classList.remove('copied');
-                    }, 2000);
-                } catch (error) {
-                    console.error('Failed to copy code:', error);
-                    copyBtn.textContent = 'Failed';
-                    setTimeout(() => {
-                        copyBtn.textContent = 'Copy';
-                    }, 2000);
-                }
-            });
-
-            wrapper.appendChild(copyBtn);
-        });
-    },
-
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    },
-
-    scrollToBottom(force = false) {
-        const container = document.getElementById('messages-container');
-
-        if (force) {
-            // Force scroll to bottom (e.g., when sending a new message)
-            container.scrollTop = container.scrollHeight;
-            this.userScrolledAway = false;
-        } else {
-            // Respect user's scroll intent - if they scrolled away, don't auto-scroll
-            if (this.userScrolledAway) {
-                return;
-            }
-
-            // Only auto-scroll if user is at the bottom (within 30px)
-            const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
-            if (distanceFromBottom < 30) {
-                container.scrollTop = container.scrollHeight;
-            }
-        }
-    },
-
-    updateContextStats() {
-        const settings = SettingsManager?.getSettings() || {};
-        const model = settings.model || 'claude-3-5-sonnet-20241022';
-        const modelLimit = this.MODEL_LIMITS[model] || 200000;
-
-        // Calculate total tokens
-        let totalTokens = 0;
-        this.messages.forEach(msg => {
-            totalTokens += this.estimateTokens(msg.content);
-        });
-
-        // Update UI
-        document.getElementById('stat-messages').textContent = this.messages.length;
-
-        const contextPercentage = ((totalTokens / modelLimit) * 100).toFixed(0);
-        const tokensFormatted = totalTokens >= 1000 ? `${(totalTokens / 1000).toFixed(1)}K` : totalTokens;
-        const limitFormatted = modelLimit >= 1000 ? `${(modelLimit / 1000).toFixed(0)}K` : modelLimit;
-        document.getElementById('stat-context').textContent = `${tokensFormatted} / ${limitFormatted} (${contextPercentage}%)`;
-
-        // Show/hide pruned messages stat
-        const prunedContainer = document.getElementById('stat-pruned-container');
-        if (this.lastPrunedCount > 0) {
-            prunedContainer.style.display = '';
-            document.getElementById('stat-pruned').textContent = `${this.lastPrunedCount}`;
-        } else {
-            prunedContainer.style.display = 'none';
-        }
+        Store.endStreaming();
+        this.updateSendButton();
     },
 
     stopStreaming() {
         if (this.abortController) {
             this.abortController.abort();
+            this.abortController = null;
+        }
+        Store.endStreaming();
+        this.updateSendButton();
+    },
+
+    // =========================================================================
+    // Polling for background streams
+    // =========================================================================
+
+    startPolling(conversationId) {
+        this.stopPolling();
+
+        this.pollInterval = setInterval(async () => {
+            if (this.activeConversationId !== conversationId) {
+                this.stopPolling();
+                return;
+            }
+
+            try {
+                const status = await ApiClient.getStreamingStatus(conversationId);
+
+                if (!status.streaming) {
+                    this.stopPolling();
+                    // Partial update: only fetch and update the latest message
+                    await this._fetchAndUpdateLatestMessage(conversationId);
+                }
+            } catch (e) {
+                console.error('Polling error:', e);
+            }
+        }, 2000);
+    },
+
+    /**
+     * Fetch the latest message from server and update DOM in-place
+     * Avoids full conversation reload to prevent flickering
+     */
+    async _fetchAndUpdateLatestMessage(conversationId) {
+        try {
+            const conversation = await ApiClient.getConversation(conversationId, this.currentBranch);
+            const latestMsg = conversation.messages?.[conversation.messages.length - 1];
+
+            if (latestMsg && latestMsg.role === 'assistant') {
+                // Find message element by ID (not stale ref)
+                let messageEl = document.querySelector(`.message[data-message-id="${latestMsg.id}"]`);
+
+                if (!messageEl) {
+                    // Message element doesn't exist, create it
+                    messageEl = this.createMessageElement('assistant', latestMsg.position, 1, 1);
+                    messageEl.dataset.messageId = latestMsg.id;
+                    document.getElementById('messages-container').appendChild(messageEl);
+                }
+
+                // Update content in-place
+                const contentEl = messageEl.querySelector('.message-content');
+                if (contentEl) {
+                    contentEl.innerHTML = '';
+                    this.renderContent(contentEl, latestMsg.content, 'assistant');
+
+                    // Backwards compatibility: render thinking from separate field
+                    if (latestMsg.thinking && !this.contentHasThinkingBlocks(latestMsg.content)) {
+                        const thinkingSegments = latestMsg.thinking.split('\n\n---\n\n');
+                        for (let i = thinkingSegments.length - 1; i >= 0; i--) {
+                            const segment = thinkingSegments[i];
+                            if (segment.trim()) {
+                                const thinkingEl = this.createThinkingBlock(false);
+                                this.updateThinkingBlock(thinkingEl, segment);
+                                thinkingEl.classList.add('collapsed');
+                                contentEl.insertBefore(thinkingEl, contentEl.firstChild);
+                            }
+                        }
+                    }
+
+                    // Backwards compatibility: apply tool results from separate field
+                    if (latestMsg.tool_results && Array.isArray(latestMsg.tool_results) && !this.contentHasToolResultBlocks(latestMsg.content)) {
+                        for (const result of latestMsg.tool_results) {
+                            const toolBlock = contentEl.querySelector(`.tool-use-block[data-tool-use-id="${result.tool_use_id}"]`);
+                            if (toolBlock) {
+                                this.applyToolResult(toolBlock, result.content, result.is_error);
+                            }
+                        }
+                    }
+
+                    this.addCodeCopyButtons(contentEl);
+                }
+
+                // Add actions if not present
+                if (!messageEl.querySelector('.message-actions')) {
+                    const actionsDiv = this.createMessageActions('assistant');
+                    messageEl.appendChild(actionsDiv);
+                }
+
+                // Update Store
+                Store.addMessage(latestMsg);
+            }
+
+            Store.endStreaming();
+            this.updateSendButton();
+            this.updateContextStats();
+
+            // Update StreamingTracker
+            if (typeof StreamingTracker !== 'undefined') {
+                StreamingTracker.setStreaming(conversationId, { streaming: false });
+            }
+        } catch (e) {
+            console.error('Error fetching latest message:', e);
+            // Fall back to full reload
+            const conversation = await ApiClient.getConversation(conversationId, this.currentBranch);
+            await this.loadConversation(conversation);
+        }
+    },
+
+    stopPolling() {
+        if (this.pollInterval) {
+            clearInterval(this.pollInterval);
+            this.pollInterval = null;
+        }
+    },
+
+    // =========================================================================
+    // Edit / Retry / Delete
+    // =========================================================================
+
+    async editMessage(position) {
+        const msg = this.messages.find(m => m.position === position);
+        if (!msg || msg.role !== 'user') return;
+
+        const messageEl = document.querySelector(`.message[data-position="${position}"]`);
+        if (!messageEl) return;
+
+        const contentEl = messageEl.querySelector('.message-content');
+        this.editingPosition = position;
+        this.originalEditContent = typeof msg.content === 'string' ? msg.content :
+            msg.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
+
+        contentEl.innerHTML = '';
+        const textarea = document.createElement('textarea');
+        textarea.className = 'edit-textarea';
+        textarea.value = this.originalEditContent;
+        contentEl.appendChild(textarea);
+
+        const buttonsDiv = document.createElement('div');
+        buttonsDiv.className = 'edit-buttons';
+
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'edit-save-btn';
+        saveBtn.textContent = 'Save & Submit';
+        saveBtn.onclick = () => this.confirmEdit(position, textarea.value);
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'edit-cancel-btn';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.onclick = () => this.cancelEdit(position);
+
+        buttonsDiv.appendChild(saveBtn);
+        buttonsDiv.appendChild(cancelBtn);
+        contentEl.appendChild(buttonsDiv);
+
+        textarea.focus();
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+    },
+
+    async confirmEdit(position, newContent) {
+        if (newContent.trim() === '' || newContent === this.originalEditContent) {
+            this.cancelEdit(position);
+            return;
+        }
+
+        const conversationId = this.activeConversationId;
+        const userMsgIndex = this.messages.filter(m => m.role === 'user' && m.position <= position).length - 1;
+
+        try {
+            const response = await fetch(`/api/conversations/${conversationId}/edit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_msg_index: userMsgIndex,
+                    content: newContent,
+                    current_branch: this.currentBranch
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                this.currentBranch = result.branch;
+
+                const conversation = await ApiClient.getConversation(conversationId, result.branch);
+                await this.loadConversation(conversation);
+                await this.streamResponse();
+            }
+        } catch (e) {
+            console.error('Error editing message:', e);
+        } finally {
+            this.editingPosition = null;
+            this.originalEditContent = null;
+        }
+    },
+
+    cancelEdit(position) {
+        const messageEl = document.querySelector(`.message[data-position="${position}"]`);
+        if (!messageEl) return;
+
+        const msg = this.messages.find(m => m.position === position);
+        if (!msg) return;
+
+        const contentEl = messageEl.querySelector('.message-content');
+        const content = typeof msg.content === 'string' ? msg.content :
+            msg.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
+        contentEl.textContent = content;
+
+        this.editingPosition = null;
+        this.originalEditContent = null;
+    },
+
+    async retryMessage(assistantPosition) {
+        // Remove from the user message before this assistant message
+        const userPosition = assistantPosition - 1;
+        const userMsg = this.messages.find(m => m.position === userPosition && m.role === 'user');
+        if (!userMsg) return;
+
+        // Remove assistant message from UI and state
+        this.removeMessagesFromPosition(assistantPosition);
+
+        // Filter messages in Store
+        const newMessages = this.messages.filter(m => m.position < assistantPosition);
+        Store.set({ messages: newMessages });
+
+        await this.streamResponse(true);
+    },
+
+    removeMessagesFromPosition(position) {
+        const container = document.getElementById('messages-container');
+        const messages = container.querySelectorAll('.message');
+        messages.forEach(el => {
+            const pos = parseInt(el.dataset.position, 10);
+            if (pos >= position) {
+                el.remove();
+            }
+        });
+    },
+
+    async deleteMessagesFrom(position) {
+        const conversationId = this.activeConversationId;
+        if (!conversationId) return;
+
+        try {
+            await fetch(`/api/conversations/${conversationId}/messages?from_position=${position}&branch=${this.currentBranch.join(',')}`, {
+                method: 'DELETE'
+            });
+
+            this.removeMessagesFromPosition(position);
+            const newMessages = this.messages.filter(m => m.position < position);
+            Store.set({ messages: newMessages });
+            this.updateContextStats();
+        } catch (e) {
+            console.error('Error deleting messages:', e);
+        }
+    },
+
+    async switchVersion(position, direction) {
+        const conversationId = this.activeConversationId;
+        const msg = this.messages.find(m => m.position === position);
+        if (!msg) return;
+
+        const userMsgIndex = msg.user_msg_index;
+        if (userMsgIndex === undefined) return;
+
+        try {
+            const response = await fetch(`/api/conversations/${conversationId}/switch-branch`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_msg_index: userMsgIndex,
+                    direction: direction,
+                    current_branch: this.currentBranch
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                this.currentBranch = result.branch;
+                await this.loadConversation(result.conversation);
+            }
+        } catch (e) {
+            console.error('Error switching version:', e);
+        }
+    },
+
+    // =========================================================================
+    // Copy
+    // =========================================================================
+
+    async copyMessage(messageEl) {
+        const contentEl = messageEl.querySelector('.message-content');
+        if (!contentEl) return;
+
+        const text = contentEl.textContent || contentEl.innerText;
+        try {
+            await navigator.clipboard.writeText(text);
+            this.showCopyFeedback(messageEl);
+        } catch (e) {
+            console.error('Error copying:', e);
+        }
+    },
+
+    showCopyFeedback(element) {
+        const btn = element.querySelector('.copy-btn') || element;
+        const original = btn.innerHTML;
+        btn.innerHTML = '✓';
+        setTimeout(() => {
+            btn.innerHTML = original;
+        }, 1000);
+    },
+
+    async copyEntireConversation() {
+        const messages = this.messages;
+        if (messages.length === 0) return;
+
+        let text = '';
+        for (const msg of messages) {
+            const role = msg.role === 'user' ? 'User' : 'Assistant';
+            const content = typeof msg.content === 'string' ? msg.content :
+                msg.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
+            text += `${role}:\n${content}\n\n`;
+        }
+
+        try {
+            await navigator.clipboard.writeText(text.trim());
+            const btn = document.getElementById('copy-all-btn');
+            if (btn) {
+                this.showCopyFeedback(btn);
+            }
+        } catch (e) {
+            console.error('Error copying conversation:', e);
+        }
+    },
+
+    // =========================================================================
+    // Rendering
+    // =========================================================================
+
+    renderMessage(msg, forceScroll = false) {
+        const container = document.getElementById('messages-container');
+        const messageEl = this.createMessageElement(
+            msg.role,
+            msg.position,
+            msg.current_version || msg.version || 1,
+            msg.total_versions || 1,
+            null,
+            msg.timestamp
+        );
+
+        if (msg.id) {
+            messageEl.dataset.messageId = msg.id;
+        }
+        if (msg.user_msg_index !== undefined) {
+            messageEl.dataset.userMsgIndex = msg.user_msg_index;
+        }
+
+        const contentEl = messageEl.querySelector('.message-content');
+
+        // Render content - renderContent handles all formats:
+        // - string (plain text)
+        // - array with thinking/text/tool_use/surface_content blocks
+        // - object with text and web_searches
+        this.renderContent(contentEl, msg.content, msg.role);
+
+        // Backwards compatibility: Render separate thinking field if present
+        // Only use legacy thinking field if content doesn't already have thinking blocks
+        if (msg.thinking && !this.contentHasThinkingBlocks(msg.content)) {
+            const thinkingSegments = msg.thinking.split('\n\n---\n\n');
+            for (let i = thinkingSegments.length - 1; i >= 0; i--) {
+                const segment = thinkingSegments[i];
+                if (segment.trim()) {
+                    const thinkingEl = this.createThinkingBlock(false);
+                    this.updateThinkingBlock(thinkingEl, segment);
+                    thinkingEl.classList.add('collapsed');
+                    contentEl.insertBefore(thinkingEl, contentEl.firstChild);
+                }
+            }
+        }
+
+        // Backwards compatibility: Apply tool results from separate field
+        // Only use legacy tool_results field if content doesn't have tool_result blocks
+        if (msg.tool_results && Array.isArray(msg.tool_results) && !this.contentHasToolResultBlocks(msg.content)) {
+            for (const result of msg.tool_results) {
+                const toolBlock = contentEl.querySelector(`.tool-use-block[data-tool-use-id="${result.tool_use_id}"]`);
+                if (toolBlock) {
+                    this.applyToolResult(toolBlock, result.content, result.is_error);
+                }
+            }
+        }
+
+        // Add actions
+        if (!msg.streaming) {
+            const actionsDiv = this.createMessageActions(msg.role);
+            messageEl.appendChild(actionsDiv);
+        } else {
+            const indicator = document.createElement('span');
+            indicator.className = 'streaming-indicator';
+            contentEl.appendChild(indicator);
+        }
+
+        container.appendChild(messageEl);
+
+        if (forceScroll) {
+            this.scrollToBottom(true);
+        }
+    },
+
+    renderContent(contentEl, content, role) {
+        if (typeof content === 'string') {
+            if (role === 'assistant') {
+                this.renderMarkdownContent(contentEl, content);
+                this.addCodeCopyButtons(contentEl);
+            } else {
+                contentEl.textContent = content;
+            }
+            return;
+        }
+
+        // Handle dict with text and web_searches
+        if (content && typeof content === 'object' && !Array.isArray(content)) {
+            if (content.text) {
+                this.renderMarkdownContent(contentEl, content.text);
+                this.addCodeCopyButtons(contentEl);
+            }
+            if (content.web_searches) {
+                for (const search of content.web_searches) {
+                    const searchBlock = this.createWebSearchBlock(search.id, 'web_search');
+                    this.updateWebSearchQuery(searchBlock, search.query);
+                    this.updateWebSearchBlock(searchBlock, search.results);
+                    contentEl.appendChild(searchBlock);
+                }
+            }
+            return;
+        }
+
+        // Handle array of content blocks
+        if (Array.isArray(content)) {
+            for (const block of content) {
+                if (block.type === 'thinking') {
+                    // Render thinking block
+                    if (block.content) {
+                        const thinkingEl = this.createThinkingBlock(false);
+                        this.updateThinkingBlock(thinkingEl, block.content);
+                        thinkingEl.classList.add('collapsed');
+                        contentEl.appendChild(thinkingEl);
+                    }
+                } else if (block.type === 'text') {
+                    const textDiv = document.createElement('div');
+                    textDiv.className = 'text-segment';
+                    if (role === 'assistant') {
+                        this.renderMarkdownContent(textDiv, block.text);
+                    } else {
+                        textDiv.textContent = block.text;
+                    }
+                    contentEl.appendChild(textDiv);
+                } else if (block.type === 'tool_use') {
+                    const toolBlock = this.createToolUseBlock(block.name, block.input, block.id);
+                    contentEl.appendChild(toolBlock);
+                } else if (block.type === 'surface_content') {
+                    if (block.filename) {
+                        const placeholder = this.createSurfaceContentPlaceholder(
+                            block.content_type,
+                            block.title,
+                            block.content_id
+                        );
+                        contentEl.appendChild(placeholder);
+                        this.loadSurfaceContent(placeholder, block.filename, block.content_type, block.title, block.content_id);
+                    } else if (block.content) {
+                        const surfaceBlock = this.createSurfaceContentBlock(
+                            block.content,
+                            block.content_type,
+                            block.title,
+                            block.content_id
+                        );
+                        contentEl.appendChild(surfaceBlock);
+                    }
+                } else if (block.type === 'web_search') {
+                    // Web search block in array format
+                    const searchBlock = this.createWebSearchBlock(block.id, 'web_search');
+                    this.updateWebSearchQuery(searchBlock, block.query);
+                    this.updateWebSearchBlock(searchBlock, block.results);
+                    contentEl.appendChild(searchBlock);
+                } else if (block.type === 'image') {
+                    const img = document.createElement('img');
+                    img.className = 'message-image';
+                    if (block.source && block.source.data) {
+                        img.src = `data:${block.source.media_type};base64,${block.source.data}`;
+                    }
+                    contentEl.appendChild(img);
+                } else if (block.type === 'tool_result') {
+                    // Find corresponding tool_use block and apply result
+                    const toolBlock = contentEl.querySelector(
+                        `.tool-use-block[data-tool-use-id="${block.tool_use_id}"]`
+                    );
+                    if (toolBlock) {
+                        this.applyToolResult(toolBlock, block.content, block.is_error);
+                    }
+                }
+            }
+            this.addCodeCopyButtons(contentEl);
+        }
+    },
+
+    // Helper to check if content array has thinking blocks
+    contentHasThinkingBlocks(content) {
+        return Array.isArray(content) && content.some(b => b.type === 'thinking');
+    },
+
+    // Helper to check if content array has tool_result blocks
+    contentHasToolResultBlocks(content) {
+        return Array.isArray(content) && content.some(b => b.type === 'tool_result');
+    },
+
+    createMessageElement(role, position = 0, version = 1, totalVersions = 1, nextVersionInfo = null, timestamp = null) {
+        const el = document.createElement('div');
+        el.className = `message ${role}`;
+        el.dataset.position = position;
+        el.dataset.role = role;
+
+        // Version nav for user messages
+        if (role === 'user' && totalVersions > 1) {
+            const versionNav = document.createElement('div');
+            versionNav.className = 'version-nav';
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'version-btn';
+            prevBtn.textContent = '◀';
+            prevBtn.dataset.direction = '-1';
+            prevBtn.dataset.position = position;
+
+            const counter = document.createElement('span');
+            counter.className = 'version-counter';
+            counter.textContent = `${version}/${totalVersions}`;
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'version-btn';
+            nextBtn.textContent = '▶';
+            nextBtn.dataset.direction = '1';
+            nextBtn.dataset.position = position;
+
+            versionNav.appendChild(prevBtn);
+            versionNav.appendChild(counter);
+            versionNav.appendChild(nextBtn);
+            el.appendChild(versionNav);
+        }
+
+        const contentEl = document.createElement('div');
+        contentEl.className = 'message-content';
+        el.appendChild(contentEl);
+
+        return el;
+    },
+
+    createMessageActions(role) {
+        const actions = document.createElement('div');
+        actions.className = 'message-actions';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'action-btn copy-btn';
+        copyBtn.innerHTML = '&#128203;';
+        copyBtn.title = 'Copy';
+        copyBtn.dataset.action = 'copy';
+        actions.appendChild(copyBtn);
+
+        if (role === 'user') {
+            const editBtn = document.createElement('button');
+            editBtn.className = 'action-btn edit-btn';
+            editBtn.innerHTML = '&#9998;';
+            editBtn.title = 'Edit';
+            editBtn.dataset.action = 'edit';
+            actions.appendChild(editBtn);
+        } else {
+            const retryBtn = document.createElement('button');
+            retryBtn.className = 'action-btn retry-btn';
+            retryBtn.innerHTML = '&#8635;';
+            retryBtn.title = 'Retry';
+            retryBtn.dataset.action = 'retry';
+            actions.appendChild(retryBtn);
+        }
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'action-btn delete-btn';
+        deleteBtn.innerHTML = '&#128465;';
+        deleteBtn.title = 'Delete';
+        deleteBtn.dataset.action = 'delete';
+        actions.appendChild(deleteBtn);
+
+        return actions;
+    },
+
+    // =========================================================================
+    // Thinking Block
+    // =========================================================================
+
+    createThinkingBlock(isStreaming = true) {
+        const el = document.createElement('div');
+        el.className = 'thinking-block';
+
+        const header = document.createElement('div');
+        header.className = 'thinking-header';
+        header.innerHTML = `
+            <span class="thinking-expand-icon">▼</span>
+            <span class="thinking-icon">💭</span>
+            <span class="thinking-label">Thinking</span>
+            <span class="thinking-status ${isStreaming ? 'thinking' : 'done'}">${isStreaming ? 'THINKING' : 'DONE'}</span>
+        `;
+
+        // Toggle expand/collapse
+        header.onclick = () => {
+            el.classList.toggle('collapsed');
+            const icon = header.querySelector('.thinking-expand-icon');
+            if (icon) {
+                icon.textContent = el.classList.contains('collapsed') ? '▶' : '▼';
+            }
+        };
+
+        const content = document.createElement('div');
+        content.className = 'thinking-content';
+
+        const inner = document.createElement('div');
+        inner.className = 'thinking-inner';
+
+        content.appendChild(inner);
+        el.appendChild(header);
+        el.appendChild(content);
+        return el;
+    },
+
+    updateThinkingBlock(el, content) {
+        const innerEl = el.querySelector('.thinking-inner');
+        if (innerEl) {
+            innerEl.textContent = content;
+        }
+    },
+
+    finalizeThinkingBlock(el) {
+        const statusEl = el.querySelector('.thinking-status');
+        if (statusEl) {
+            statusEl.className = 'thinking-status done';
+            statusEl.textContent = 'DONE';
+        }
+    },
+
+    // =========================================================================
+    // Web Search Block
+    // =========================================================================
+
+    createWebSearchBlock(id, name) {
+        const el = document.createElement('div');
+        el.className = 'web-search-block';
+        el.dataset.searchId = id;
+
+        const header = document.createElement('div');
+        header.className = 'web-search-header';
+        header.innerHTML = '<span class="search-icon">🔍</span><span class="search-query">Searching...</span>';
+
+        const results = document.createElement('div');
+        results.className = 'web-search-results';
+
+        el.appendChild(header);
+        el.appendChild(results);
+        return el;
+    },
+
+    updateWebSearchQuery(el, query) {
+        const queryEl = el.querySelector('.search-query');
+        if (queryEl) {
+            queryEl.textContent = query || 'Searching...';
+        }
+    },
+
+    updateWebSearchBlock(el, results) {
+        const resultsEl = el.querySelector('.web-search-results');
+        if (!resultsEl || !results) return;
+
+        resultsEl.innerHTML = '';
+        for (const result of results) {
+            const item = document.createElement('a');
+            item.className = 'search-result-item';
+            item.href = result.url;
+            item.target = '_blank';
+            item.innerHTML = `
+                <div class="result-title">${this.escapeHtml(result.title)}</div>
+                <div class="result-url">${this.escapeHtml(result.url)}</div>
+            `;
+            resultsEl.appendChild(item);
+        }
+    },
+
+    // =========================================================================
+    // Tool Use Block
+    // =========================================================================
+
+    createToolUseBlock(toolName, input, toolUseId) {
+        const el = document.createElement('div');
+        el.className = 'tool-use-block';
+        el.dataset.toolUseId = toolUseId;
+
+        // Get brief description from input
+        const brief = this.getToolBrief(toolName, input);
+
+        // Header with expand icon, tool info, and status
+        const header = document.createElement('div');
+        header.className = 'tool-header';
+        header.innerHTML = `
+            <span class="tool-expand-icon">▼</span>
+            <span class="tool-icon">${this.getToolIcon(toolName)}</span>
+            <span class="tool-name">${this.getToolDisplayName(toolName)}</span>
+            <span class="tool-brief">${this.escapeHtml(brief)}</span>
+            <span class="tool-status running">RUNNING</span>
+        `;
+
+        // Content area (collapsible)
+        const content = document.createElement('div');
+        content.className = 'tool-content';
+
+        // Input section
+        const inputEl = document.createElement('div');
+        inputEl.className = 'tool-input';
+        inputEl.innerHTML = `
+            <div class="tool-section-label">INPUT</div>
+            <pre>${this.escapeHtml(JSON.stringify(input, null, 2))}</pre>
+        `;
+
+        // Result section (populated when result arrives)
+        const resultEl = document.createElement('div');
+        resultEl.className = 'tool-result';
+
+        content.appendChild(inputEl);
+        content.appendChild(resultEl);
+
+        // Toggle expand/collapse
+        header.onclick = () => {
+            el.classList.toggle('collapsed');
+            const icon = header.querySelector('.tool-expand-icon');
+            if (icon) {
+                icon.textContent = el.classList.contains('collapsed') ? '▶' : '▼';
+            }
+        };
+
+        el.appendChild(header);
+        el.appendChild(content);
+        return el;
+    },
+
+    updateToolResult(toolUseId, content, isError) {
+        // First try the cache (populated during live streaming)
+        let block = this.toolBlocks[toolUseId];
+
+        // Fall back to DOM query (needed when loading from saved data)
+        if (!block) {
+            block = document.querySelector(`.tool-use-block[data-tool-use-id="${toolUseId}"]`);
+        }
+
+        if (!block) return;
+
+        // Update status badge
+        const statusEl = block.querySelector('.tool-status');
+        if (statusEl) {
+            statusEl.className = `tool-status ${isError ? 'error' : 'done'}`;
+            statusEl.textContent = isError ? 'ERROR' : 'DONE';
+        }
+
+        const resultEl = block.querySelector('.tool-result');
+        if (!resultEl) return;
+
+        resultEl.className = `tool-result ${isError ? 'error' : 'success'}`;
+
+        const contentStr = typeof content === 'string' ? content : JSON.stringify(content, null, 2);
+        const isLong = contentStr.length > 500;
+
+        resultEl.innerHTML = `
+            <div class="tool-section-label">RESULT</div>
+            <pre class="${isLong ? 'collapsed' : ''}">${this.escapeHtml(contentStr)}</pre>
+        `;
+
+        if (isLong) {
+            resultEl.onclick = () => resultEl.querySelector('pre').classList.toggle('collapsed');
+        }
+    },
+
+    // Apply tool result directly to a block element (used when block isn't in DOM yet)
+    applyToolResult(block, content, isError) {
+        if (!block) return;
+
+        // Update status badge
+        const statusEl = block.querySelector('.tool-status');
+        if (statusEl) {
+            statusEl.className = `tool-status ${isError ? 'error' : 'done'}`;
+            statusEl.textContent = isError ? 'ERROR' : 'DONE';
+        }
+
+        const resultEl = block.querySelector('.tool-result');
+        if (!resultEl) return;
+
+        resultEl.className = `tool-result ${isError ? 'error' : 'success'}`;
+
+        const contentStr = typeof content === 'string' ? content : JSON.stringify(content, null, 2);
+        const isLong = contentStr.length > 500;
+
+        resultEl.innerHTML = `
+            <div class="tool-section-label">RESULT</div>
+            <pre class="${isLong ? 'collapsed' : ''}">${this.escapeHtml(contentStr)}</pre>
+        `;
+
+        if (isLong) {
+            resultEl.onclick = () => resultEl.querySelector('pre').classList.toggle('collapsed');
+        }
+    },
+
+    getToolBrief(toolName, input) {
+        // Extract a brief description from the input based on tool type
+        if (!input) return '';
+
+        switch (toolName) {
+            case 'Read':
+                return input.file_path || '';
+            case 'Write':
+                return input.file_path || '';
+            case 'Edit':
+                return input.file_path || '';
+            case 'Bash':
+                const cmd = input.command || '';
+                return cmd.length > 50 ? cmd.substring(0, 50) + '...' : cmd;
+            case 'Glob':
+                return input.pattern || '';
+            case 'Grep':
+                return input.pattern || '';
+            case 'WebFetch':
+                return input.url || '';
+            case 'WebSearch':
+                return input.query || '';
+            default:
+                // Try common fields
+                return input.file_path || input.path || input.command || input.query || '';
+        }
+    },
+
+    getToolIcon(toolName) {
+        const icons = {
+            'Read': '📖',
+            'Write': '✏️',
+            'Edit': '📝',
+            'Bash': '💻',
+            'Glob': '🔍',
+            'Grep': '🔎',
+            'WebFetch': '🌐',
+            'WebSearch': '🔍'
+        };
+        return icons[toolName] || '🔧';
+    },
+
+    getToolDisplayName(toolName) {
+        return toolName || 'Tool';
+    },
+
+    // =========================================================================
+    // Surface Content Block
+    // =========================================================================
+
+    createSurfaceContentBlock(content, contentType, title, contentId) {
+        const el = document.createElement('div');
+        el.className = 'surface-content-block';
+        el.dataset.contentId = contentId;
+
+        const header = document.createElement('div');
+        header.className = 'surface-header';
+        header.innerHTML = `<span class="surface-icon">📊</span><span class="surface-title">${this.escapeHtml(title || 'Content')}</span><button class="surface-expand">↗</button>`;
+
+        const container = document.createElement('div');
+        container.className = 'surface-container';
+
+        if (contentType === 'html') {
+            const iframe = document.createElement('iframe');
+            iframe.className = 'surface-iframe';
+            iframe.sandbox = 'allow-scripts';
+            iframe.srcdoc = content;
+            container.appendChild(iframe);
+        } else {
+            this.renderMarkdownContent(container, content);
+        }
+
+        header.querySelector('.surface-expand').onclick = () => {
+            this.openSurfaceModal(content, contentType, title);
+        };
+
+        el.appendChild(header);
+        el.appendChild(container);
+        return el;
+    },
+
+    createSurfaceContentPlaceholder(contentType, title, contentId) {
+        const el = document.createElement('div');
+        el.className = 'surface-content-block loading';
+        el.dataset.contentId = contentId;
+
+        const header = document.createElement('div');
+        header.className = 'surface-header';
+        header.innerHTML = `<span class="surface-icon">📊</span><span class="surface-title">${this.escapeHtml(title || 'Loading...')}</span>`;
+
+        el.appendChild(header);
+        return el;
+    },
+
+    async loadSurfaceContent(placeholderEl, filename, contentType, title, contentId) {
+        const conversationId = this.activeConversationId;
+        if (!conversationId) return;
+
+        try {
+            const response = await fetch(`/api/agent-chat/workspace/${conversationId}/${filename}`);
+            if (response.ok) {
+                const content = await response.text();
+                this.replaceSurfaceContentPlaceholder(placeholderEl, content, contentType, title, contentId);
+            }
+        } catch (e) {
+            console.error('Error loading surface content:', e);
+        }
+    },
+
+    replaceSurfaceContentPlaceholder(placeholderEl, content, contentType, title, contentId) {
+        const newBlock = this.createSurfaceContentBlock(content, contentType, title, contentId);
+        placeholderEl.replaceWith(newBlock);
+    },
+
+    openSurfaceModal(content, contentType, title) {
+        const modal = document.createElement('div');
+        modal.className = 'surface-modal';
+        modal.innerHTML = `
+            <div class="surface-modal-content">
+                <div class="surface-modal-header">
+                    <span>${this.escapeHtml(title || 'Content')}</span>
+                    <button class="surface-modal-close">×</button>
+                </div>
+                <div class="surface-modal-body"></div>
+            </div>
+        `;
+
+        const body = modal.querySelector('.surface-modal-body');
+        if (contentType === 'html') {
+            const iframe = document.createElement('iframe');
+            iframe.className = 'surface-modal-iframe';
+            iframe.sandbox = 'allow-scripts';
+            iframe.srcdoc = content;
+            body.appendChild(iframe);
+        } else {
+            this.renderMarkdownContent(body, content);
+        }
+
+        modal.querySelector('.surface-modal-close').onclick = () => modal.remove();
+        modal.onclick = (e) => {
+            if (e.target === modal) modal.remove();
+        };
+
+        document.body.appendChild(modal);
+    },
+
+    // =========================================================================
+    // Markdown / Content Rendering
+    // =========================================================================
+
+    updateMessageContent(contentEl, text, indicator) {
+        // Use a dedicated text container to preserve order of special blocks
+        let textContainer = contentEl.querySelector('.streaming-text');
+
+        if (!textContainer) {
+            // Create text container and insert it before the indicator
+            textContainer = document.createElement('div');
+            textContainer.className = 'streaming-text';
+            if (indicator && indicator.parentNode === contentEl) {
+                contentEl.insertBefore(textContainer, indicator);
+            } else {
+                contentEl.appendChild(textContainer);
+            }
+        }
+
+        // Only update the text container, preserving other blocks in their positions
+        this.renderMarkdownContent(textContainer, text);
+        this.addCodeCopyButtons(textContainer);
+
+        this.scrollToBottom();
+    },
+
+    renderMarkdownContent(element, text) {
+        if (!text) {
+            element.innerHTML = '';
+            return;
+        }
+
+        if (typeof marked !== 'undefined') {
+            element.innerHTML = marked.parse(text);
+            this.embedGiphyUrls(element);
+        } else {
+            element.textContent = text;
+        }
+    },
+
+    embedGiphyUrls(element) {
+        const links = element.querySelectorAll('a[href*="giphy.com"]');
+        links.forEach(link => {
+            const match = link.href.match(/giphy\.com\/(?:gifs|media)\/(?:.*-)?([a-zA-Z0-9]+)/);
+            if (match) {
+                const gifId = match[1];
+                const img = document.createElement('img');
+                img.src = `https://media.giphy.com/media/${gifId}/giphy.gif`;
+                img.className = 'giphy-embed';
+                link.replaceWith(img);
+            }
+        });
+    },
+
+    addCodeCopyButtons(container) {
+        const codeBlocks = container.querySelectorAll('pre code');
+        codeBlocks.forEach(code => {
+            const pre = code.parentElement;
+            if (pre.querySelector('.code-copy-btn')) return;
+
+            const btn = document.createElement('button');
+            btn.className = 'code-copy-btn';
+            btn.textContent = 'Copy';
+            btn.onclick = async () => {
+                try {
+                    await navigator.clipboard.writeText(code.textContent);
+                    btn.textContent = 'Copied!';
+                    setTimeout(() => btn.textContent = 'Copy', 1000);
+                } catch (e) {
+                    console.error('Error copying code:', e);
+                }
+            };
+
+            pre.style.position = 'relative';
+            pre.appendChild(btn);
+        });
+    },
+
+    showError(contentEl, message) {
+        const errorEl = document.createElement('div');
+        errorEl.className = 'error-message';
+        errorEl.textContent = `Error: ${message}`;
+        contentEl.appendChild(errorEl);
+    },
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    },
+
+    // =========================================================================
+    // Context Stats
+    // =========================================================================
+
+    updateContextStats() {
+        const statsEl = document.getElementById('context-stats');
+        if (!statsEl) return;
+
+        const messages = this.messages;
+        const totalTokens = messages.reduce((sum, m) => sum + this.estimateTokens(m.content), 0);
+        const limit = this.getContextLimit();
+        const percent = Math.round((totalTokens / limit) * 100);
+
+        statsEl.textContent = `${totalTokens.toLocaleString()} / ${limit.toLocaleString()} tokens (${percent}%)`;
+
+        if (percent > 80) {
+            statsEl.className = 'context-stats warning';
+        } else {
+            statsEl.className = 'context-stats';
+        }
+    },
+
+    // Animation stubs (simplified)
+    stopStreamingAnimation() {
+        if (this.streamingAnimationFrame) {
+            cancelAnimationFrame(this.streamingAnimationFrame);
+            this.streamingAnimationFrame = null;
         }
     }
 };
+
+// Note: ChatManager.init() is called by app.js to ensure proper initialization order

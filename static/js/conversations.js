@@ -21,6 +21,11 @@ const ConversationsManager = {
         this.bindEvents();
         this.bindSearchEvents();
         this.startPeriodicRefresh();
+
+        // Sync streaming states from server (for background streams that survived page reload)
+        if (typeof StreamingTracker !== 'undefined') {
+            await StreamingTracker.refreshAllStreamingStates();
+        }
     },
 
     /**
@@ -385,8 +390,9 @@ const ConversationsManager = {
 
             // Clear the chat UI to show the new empty conversation
             if (clearUI && typeof ChatManager !== 'undefined') {
-                ChatManager.isAgentConversation = isAgent;  // Set this so clearChat shows correct welcome message
                 ChatManager.clearChat();
+                // Set isAgentConversation AFTER clearChat (which resets it to false)
+                ChatManager.isAgentConversation = isAgent;
                 ChatManager.activeConversationId = conversation.id;
                 ChatManager.currentBranch = [0];
 

@@ -1,0 +1,18564 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - heading "Claude Chat" [level=1] [ref=e5]
+    - generic [ref=e6]:
+      - button "❓" [ref=e7] [cursor=pointer]
+      - button "📋" [ref=e8] [cursor=pointer]
+      - button "☀" [ref=e9] [cursor=pointer]:
+        - generic [ref=e10]: ☀
+      - button "⚙" [ref=e11] [cursor=pointer]
+  - generic [ref=e12]:
+    - complementary [ref=e13]:
+      - generic [ref=e14]:
+        - button "+ New Chat" [ref=e15] [cursor=pointer]:
+          - generic [ref=e16]: +
+          - text: New Chat
+        - button "Agent Agent Chat" [ref=e17] [cursor=pointer]:
+          - img "Agent" [ref=e18]
+          - text: Agent Chat
+        - button "+ New Project" [ref=e19] [cursor=pointer]:
+          - generic [ref=e20]: +
+          - text: New Project
+      - textbox "Search chats..." [ref=e22]
+      - generic [ref=e23]:
+        - generic [ref=e25] [cursor=pointer]:
+          - generic [ref=e26]: ▶
+          - generic [ref=e28]: evals
+          - generic "Shared memory for agent chats" [ref=e29]: 🧠
+          - generic [ref=e30]: (7)
+          - generic [ref=e31]:
+            - button "+" [ref=e32]
+            - button "+" [ref=e33]
+            - button "⋮" [ref=e35]
+        - generic [ref=e37] [cursor=pointer]:
+          - generic [ref=e38]: ▶
+          - generic [ref=e40]: AAR
+          - generic "Shared memory for agent chats" [ref=e41]: 🧠
+          - generic [ref=e42]: (27)
+          - generic [ref=e43]:
+            - button "+" [ref=e44]
+            - button "+" [ref=e45]
+            - button "⋮" [ref=e47]
+      - generic [ref=e48]:
+        - generic [ref=e49] [cursor=pointer]:
+          - img "Agent" [ref=e50]
+          - generic [ref=e51]: Agent with tools TEST_1769910054888_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e52] [cursor=pointer]:
+          - img "Agent" [ref=e53]
+          - generic [ref=e54]: Agent msg TEST_1769910055373_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e55] [cursor=pointer]:
+          - img "Agent" [ref=e56]
+          - generic [ref=e57]: Agent conv TEST_1769910055491_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e58] [cursor=pointer]:
+          - generic [ref=e59]: Normal settings test TEST_1769910056473
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e60] [cursor=pointer]:
+          - img "Agent" [ref=e61]
+          - generic [ref=e62]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e63] [cursor=pointer]:
+          - generic [ref=e64]: Normal chat TEST_1769910054453_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e65] [cursor=pointer]:
+          - img "Agent" [ref=e66]
+          - generic [ref=e67]: Create a file TEST_1769910055195_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e68] [cursor=pointer]:
+          - img "Agent" [ref=e69]
+          - generic [ref=e70]: Agent unique TEST_1769910054655_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e71] [cursor=pointer]:
+          - generic [ref=e72]: Normal conv TEST_1769910055491_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e73] [cursor=pointer]:
+          - generic [ref=e74]: Normal msg TEST_1769910055373_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e75] [cursor=pointer]:
+          - generic [ref=e76]: Normal before agent TEST_1769910054888_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e77] [cursor=pointer]:
+          - generic [ref=e78]: Normal unique TEST_1769910054655_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e79] [cursor=pointer]:
+          - generic [ref=e80]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e81] [cursor=pointer]:
+          - generic [ref=e82]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e83] [cursor=pointer]:
+          - generic [ref=e84]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e85] [cursor=pointer]:
+          - generic [ref=e86]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e87] [cursor=pointer]:
+          - generic [ref=e88]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e89] [cursor=pointer]:
+          - generic [ref=e90]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e91] [cursor=pointer]:
+          - generic [ref=e92]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e93] [cursor=pointer]:
+          - generic [ref=e94]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e95] [cursor=pointer]:
+          - generic [ref=e96]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e97] [cursor=pointer]:
+          - generic [ref=e98]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e99] [cursor=pointer]:
+          - img "Agent" [ref=e100]
+          - generic [ref=e101]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e102] [cursor=pointer]:
+          - img "Agent" [ref=e103]
+          - generic [ref=e104]: "Error: ProcessTransport is not ready for writing"
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e105] [cursor=pointer]:
+          - img "Agent" [ref=e106]
+          - generic [ref=e107]: look up Homotopy type theory recent work and give...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e108] [cursor=pointer]:
+          - generic [ref=e109]: look up Homotopy type theory recent work and give...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e110] [cursor=pointer]:
+          - img "Agent" [ref=e111]
+          - generic [ref=e112]: look up Homotopy type theory recent work and give...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e113] [cursor=pointer]:
+          - img "Agent" [ref=e114]
+          - generic [ref=e115]: look up claude agent sdk recent work and give me a...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e116] [cursor=pointer]:
+          - img "Agent" [ref=e117]
+          - generic [ref=e118]: look up Homotopy type theory recent work and give...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e119] [cursor=pointer]:
+          - img "Agent" [ref=e120]
+          - generic [ref=e121]: look up Homotopy type theory recent work and give...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e122] [cursor=pointer]:
+          - generic [ref=e123]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e124] [cursor=pointer]:
+          - generic [ref=e125]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e126] [cursor=pointer]:
+          - generic [ref=e127]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e128] [cursor=pointer]:
+          - generic [ref=e129]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e130] [cursor=pointer]:
+          - generic [ref=e131]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e132] [cursor=pointer]:
+          - generic [ref=e133]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e134] [cursor=pointer]:
+          - generic [ref=e135]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e136] [cursor=pointer]:
+          - generic [ref=e137]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e138] [cursor=pointer]:
+          - generic [ref=e139]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e140] [cursor=pointer]:
+          - generic [ref=e141]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e142] [cursor=pointer]:
+          - img "Agent" [ref=e143]
+          - generic [ref=e144]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e145] [cursor=pointer]:
+          - generic [ref=e146]: Message in conv 3 - thinking ON again
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e147] [cursor=pointer]:
+          - generic [ref=e148]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e149] [cursor=pointer]:
+          - generic [ref=e150]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e151] [cursor=pointer]:
+          - img "Agent" [ref=e152]
+          - generic [ref=e153]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e154] [cursor=pointer]:
+          - generic [ref=e155]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e156] [cursor=pointer]:
+          - img "Agent" [ref=e157]
+          - generic [ref=e158]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e159] [cursor=pointer]:
+          - generic [ref=e160]: Message in conv 2 - thinking OFF
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e161] [cursor=pointer]:
+          - img "Agent" [ref=e162]
+          - generic [ref=e163]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e164] [cursor=pointer]:
+          - generic [ref=e165]: Test toggle
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e166] [cursor=pointer]:
+          - generic [ref=e167]: Test status
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e168] [cursor=pointer]:
+          - generic [ref=e169]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e170] [cursor=pointer]:
+          - generic [ref=e171]: Test reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e172] [cursor=pointer]:
+          - generic [ref=e173]: Different conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e174] [cursor=pointer]:
+          - generic [ref=e175]: First message with thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e176] [cursor=pointer]:
+          - generic [ref=e177]: First message 1769907883336
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e178] [cursor=pointer]:
+          - generic [ref=e179]: Test expanded state unique
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e180] [cursor=pointer]:
+          - generic [ref=e181]: Message in conv 1 - thinking ON
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e182] [cursor=pointer]:
+          - generic [ref=e183]: Generate long thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e184] [cursor=pointer]:
+          - generic [ref=e185]: RAPID_5_FIVE_1769907883632
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e186] [cursor=pointer]:
+          - generic [ref=e187]: RAPID_FOUR_1769907889144
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e188] [cursor=pointer]:
+          - generic [ref=e189]: First message in conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e190] [cursor=pointer]:
+          - generic [ref=e191]: THINKING_LEAK_1769907891327
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e192] [cursor=pointer]:
+          - generic [ref=e193]: Message for retry test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e194] [cursor=pointer]:
+          - generic [ref=e195]: RAPID_THREE_1769907889144
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e196] [cursor=pointer]:
+          - generic [ref=e197]: NORMAL_LEAK_1769907891327
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e198] [cursor=pointer]:
+          - generic [ref=e199]: RAPID_5_FOUR_1769907883632
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e200] [cursor=pointer]:
+          - img "Agent" [ref=e201]
+          - generic [ref=e202]: AGENT_TOOL_1769907890116
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e203] [cursor=pointer]:
+          - generic [ref=e204]: RAPID_TWO_1769907889144
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e205] [cursor=pointer]:
+          - generic [ref=e206]: STREAM_SWITCH_B_1769907888335
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e207] [cursor=pointer]:
+          - generic [ref=e208]: DOUBLE_SEND_1769907890615
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e209] [cursor=pointer]:
+          - generic [ref=e210]: STOP_BTN_A_1769907883630
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e211] [cursor=pointer]:
+          - generic [ref=e212]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e213] [cursor=pointer]:
+          - generic [ref=e214]: NORMAL_CHAT_1769907890116
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e215] [cursor=pointer]:
+          - generic [ref=e216]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e217] [cursor=pointer]:
+          - generic [ref=e218]: STREAM_CONV_B_1769907882655
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e219] [cursor=pointer]:
+          - generic [ref=e220]: STOP_ABORT_1769907889266
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e221] [cursor=pointer]:
+          - generic [ref=e222]: RAPID_5_THREE_1769907883632
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e223] [cursor=pointer]:
+          - generic [ref=e224]: RAPID_ONE_1769907889144
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e225] [cursor=pointer]:
+          - generic [ref=e226]: NEW_CHAT_AFTER_1769907887320
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e227] [cursor=pointer]:
+          - generic [ref=e228]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e229] [cursor=pointer]:
+          - generic [ref=e230]: STREAM_CONV_C_1769907882655
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e231] [cursor=pointer]:
+          - generic [ref=e232]: STREAM_SWITCH_A_1769907888335
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e233] [cursor=pointer]:
+          - generic [ref=e234]: SETTINGS_STREAM_1769907888334
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e235] [cursor=pointer]:
+          - generic [ref=e236]: RELOAD_STREAM_1769907887060
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e237] [cursor=pointer]:
+          - generic [ref=e238]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e239] [cursor=pointer]:
+          - generic [ref=e240]: NEW_CHAT_STREAM_1769907887320
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e241] [cursor=pointer]:
+          - generic [ref=e242]: ERROR_TEST_B_1769907883636
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e243] [cursor=pointer]:
+          - generic [ref=e244]: RAPID_5_TWO_1769907883632
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e245] [cursor=pointer]:
+          - generic [ref=e246]: ALT_BETA_1769907883630
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e247] [cursor=pointer]:
+          - generic [ref=e248]: ABORT_STREAM_1769907885452
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e249] [cursor=pointer]:
+          - generic [ref=e250]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e251] [cursor=pointer]:
+          - generic [ref=e252]: Third conversation unique message CCC
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e253] [cursor=pointer]:
+          - generic [ref=e254]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e255] [cursor=pointer]:
+          - img "Agent" [ref=e256]
+          - generic [ref=e257]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e258] [cursor=pointer]:
+          - generic [ref=e259]: ERROR_TEST_A_1769907883636
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e260] [cursor=pointer]:
+          - generic [ref=e261]: RAPID_5_ONE_1769907883632
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e262] [cursor=pointer]:
+          - generic [ref=e263]: ALT_ALPHA_1769907883630
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e264] [cursor=pointer]:
+          - generic [ref=e265]: Second conversation unique message BBB
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e266] [cursor=pointer]:
+          - generic [ref=e267]: LongMessageTest1769907882908 AAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e268] [cursor=pointer]:
+          - generic [ref=e269]: STREAM_CONV_A_1769907882655
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e270] [cursor=pointer]:
+          - generic [ref=e271]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e272] [cursor=pointer]:
+          - generic [ref=e273]: First conversation unique message AAA
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e274] [cursor=pointer]:
+          - generic [ref=e275]: Second conversation after reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e276] [cursor=pointer]:
+          - generic [ref=e277]: Conversation to keep
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e278] [cursor=pointer]:
+          - generic [ref=e279]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e280] [cursor=pointer]:
+          - generic [ref=e281]: Persistence test 1769907879114
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e282] [cursor=pointer]:
+          - generic [ref=e283]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e284] [cursor=pointer]:
+          - generic [ref=e285]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e286] [cursor=pointer]:
+          - img "Agent" [ref=e287]
+          - generic [ref=e288]: Test agent thinking reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e289] [cursor=pointer]:
+          - generic [ref=e290]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e291] [cursor=pointer]:
+          - generic [ref=e292]: Normal after agent TEST_1769907869690_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e293] [cursor=pointer]:
+          - img "Agent" [ref=e294]
+          - generic [ref=e295]: Agent conv TEST_1769907869809_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e296] [cursor=pointer]:
+          - generic [ref=e297]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e298] [cursor=pointer]:
+          - generic [ref=e299]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e300] [cursor=pointer]:
+          - img "Agent" [ref=e301]
+          - generic [ref=e302]: Test agent thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e303] [cursor=pointer]:
+          - generic [ref=e304]: Normal conv TEST_1769907869809_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e305] [cursor=pointer]:
+          - img "Agent" [ref=e306]
+          - generic [ref=e307]: Agent settings test TEST_1769907870913_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e308] [cursor=pointer]:
+          - img "Agent" [ref=e309]
+          - generic [ref=e310]: Agent conv TEST_1769907869809_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e311] [cursor=pointer]:
+          - img "Agent" [ref=e312]
+          - generic [ref=e313]: Test agent tool persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e314] [cursor=pointer]:
+          - img "Agent" [ref=e315]
+          - generic [ref=e316]: Test agent reload persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e317] [cursor=pointer]:
+          - img "Agent" [ref=e318]
+          - generic [ref=e319]: Agent unique TEST_1769907869335_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e320] [cursor=pointer]:
+          - img "Agent" [ref=e321]
+          - generic [ref=e322]: Agent msg TEST_1769907869571_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e323] [cursor=pointer]:
+          - generic [ref=e324]: Normal settings test TEST_1769907870913
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e325] [cursor=pointer]:
+          - img "Agent" [ref=e326]
+          - generic [ref=e327]: Agent with tools TEST_1769907869094_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e328] [cursor=pointer]:
+          - img "Agent" [ref=e329]
+          - generic [ref=e330]: Create a file TEST_1769907869690_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e331] [cursor=pointer]:
+          - generic [ref=e332]: Normal conv TEST_1769907869809_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e333] [cursor=pointer]:
+          - img "Agent" [ref=e334]
+          - generic [ref=e335]: Agent chat TEST_1769907866880_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e336] [cursor=pointer]:
+          - generic [ref=e337]: Normal msg TEST_1769907869571_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e338] [cursor=pointer]:
+          - generic [ref=e339]: Normal unique TEST_1769907869335_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e340] [cursor=pointer]:
+          - generic [ref=e341]: Normal before agent TEST_1769907869094_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e342] [cursor=pointer]:
+          - generic [ref=e343]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e344] [cursor=pointer]:
+          - generic [ref=e345]: Normal chat TEST_1769907866880_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e346] [cursor=pointer]:
+          - generic [ref=e347]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e348] [cursor=pointer]:
+          - generic [ref=e349]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e350] [cursor=pointer]:
+          - generic [ref=e351]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e352] [cursor=pointer]:
+          - img "Agent" [ref=e353]
+          - generic [ref=e354]: Agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e355] [cursor=pointer]:
+          - generic [ref=e356]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e357] [cursor=pointer]:
+          - generic [ref=e358]: Normal chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e359] [cursor=pointer]:
+          - generic [ref=e360]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e361] [cursor=pointer]:
+          - generic [ref=e362]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e363] [cursor=pointer]:
+          - generic [ref=e364]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e365] [cursor=pointer]:
+          - generic [ref=e366]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e367] [cursor=pointer]:
+          - generic [ref=e368]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e369] [cursor=pointer]:
+          - generic [ref=e370]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e371] [cursor=pointer]:
+          - generic [ref=e372]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e373] [cursor=pointer]:
+          - generic [ref=e374]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e375] [cursor=pointer]:
+          - generic [ref=e376]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e377] [cursor=pointer]:
+          - generic [ref=e378]: STREAM_CONV_C_1769907821809
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e379] [cursor=pointer]:
+          - generic [ref=e380]: STREAM_CONV_B_1769907821809
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e381] [cursor=pointer]:
+          - generic [ref=e382]: STREAM_CONV_A_1769907821809
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e383] [cursor=pointer]:
+          - generic [ref=e384]: RAPID_5_FIVE_1769907707856
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e385] [cursor=pointer]:
+          - generic [ref=e386]: RAPID_5_FOUR_1769907707856
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e387] [cursor=pointer]:
+          - generic [ref=e388]: RAPID_FOUR_1769907710248
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e389] [cursor=pointer]:
+          - generic [ref=e390]: RAPID_THREE_1769907710248
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e391] [cursor=pointer]:
+          - generic [ref=e392]: RAPID_5_THREE_1769907707856
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e393] [cursor=pointer]:
+          - img "Agent" [ref=e394]
+          - generic [ref=e395]: AGENT_TOOL_1769907710356
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e396] [cursor=pointer]:
+          - generic [ref=e397]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e398] [cursor=pointer]:
+          - generic [ref=e399]: STOP_BTN_A_1769907707452
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e400] [cursor=pointer]:
+          - generic [ref=e401]: ERROR_TEST_B_1769907708596
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e402] [cursor=pointer]:
+          - generic [ref=e403]: THINKING_LEAK_1769907709722
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e404] [cursor=pointer]:
+          - generic [ref=e405]: RAPID_TWO_1769907710248
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e406] [cursor=pointer]:
+          - generic [ref=e407]: NEW_CHAT_AFTER_1769907709829
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e408] [cursor=pointer]:
+          - generic [ref=e409]: RAPID_5_TWO_1769907707856
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e410] [cursor=pointer]:
+          - generic [ref=e411]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e412] [cursor=pointer]:
+          - generic [ref=e413]: DOUBLE_SEND_1769907710635
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e414] [cursor=pointer]:
+          - generic [ref=e415]: DOUBLE_CLICK_B_1769907707840
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e416] [cursor=pointer]:
+          - generic [ref=e417]: ALT_BETA_1769907708237
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e418] [cursor=pointer]:
+          - generic [ref=e419]: NORMAL_CHAT_1769907710356
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e420] [cursor=pointer]:
+          - generic [ref=e421]: STREAM_SWITCH_B_1769907708683
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e422] [cursor=pointer]:
+          - generic [ref=e423]: RAPID_ONE_1769907710248
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e424] [cursor=pointer]:
+          - generic [ref=e425]: SETTINGS_STREAM_1769907710186
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e426] [cursor=pointer]:
+          - generic [ref=e427]: RAPID_SWITCH_B_1769907707429
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e428] [cursor=pointer]:
+          - generic [ref=e429]: NORMAL_LEAK_1769907709722
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e430] [cursor=pointer]:
+          - generic [ref=e431]: NEW_CHAT_STREAM_1769907709829
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e432] [cursor=pointer]:
+          - generic [ref=e433]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e434] [cursor=pointer]:
+          - generic [ref=e435]: RELOAD_STREAM_1769907709469
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e436] [cursor=pointer]:
+          - generic [ref=e437]: STOP_ABORT_1769907709575
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e438] [cursor=pointer]:
+          - generic [ref=e439]: ERROR_TEST_A_1769907708596
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e440] [cursor=pointer]:
+          - img "Agent" [ref=e441]
+          - generic [ref=e442]: Test agent tool persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e443] [cursor=pointer]:
+          - img "Agent" [ref=e444]
+          - generic [ref=e445]: Test agent reload persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e446] [cursor=pointer]:
+          - generic [ref=e447]: STREAM_SWITCH_A_1769907708683
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e448] [cursor=pointer]:
+          - generic [ref=e449]: ALT_ALPHA_1769907708237
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e450] [cursor=pointer]:
+          - generic [ref=e451]: RAPID_5_ONE_1769907707856
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e452] [cursor=pointer]:
+          - generic [ref=e453]: DOUBLE_CLICK_A_1769907707840
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e454] [cursor=pointer]:
+          - generic [ref=e455]: ABORT_STREAM_1769907707473
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e456] [cursor=pointer]:
+          - generic [ref=e457]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e458] [cursor=pointer]:
+          - generic [ref=e459]: RAPID_SWITCH_A_1769907707429
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e460] [cursor=pointer]:
+          - generic [ref=e461]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e462] [cursor=pointer]:
+          - img "Agent" [ref=e463]
+          - generic [ref=e464]: Test agent tool persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e465] [cursor=pointer]:
+          - img "Agent" [ref=e466]
+          - generic [ref=e467]: Test agent tool persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e468] [cursor=pointer]:
+          - generic [ref=e469]: RAPID_5_FIVE_1769907276807
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e470] [cursor=pointer]:
+          - generic [ref=e471]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e472] [cursor=pointer]:
+          - generic [ref=e473]: STOP_BTN_A_1769907278350
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e474] [cursor=pointer]:
+          - generic [ref=e475]: RAPID_5_FOUR_1769907276807
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e476] [cursor=pointer]:
+          - generic [ref=e477]: STREAM_CONV_C_1769907278343
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e478] [cursor=pointer]:
+          - generic [ref=e479]: RAPID_FOUR_1769907278491
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e480] [cursor=pointer]:
+          - generic [ref=e481]: RAPID_5_THREE_1769907276807
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e482] [cursor=pointer]:
+          - img "Agent" [ref=e483]
+          - generic [ref=e484]: look up Homotopy type theory recent work and give...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e485] [cursor=pointer]:
+          - img "Agent" [ref=e486]
+          - generic [ref=e487]: AGENT_TOOL_1769907279050
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e488] [cursor=pointer]:
+          - generic [ref=e489]: RAPID_THREE_1769907278491
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e490] [cursor=pointer]:
+          - generic [ref=e491]: STREAM_SWITCH_B_1769907279664
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e492] [cursor=pointer]:
+          - generic [ref=e493]: STREAM_CONV_B_1769907278343
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e494] [cursor=pointer]:
+          - generic [ref=e495]: THINKING_LEAK_1769907278917
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e496] [cursor=pointer]:
+          - generic [ref=e497]: NEW_CHAT_AFTER_1769907278606
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e498] [cursor=pointer]:
+          - img "Agent" [ref=e499]
+          - generic [ref=e500]: Test agent tool persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e501] [cursor=pointer]:
+          - generic [ref=e502]: RAPID_TWO_1769907278491
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e503] [cursor=pointer]:
+          - generic [ref=e504]: RAPID_SWITCH_B_1769907276984
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e505] [cursor=pointer]:
+          - generic [ref=e506]: STREAM_SWITCH_A_1769907279664
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e507] [cursor=pointer]:
+          - generic [ref=e508]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e509] [cursor=pointer]:
+          - generic [ref=e510]: RAPID_5_TWO_1769907276807
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e511] [cursor=pointer]:
+          - generic [ref=e512]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e513] [cursor=pointer]:
+          - img "Agent" [ref=e514]
+          - generic [ref=e515]: Test agent reload persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e516] [cursor=pointer]:
+          - generic [ref=e517]: ERROR_TEST_B_1769907276399
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e518] [cursor=pointer]:
+          - generic [ref=e519]: NORMAL_LEAK_1769907278917
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e520] [cursor=pointer]:
+          - generic [ref=e521]: STOP_ABORT_1769907279212
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e522] [cursor=pointer]:
+          - generic [ref=e523]: ABORT_STREAM_1769907278372
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e524] [cursor=pointer]:
+          - generic [ref=e525]: DOUBLE_CLICK_B_1769907276541
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e526] [cursor=pointer]:
+          - generic [ref=e527]: NORMAL_CHAT_1769907279050
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e528] [cursor=pointer]:
+          - generic [ref=e529]: STREAM_CONV_A_1769907278343
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e530] [cursor=pointer]:
+          - generic [ref=e531]: DOUBLE_SEND_1769907278777
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e532] [cursor=pointer]:
+          - generic [ref=e533]: NEW_CHAT_STREAM_1769907278606
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e534] [cursor=pointer]:
+          - generic [ref=e535]: RAPID_ONE_1769907278491
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e536] [cursor=pointer]:
+          - img "Agent" [ref=e537]
+          - generic [ref=e538]: look up Homotopy type theory recent work and give...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e539] [cursor=pointer]:
+          - generic [ref=e540]: SETTINGS_STREAM_1769907277876
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e541] [cursor=pointer]:
+          - generic [ref=e542]: RAPID_SWITCH_A_1769907276984
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e543] [cursor=pointer]:
+          - generic [ref=e544]: RELOAD_STREAM_1769907277451
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e545] [cursor=pointer]:
+          - generic [ref=e546]: RAPID_5_ONE_1769907276807
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e547] [cursor=pointer]:
+          - generic [ref=e548]: DOUBLE_CLICK_A_1769907276541
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e549] [cursor=pointer]:
+          - generic [ref=e550]: ERROR_TEST_A_1769907276399
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e551] [cursor=pointer]:
+          - generic [ref=e552]: look up Homotopy type theory recent work and give...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e553] [cursor=pointer]:
+          - img "Agent" [ref=e554]
+          - generic [ref=e555]: look up Homotopy type theory recent work and give...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e556] [cursor=pointer]:
+          - img "Agent" [ref=e557]
+          - generic [ref=e558]: look up Homotopy type theory recent work and give...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e559] [cursor=pointer]:
+          - img "Agent" [ref=e560]
+          - generic [ref=e561]: look up Homotopy type theory recent work and give...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e562] [cursor=pointer]:
+          - img "Agent" [ref=e563]
+          - generic [ref=e564]: look up Homotopy type theory recent work and give...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e565] [cursor=pointer]:
+          - generic [ref=e566]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e567] [cursor=pointer]:
+          - generic [ref=e568]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e569] [cursor=pointer]:
+          - generic [ref=e570]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e571] [cursor=pointer]:
+          - generic [ref=e572]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e573] [cursor=pointer]:
+          - generic [ref=e574]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e575] [cursor=pointer]:
+          - generic [ref=e576]: Message in conv 3 - thinking ON again
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e577] [cursor=pointer]:
+          - generic [ref=e578]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e579] [cursor=pointer]:
+          - generic [ref=e580]: Message in conv 2 - thinking OFF
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e581] [cursor=pointer]:
+          - generic [ref=e582]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e583] [cursor=pointer]:
+          - generic [ref=e584]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e585] [cursor=pointer]:
+          - generic [ref=e586]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e587] [cursor=pointer]:
+          - generic [ref=e588]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e589] [cursor=pointer]:
+          - generic [ref=e590]: First message with thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e591] [cursor=pointer]:
+          - generic [ref=e592]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e593] [cursor=pointer]:
+          - img "Agent" [ref=e594]
+          - generic [ref=e595]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e596] [cursor=pointer]:
+          - img "Agent" [ref=e597]
+          - generic [ref=e598]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e599] [cursor=pointer]:
+          - img "Agent" [ref=e600]
+          - generic [ref=e601]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e602] [cursor=pointer]:
+          - img "Agent" [ref=e603]
+          - generic [ref=e604]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e605] [cursor=pointer]:
+          - generic [ref=e606]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e607] [cursor=pointer]:
+          - generic [ref=e608]: Test reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e609] [cursor=pointer]:
+          - generic [ref=e610]: Message in conv 1 - thinking ON
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e611] [cursor=pointer]:
+          - generic [ref=e612]: Test status
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e613] [cursor=pointer]:
+          - generic [ref=e614]: RAPID_FOUR_1769906676835
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e615] [cursor=pointer]:
+          - generic [ref=e616]: THINKING_LEAK_1769906678974
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e617] [cursor=pointer]:
+          - generic [ref=e618]: RAPID_5_FIVE_1769906669862
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e619] [cursor=pointer]:
+          - generic [ref=e620]: RAPID_THREE_1769906676835
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e621] [cursor=pointer]:
+          - img "Agent" [ref=e622]
+          - generic [ref=e623]: AGENT_TOOL_1769906676949
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e624] [cursor=pointer]:
+          - generic [ref=e625]: RAPID_5_FOUR_1769906669862
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e626] [cursor=pointer]:
+          - generic [ref=e627]: NORMAL_LEAK_1769906678974
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e628] [cursor=pointer]:
+          - generic [ref=e629]: DOUBLE_SEND_1769906678839
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e630] [cursor=pointer]:
+          - generic [ref=e631]: RAPID_TWO_1769906676835
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e632] [cursor=pointer]:
+          - generic [ref=e633]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e634] [cursor=pointer]:
+          - generic [ref=e635]: STOP_BTN_A_1769906671329
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e636] [cursor=pointer]:
+          - generic [ref=e637]: Different conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e638] [cursor=pointer]:
+          - generic [ref=e639]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e640] [cursor=pointer]:
+          - generic [ref=e641]: NORMAL_CHAT_1769906676949
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e642] [cursor=pointer]:
+          - generic [ref=e643]: SETTINGS_STREAM_1769906676999
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e644] [cursor=pointer]:
+          - generic [ref=e645]: RAPID_5_THREE_1769906669862
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e646] [cursor=pointer]:
+          - generic [ref=e647]: STOP_ABORT_1769906676766
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e648] [cursor=pointer]:
+          - generic [ref=e649]: RAPID_ONE_1769906676835
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e650] [cursor=pointer]:
+          - generic [ref=e651]: First message in conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e652] [cursor=pointer]:
+          - generic [ref=e653]: STREAM_SWITCH_B_1769906674338
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e654] [cursor=pointer]:
+          - generic [ref=e655]: NEW_CHAT_AFTER_1769906673970
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e656] [cursor=pointer]:
+          - generic [ref=e657]: DOUBLE_CLICK_B_1769906671352
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e658] [cursor=pointer]:
+          - generic [ref=e659]: STREAM_SWITCH_A_1769906674338
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e660] [cursor=pointer]:
+          - generic [ref=e661]: NEW_CHAT_STREAM_1769906673970
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e662] [cursor=pointer]:
+          - generic [ref=e663]: STREAM_CONV_B_1769906667950
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e664] [cursor=pointer]:
+          - generic [ref=e665]: RELOAD_STREAM_1769906673550
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e666] [cursor=pointer]:
+          - generic [ref=e667]: ALT_BETA_1769906669846
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e668] [cursor=pointer]:
+          - generic [ref=e669]: RAPID_5_TWO_1769906669862
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e670] [cursor=pointer]:
+          - generic [ref=e671]: STREAM_CONV_C_1769906667950
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e672] [cursor=pointer]:
+          - generic [ref=e673]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e674] [cursor=pointer]:
+          - generic [ref=e675]: ERROR_TEST_A_1769906669193
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e676] [cursor=pointer]:
+          - generic [ref=e677]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e678] [cursor=pointer]:
+          - generic [ref=e679]: DOUBLE_CLICK_A_1769906671352
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e680] [cursor=pointer]:
+          - generic [ref=e681]: ABORT_STREAM_1769906671022
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e682] [cursor=pointer]:
+          - generic [ref=e683]: ERROR_TEST_B_1769906669193
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e684] [cursor=pointer]:
+          - generic [ref=e685]: RAPID_SWITCH_B_1769906668588
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e686] [cursor=pointer]:
+          - generic [ref=e687]: ALT_ALPHA_1769906669846
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e688] [cursor=pointer]:
+          - generic [ref=e689]: RAPID_5_ONE_1769906669862
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e690] [cursor=pointer]:
+          - generic [ref=e691]: RAPID_SWITCH_A_1769906668588
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e692] [cursor=pointer]:
+          - generic [ref=e693]: STREAM_CONV_A_1769906667950
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e694] [cursor=pointer]:
+          - generic [ref=e695]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e696] [cursor=pointer]:
+          - generic [ref=e697]: Conversation to keep
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e698] [cursor=pointer]:
+          - generic [ref=e699]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e700] [cursor=pointer]:
+          - img "Agent" [ref=e701]
+          - generic [ref=e702]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e703] [cursor=pointer]:
+          - generic [ref=e704]: Second conversation after reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e705] [cursor=pointer]:
+          - generic [ref=e706]: Persistence test 1769906665796
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e707] [cursor=pointer]:
+          - generic [ref=e708]: Third conversation unique message CCC
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e709] [cursor=pointer]:
+          - generic [ref=e710]: LongMessageTest1769906664476 AAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e711] [cursor=pointer]:
+          - generic [ref=e712]: Normal after agent TEST_1769906651803_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e713] [cursor=pointer]:
+          - generic [ref=e714]: Second conversation unique message BBB
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e715] [cursor=pointer]:
+          - img "Agent" [ref=e716]
+          - generic [ref=e717]: Test agent thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e718] [cursor=pointer]:
+          - img "Agent" [ref=e719]
+          - generic [ref=e720]: Test agent thinking reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e721] [cursor=pointer]:
+          - generic [ref=e722]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e723] [cursor=pointer]:
+          - generic [ref=e724]: First conversation unique message AAA
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e725] [cursor=pointer]:
+          - img "Agent" [ref=e726]
+          - generic [ref=e727]: Agent conv TEST_1769906652022_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e728] [cursor=pointer]:
+          - generic [ref=e729]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e730] [cursor=pointer]:
+          - generic [ref=e731]: Normal conv TEST_1769906652022_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e732] [cursor=pointer]:
+          - img "Agent" [ref=e733]
+          - generic [ref=e734]: Agent chat TEST_1769906651468_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e735] [cursor=pointer]:
+          - img "Agent" [ref=e736]
+          - generic [ref=e737]: Agent conv TEST_1769906652022_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e738] [cursor=pointer]:
+          - img "Agent" [ref=e739]
+          - generic [ref=e740]: Test agent reload persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e741] [cursor=pointer]:
+          - img "Agent" [ref=e742]
+          - generic [ref=e743]: Create a file TEST_1769906651803_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e744] [cursor=pointer]:
+          - img "Agent" [ref=e745]
+          - generic [ref=e746]: Test agent tool persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e747] [cursor=pointer]:
+          - img "Agent" [ref=e748]
+          - generic [ref=e749]: Agent msg TEST_1769906652261_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e750] [cursor=pointer]:
+          - img "Agent" [ref=e751]
+          - generic [ref=e752]: Agent settings test TEST_1769906652163_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e753] [cursor=pointer]:
+          - generic [ref=e754]: Normal before agent TEST_1769906651912_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e755] [cursor=pointer]:
+          - img "Agent" [ref=e756]
+          - generic [ref=e757]: Agent with tools TEST_1769906651912_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e758] [cursor=pointer]:
+          - img "Agent" [ref=e759]
+          - generic [ref=e760]: Agent unique TEST_1769906651582_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e761] [cursor=pointer]:
+          - generic [ref=e762]: Normal settings test TEST_1769906652163
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e763] [cursor=pointer]:
+          - generic [ref=e764]: Normal msg TEST_1769906652261_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e765] [cursor=pointer]:
+          - generic [ref=e766]: Normal conv TEST_1769906652022_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e767] [cursor=pointer]:
+          - generic [ref=e768]: Normal unique TEST_1769906651582_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e769] [cursor=pointer]:
+          - generic [ref=e770]: Normal chat TEST_1769906651468_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e771] [cursor=pointer]:
+          - generic [ref=e772]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e773] [cursor=pointer]:
+          - generic [ref=e774]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e775] [cursor=pointer]:
+          - generic [ref=e776]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e777] [cursor=pointer]:
+          - generic [ref=e778]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e779] [cursor=pointer]:
+          - img "Agent" [ref=e780]
+          - generic [ref=e781]: Agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e782] [cursor=pointer]:
+          - generic [ref=e783]: Normal chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e784] [cursor=pointer]:
+          - generic [ref=e785]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e786] [cursor=pointer]:
+          - generic [ref=e787]: Persistence test 1769906630853
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e788] [cursor=pointer]:
+          - generic [ref=e789]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e790] [cursor=pointer]:
+          - generic [ref=e791]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e792] [cursor=pointer]:
+          - generic [ref=e793]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e794] [cursor=pointer]:
+          - generic [ref=e795]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e796] [cursor=pointer]:
+          - generic [ref=e797]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e798] [cursor=pointer]:
+          - img "Agent" [ref=e799]
+          - generic [ref=e800]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e801] [cursor=pointer]:
+          - img "Agent" [ref=e802]
+          - generic [ref=e803]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e804] [cursor=pointer]:
+          - generic [ref=e805]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e806] [cursor=pointer]:
+          - generic [ref=e807]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e808] [cursor=pointer]:
+          - img "Agent" [ref=e809]
+          - generic [ref=e810]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e811] [cursor=pointer]:
+          - img "Agent" [ref=e812]
+          - generic [ref=e813]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e814] [cursor=pointer]:
+          - img "Agent" [ref=e815]
+          - generic [ref=e816]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e817] [cursor=pointer]:
+          - img "Agent" [ref=e818]
+          - generic [ref=e819]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e820] [cursor=pointer]:
+          - img "Agent" [ref=e821]
+          - generic [ref=e822]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e823] [cursor=pointer]:
+          - generic [ref=e824]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e825] [cursor=pointer]:
+          - generic [ref=e826]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e827] [cursor=pointer]:
+          - generic [ref=e828]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e829] [cursor=pointer]:
+          - generic [ref=e830]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e831] [cursor=pointer]:
+          - generic [ref=e832]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e833] [cursor=pointer]:
+          - generic [ref=e834]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e835] [cursor=pointer]:
+          - generic [ref=e836]: Message in conv 3 - thinking ON again
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e837] [cursor=pointer]:
+          - generic [ref=e838]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e839] [cursor=pointer]:
+          - generic [ref=e840]: Message in conv 2 - thinking OFF
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e841] [cursor=pointer]:
+          - generic [ref=e842]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e843] [cursor=pointer]:
+          - generic [ref=e844]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e845] [cursor=pointer]:
+          - img "Agent" [ref=e846]
+          - generic [ref=e847]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e848] [cursor=pointer]:
+          - generic [ref=e849]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e850] [cursor=pointer]:
+          - img "Agent" [ref=e851]
+          - generic [ref=e852]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e853] [cursor=pointer]:
+          - generic [ref=e854]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e855] [cursor=pointer]:
+          - img "Agent" [ref=e856]
+          - generic [ref=e857]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e858] [cursor=pointer]:
+          - generic [ref=e859]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e860] [cursor=pointer]:
+          - img "Agent" [ref=e861]
+          - generic [ref=e862]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e863] [cursor=pointer]:
+          - generic [ref=e864]: First message with thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e865] [cursor=pointer]:
+          - generic [ref=e866]: Test reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e867] [cursor=pointer]:
+          - generic [ref=e868]: Test icon
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e869] [cursor=pointer]:
+          - generic [ref=e870]: Test status
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e871] [cursor=pointer]:
+          - generic [ref=e872]: RAPID_FOUR_1769904369757
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e873] [cursor=pointer]:
+          - generic [ref=e874]: Message for retry test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e875] [cursor=pointer]:
+          - generic [ref=e876]: Message in conv 1 - thinking ON
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e877] [cursor=pointer]:
+          - generic [ref=e878]: Generate long thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e879] [cursor=pointer]:
+          - generic [ref=e880]: RAPID_5_FIVE_1769904362528
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e881] [cursor=pointer]:
+          - generic [ref=e882]: RAPID_THREE_1769904369757
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e883] [cursor=pointer]:
+          - generic [ref=e884]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e885] [cursor=pointer]:
+          - generic [ref=e886]: THINKING_LEAK_1769904370018
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e887] [cursor=pointer]:
+          - generic [ref=e888]: RAPID_5_FOUR_1769904362528
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e889] [cursor=pointer]:
+          - generic [ref=e890]: RAPID_TWO_1769904369757
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e891] [cursor=pointer]:
+          - generic [ref=e892]: NORMAL_LEAK_1769904370018
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e893] [cursor=pointer]:
+          - generic [ref=e894]: STOP_ABORT_1769904369905
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e895] [cursor=pointer]:
+          - generic [ref=e896]: RAPID_5_THREE_1769904362528
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e897] [cursor=pointer]:
+          - generic [ref=e898]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e899] [cursor=pointer]:
+          - generic [ref=e900]: RAPID_ONE_1769904369757
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e901] [cursor=pointer]:
+          - generic [ref=e902]: DOUBLE_SEND_1769904369643
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e903] [cursor=pointer]:
+          - generic [ref=e904]: STREAM_CONV_C_1769904362528
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e905] [cursor=pointer]:
+          - img "Agent" [ref=e906]
+          - generic [ref=e907]: AGENT_TOOL_1769904366014
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e908] [cursor=pointer]:
+          - generic [ref=e909]: NEW_CHAT_AFTER_1769904366369
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e910] [cursor=pointer]:
+          - generic [ref=e911]: STREAM_SWITCH_B_1769904365133
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e912] [cursor=pointer]:
+          - generic [ref=e913]: SETTINGS_STREAM_1769904366138
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e914] [cursor=pointer]:
+          - generic [ref=e915]: Different conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e916] [cursor=pointer]:
+          - generic [ref=e917]: NEW_CHAT_STREAM_1769904366369
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e918] [cursor=pointer]:
+          - generic [ref=e919]: ERROR_TEST_A_1769904362523
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e920] [cursor=pointer]:
+          - generic [ref=e921]: RAPID_SWITCH_B_1769904362520
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e922] [cursor=pointer]:
+          - generic [ref=e923]: NORMAL_CHAT_1769904366015
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e924] [cursor=pointer]:
+          - generic [ref=e925]: RAPID_5_TWO_1769904362528
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e926] [cursor=pointer]:
+          - generic [ref=e927]: STREAM_CONV_B_1769904362528
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e928] [cursor=pointer]:
+          - generic [ref=e929]: ALT_BETA_1769904362496
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e930] [cursor=pointer]:
+          - generic [ref=e931]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e932] [cursor=pointer]:
+          - generic [ref=e933]: DOUBLE_CLICK_B_1769904362064
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e934] [cursor=pointer]:
+          - generic [ref=e935]: ERROR_TEST_B_1769904362523
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e936] [cursor=pointer]:
+          - generic [ref=e937]: STREAM_SWITCH_A_1769904365133
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e938] [cursor=pointer]:
+          - generic [ref=e939]: First message in conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e940] [cursor=pointer]:
+          - generic [ref=e941]: RELOAD_STREAM_1769904364992
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e942] [cursor=pointer]:
+          - generic [ref=e943]: STOP_BTN_A_1769904364012
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e944] [cursor=pointer]:
+          - generic [ref=e945]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e946] [cursor=pointer]:
+          - generic [ref=e947]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e948] [cursor=pointer]:
+          - generic [ref=e949]: RAPID_SWITCH_A_1769904362520
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e950] [cursor=pointer]:
+          - generic [ref=e951]: STREAM_CONV_A_1769904362528
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e952] [cursor=pointer]:
+          - generic [ref=e953]: ABORT_STREAM_1769904362503
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e954] [cursor=pointer]:
+          - generic [ref=e955]: DOUBLE_CLICK_A_1769904362064
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e956] [cursor=pointer]:
+          - generic [ref=e957]: RAPID_5_ONE_1769904362528
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e958] [cursor=pointer]:
+          - generic [ref=e959]: ALT_ALPHA_1769904362496
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e960] [cursor=pointer]:
+          - generic [ref=e961]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e962] [cursor=pointer]:
+          - img "Agent" [ref=e963]
+          - generic [ref=e964]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e965] [cursor=pointer]:
+          - generic [ref=e966]: LongMessageTest1769904360666 AAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e967] [cursor=pointer]:
+          - generic [ref=e968]: Thinking test 1769904360664
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e969] [cursor=pointer]:
+          - generic [ref=e970]: First message 1769904358243
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e971] [cursor=pointer]:
+          - generic [ref=e972]: Normal after agent TEST_1769904346253_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e973] [cursor=pointer]:
+          - generic [ref=e974]: Markdown test 1769904356393
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e975] [cursor=pointer]:
+          - generic [ref=e976]: Second conversation after reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e977] [cursor=pointer]:
+          - generic [ref=e978]: Conversation to keep
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e979] [cursor=pointer]:
+          - generic [ref=e980]: Third conversation unique message CCC
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e981] [cursor=pointer]:
+          - generic [ref=e982]: Persistence test 1769904354821
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e983] [cursor=pointer]:
+          - generic [ref=e984]: Second conversation unique message BBB
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e985] [cursor=pointer]:
+          - generic [ref=e986]: First conversation unique message AAA
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e987] [cursor=pointer]:
+          - img "Agent" [ref=e988]
+          - generic [ref=e989]: Agent conv TEST_1769904346581_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e990] [cursor=pointer]:
+          - img "Agent" [ref=e991]
+          - generic [ref=e992]: Test agent thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e993] [cursor=pointer]:
+          - img "Agent" [ref=e994]
+          - generic [ref=e995]: Test agent reload persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e996] [cursor=pointer]:
+          - img "Agent" [ref=e997]
+          - generic [ref=e998]: Agent conv TEST_1769904346581_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e999] [cursor=pointer]:
+          - generic [ref=e1000]: Normal conv TEST_1769904346581_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1001] [cursor=pointer]:
+          - generic [ref=e1002]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1003] [cursor=pointer]:
+          - img "Agent" [ref=e1004]
+          - generic [ref=e1005]: Agent settings test TEST_1769904346806_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1006] [cursor=pointer]:
+          - img "Agent" [ref=e1007]
+          - generic [ref=e1008]: Test agent tool persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1009] [cursor=pointer]:
+          - generic [ref=e1010]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1011] [cursor=pointer]:
+          - img "Agent" [ref=e1012]
+          - generic [ref=e1013]: Create a file TEST_1769904346253_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1014] [cursor=pointer]:
+          - img "Agent" [ref=e1015]
+          - generic [ref=e1016]: Agent chat TEST_1769904345995_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1017] [cursor=pointer]:
+          - img "Agent" [ref=e1018]
+          - generic [ref=e1019]: Test agent thinking reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1020] [cursor=pointer]:
+          - img "Agent" [ref=e1021]
+          - generic [ref=e1022]: Agent msg TEST_1769904346361_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1023] [cursor=pointer]:
+          - generic [ref=e1024]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1025] [cursor=pointer]:
+          - generic [ref=e1026]: Normal settings test TEST_1769904346806
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1027] [cursor=pointer]:
+          - img "Agent" [ref=e1028]
+          - generic [ref=e1029]: Agent with tools TEST_1769904345236_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1030] [cursor=pointer]:
+          - generic [ref=e1031]: Normal conv TEST_1769904346581_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1032] [cursor=pointer]:
+          - generic [ref=e1033]: Normal msg TEST_1769904346361_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1034] [cursor=pointer]:
+          - generic [ref=e1035]: Normal chat TEST_1769904345995_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1036] [cursor=pointer]:
+          - img "Agent" [ref=e1037]
+          - generic [ref=e1038]: Agent unique TEST_1769904344776_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1039] [cursor=pointer]:
+          - generic [ref=e1040]: Normal before agent TEST_1769904345236_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1041] [cursor=pointer]:
+          - generic [ref=e1042]: Normal unique TEST_1769904344776_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1043] [cursor=pointer]:
+          - generic [ref=e1044]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1045] [cursor=pointer]:
+          - generic [ref=e1046]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1047] [cursor=pointer]:
+          - generic [ref=e1048]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1049] [cursor=pointer]:
+          - generic [ref=e1050]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1051] [cursor=pointer]:
+          - generic [ref=e1052]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1053] [cursor=pointer]:
+          - img "Agent" [ref=e1054]
+          - generic [ref=e1055]: Agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1056] [cursor=pointer]:
+          - generic [ref=e1057]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1058] [cursor=pointer]:
+          - generic [ref=e1059]: Normal chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1060] [cursor=pointer]:
+          - generic [ref=e1061]: Persistence test 1769904329484
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1062] [cursor=pointer]:
+          - generic [ref=e1063]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1064] [cursor=pointer]:
+          - generic [ref=e1065]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1066] [cursor=pointer]:
+          - generic [ref=e1067]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1068] [cursor=pointer]:
+          - generic [ref=e1069]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1070] [cursor=pointer]:
+          - generic [ref=e1071]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1072] [cursor=pointer]:
+          - generic [ref=e1073]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1074] [cursor=pointer]:
+          - generic [ref=e1075]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1076] [cursor=pointer]:
+          - img "Agent" [ref=e1077]
+          - generic [ref=e1078]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1079] [cursor=pointer]:
+          - generic [ref=e1080]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1081] [cursor=pointer]:
+          - generic [ref=e1082]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1083] [cursor=pointer]:
+          - generic [ref=e1084]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1085] [cursor=pointer]:
+          - generic [ref=e1086]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1087] [cursor=pointer]:
+          - generic [ref=e1088]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1089] [cursor=pointer]:
+          - generic [ref=e1090]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1091] [cursor=pointer]:
+          - generic [ref=e1092]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1093] [cursor=pointer]:
+          - generic [ref=e1094]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1095] [cursor=pointer]:
+          - generic [ref=e1096]: Message in conv 2 - thinking OFF
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1097] [cursor=pointer]:
+          - generic [ref=e1098]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1099] [cursor=pointer]:
+          - generic [ref=e1100]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1101] [cursor=pointer]:
+          - img "Agent" [ref=e1102]
+          - generic [ref=e1103]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1104] [cursor=pointer]:
+          - img "Agent" [ref=e1105]
+          - generic [ref=e1106]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1107] [cursor=pointer]:
+          - generic [ref=e1108]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1109] [cursor=pointer]:
+          - img "Agent" [ref=e1110]
+          - generic [ref=e1111]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1112] [cursor=pointer]:
+          - img "Agent" [ref=e1113]
+          - generic [ref=e1114]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1115] [cursor=pointer]:
+          - generic [ref=e1116]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1117] [cursor=pointer]:
+          - generic [ref=e1118]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1119] [cursor=pointer]:
+          - generic [ref=e1120]: Test status
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1121] [cursor=pointer]:
+          - generic [ref=e1122]: Test icon
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1123] [cursor=pointer]:
+          - generic [ref=e1124]: Test toggle
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1125] [cursor=pointer]:
+          - generic [ref=e1126]: RAPID_FOUR_1769903592750
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1127] [cursor=pointer]:
+          - generic [ref=e1128]: Switch conversation 3 1769903597796
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1129] [cursor=pointer]:
+          - generic [ref=e1130]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1131] [cursor=pointer]:
+          - generic [ref=e1132]: RAPID_5_FIVE_1769903587134
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1133] [cursor=pointer]:
+          - generic [ref=e1134]: Generate long thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1135] [cursor=pointer]:
+          - generic [ref=e1136]: Message in conv 1 - thinking ON
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1137] [cursor=pointer]:
+          - generic [ref=e1138]: Test reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1139] [cursor=pointer]:
+          - generic [ref=e1140]: Test expanded state unique
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1141] [cursor=pointer]:
+          - generic [ref=e1142]: RAPID_THREE_1769903592750
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1143] [cursor=pointer]:
+          - generic [ref=e1144]: THINKING_LEAK_1769903593805
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1145] [cursor=pointer]:
+          - generic [ref=e1146]: First message 1769903585365
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1147] [cursor=pointer]:
+          - generic [ref=e1148]: Message for retry test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1149] [cursor=pointer]:
+          - generic [ref=e1150]: STOP_BTN_A_1769903589342
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1151] [cursor=pointer]:
+          - generic [ref=e1152]: RAPID_5_FOUR_1769903587134
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1153] [cursor=pointer]:
+          - generic [ref=e1154]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1155] [cursor=pointer]:
+          - img "Agent" [ref=e1156]
+          - generic [ref=e1157]: AGENT_TOOL_1769903592276
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1158] [cursor=pointer]:
+          - generic [ref=e1159]: RAPID_TWO_1769903592750
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1160] [cursor=pointer]:
+          - generic [ref=e1161]: NORMAL_LEAK_1769903593805
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1162] [cursor=pointer]:
+          - generic [ref=e1163]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1164] [cursor=pointer]:
+          - generic [ref=e1165]: STOP_ABORT_1769903593162
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1166] [cursor=pointer]:
+          - generic [ref=e1167]: SETTINGS_STREAM_1769903592854
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1168] [cursor=pointer]:
+          - generic [ref=e1169]: RAPID_5_THREE_1769903587134
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1170] [cursor=pointer]:
+          - generic [ref=e1171]: RAPID_ONE_1769903592750
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1172] [cursor=pointer]:
+          - generic [ref=e1173]: STREAM_CONV_C_1769903587107
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1174] [cursor=pointer]:
+          - generic [ref=e1175]: DOUBLE_CLICK_B_1769903589653
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1176] [cursor=pointer]:
+          - generic [ref=e1177]: Switch conversation 2 1769903592616
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1178] [cursor=pointer]:
+          - generic [ref=e1179]: NORMAL_CHAT_1769903592276
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1180] [cursor=pointer]:
+          - generic [ref=e1181]: STREAM_SWITCH_B_1769903590325
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1182] [cursor=pointer]:
+          - generic [ref=e1183]: NEW_CHAT_AFTER_1769903590428
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1184] [cursor=pointer]:
+          - generic [ref=e1185]: RELOAD_STREAM_1769903591515
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1186] [cursor=pointer]:
+          - generic [ref=e1187]: DOUBLE_SEND_1769903590779
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1188] [cursor=pointer]:
+          - generic [ref=e1189]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1190] [cursor=pointer]:
+          - generic [ref=e1191]: DOUBLE_CLICK_A_1769903589653
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1192] [cursor=pointer]:
+          - generic [ref=e1193]: NEW_CHAT_STREAM_1769903590428
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1194] [cursor=pointer]:
+          - generic [ref=e1195]: STREAM_CONV_B_1769903587107
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1196] [cursor=pointer]:
+          - generic [ref=e1197]: STREAM_SWITCH_A_1769903590325
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1198] [cursor=pointer]:
+          - generic [ref=e1199]: RAPID_5_TWO_1769903587134
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1200] [cursor=pointer]:
+          - generic [ref=e1201]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1202] [cursor=pointer]:
+          - generic [ref=e1203]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1204] [cursor=pointer]:
+          - generic [ref=e1205]: RAPID_SWITCH_B_1769903585698
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1206] [cursor=pointer]:
+          - generic [ref=e1207]: STREAM_CONV_A_1769903587107
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1208] [cursor=pointer]:
+          - generic [ref=e1209]: RAPID_5_ONE_1769903587134
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1210] [cursor=pointer]:
+          - generic [ref=e1211]: Different conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1212] [cursor=pointer]:
+          - generic [ref=e1213]: Switch conversation 1 1769903587489
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1214] [cursor=pointer]:
+          - generic [ref=e1215]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1216] [cursor=pointer]:
+          - img "Agent" [ref=e1217]
+          - generic [ref=e1218]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1219] [cursor=pointer]:
+          - generic [ref=e1220]: First message in conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1221] [cursor=pointer]:
+          - generic [ref=e1222]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1223] [cursor=pointer]:
+          - generic [ref=e1224]: RAPID_SWITCH_A_1769903585698
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1225] [cursor=pointer]:
+          - generic [ref=e1226]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1227] [cursor=pointer]:
+          - generic [ref=e1228]: LongMessageTest1769903585254 AAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1229] [cursor=pointer]:
+          - generic [ref=e1230]: Normal after agent TEST_1769903577450_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1231] [cursor=pointer]:
+          - generic [ref=e1232]: Second conversation after reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1233] [cursor=pointer]:
+          - generic [ref=e1234]: Web search test 1769903582613
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1235] [cursor=pointer]:
+          - generic [ref=e1236]: Third conversation unique message CCC
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1237] [cursor=pointer]:
+          - generic [ref=e1238]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1239] [cursor=pointer]:
+          - generic [ref=e1240]: Thinking test 1769903581231
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1241] [cursor=pointer]:
+          - img "Agent" [ref=e1242]
+          - generic [ref=e1243]: Agent conv TEST_1769903577749_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1244] [cursor=pointer]:
+          - generic [ref=e1245]: Conversation to keep
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1246] [cursor=pointer]:
+          - generic [ref=e1247]: Markdown test 1769903580984
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1248] [cursor=pointer]:
+          - generic [ref=e1249]: Persistence test 1769903581365
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1250] [cursor=pointer]:
+          - generic [ref=e1251]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1252] [cursor=pointer]:
+          - generic [ref=e1253]: Second conversation unique message BBB
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1254] [cursor=pointer]:
+          - generic [ref=e1255]: Normal conv TEST_1769903577749_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1256] [cursor=pointer]:
+          - img "Agent" [ref=e1257]
+          - generic [ref=e1258]: Agent msg TEST_1769903578047_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1259] [cursor=pointer]:
+          - img "Agent" [ref=e1260]
+          - generic [ref=e1261]: Test agent thinking reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1262] [cursor=pointer]:
+          - img "Agent" [ref=e1263]
+          - generic [ref=e1264]: Test agent thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1265] [cursor=pointer]:
+          - img "Agent" [ref=e1266]
+          - generic [ref=e1267]: Agent conv TEST_1769903577749_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1268] [cursor=pointer]:
+          - generic [ref=e1269]: First conversation unique message AAA
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1270] [cursor=pointer]:
+          - img "Agent" [ref=e1271]
+          - generic [ref=e1272]: Agent settings test TEST_1769903576368_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1273] [cursor=pointer]:
+          - img "Agent" [ref=e1274]
+          - generic [ref=e1275]: Agent chat TEST_1769903576599_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1276] [cursor=pointer]:
+          - img "Agent" [ref=e1277]
+          - generic [ref=e1278]: Test agent reload persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1279] [cursor=pointer]:
+          - img "Agent" [ref=e1280]
+          - generic [ref=e1281]: Test agent tool persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1282] [cursor=pointer]:
+          - generic [ref=e1283]: Normal msg TEST_1769903578047_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1284] [cursor=pointer]:
+          - img "Agent" [ref=e1285]
+          - generic [ref=e1286]: Agent unique TEST_1769903576499_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1287] [cursor=pointer]:
+          - img "Agent" [ref=e1288]
+          - generic [ref=e1289]: Agent with tools TEST_1769903576262_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1290] [cursor=pointer]:
+          - img "Agent" [ref=e1291]
+          - generic [ref=e1292]: Create a file TEST_1769903577450_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1293] [cursor=pointer]:
+          - generic [ref=e1294]: Normal conv TEST_1769903577749_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1295] [cursor=pointer]:
+          - generic [ref=e1296]: Normal chat TEST_1769903576599_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1297] [cursor=pointer]:
+          - generic [ref=e1298]: Normal unique TEST_1769903576499_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1299] [cursor=pointer]:
+          - generic [ref=e1300]: Normal settings test TEST_1769903576368
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1301] [cursor=pointer]:
+          - generic [ref=e1302]: Normal before agent TEST_1769903576262_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1303] [cursor=pointer]:
+          - generic [ref=e1304]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1305] [cursor=pointer]:
+          - generic [ref=e1306]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1307] [cursor=pointer]:
+          - generic [ref=e1308]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1309] [cursor=pointer]:
+          - generic [ref=e1310]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1311] [cursor=pointer]:
+          - generic [ref=e1312]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1313] [cursor=pointer]:
+          - generic [ref=e1314]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1315] [cursor=pointer]:
+          - generic [ref=e1316]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1317] [cursor=pointer]:
+          - generic [ref=e1318]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1319] [cursor=pointer]:
+          - generic [ref=e1320]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1321] [cursor=pointer]:
+          - generic [ref=e1322]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1323] [cursor=pointer]:
+          - img "Agent" [ref=e1324]
+          - generic [ref=e1325]: Agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1326] [cursor=pointer]:
+          - generic [ref=e1327]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1328] [cursor=pointer]:
+          - generic [ref=e1329]: Normal chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1330] [cursor=pointer]:
+          - generic [ref=e1331]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1332] [cursor=pointer]:
+          - generic [ref=e1333]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1334] [cursor=pointer]:
+          - generic [ref=e1335]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1336] [cursor=pointer]:
+          - generic [ref=e1337]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1338] [cursor=pointer]:
+          - generic [ref=e1339]: Tell me a long story
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1340] [cursor=pointer]:
+          - generic [ref=e1341]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1342] [cursor=pointer]:
+          - generic [ref=e1343]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1344] [cursor=pointer]:
+          - generic [ref=e1345]: This is my test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1346] [cursor=pointer]:
+          - generic [ref=e1347]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1348] [cursor=pointer]:
+          - generic [ref=e1349]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1350] [cursor=pointer]:
+          - generic [ref=e1351]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1352] [cursor=pointer]:
+          - generic [ref=e1353]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1354] [cursor=pointer]:
+          - generic [ref=e1355]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1356] [cursor=pointer]:
+          - generic [ref=e1357]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1358] [cursor=pointer]:
+          - img "Agent" [ref=e1359]
+          - generic [ref=e1360]: Test agent thinking reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1361] [cursor=pointer]:
+          - img "Agent" [ref=e1362]
+          - generic [ref=e1363]: Test agent thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1364] [cursor=pointer]:
+          - img "Agent" [ref=e1365]
+          - generic [ref=e1366]: Test agent reload persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1367] [cursor=pointer]:
+          - img "Agent" [ref=e1368]
+          - generic [ref=e1369]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1370] [cursor=pointer]:
+          - img "Agent" [ref=e1371]
+          - generic [ref=e1372]: Test agent tool persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1373] [cursor=pointer]:
+          - img "Agent" [ref=e1374]
+          - generic [ref=e1375]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1376] [cursor=pointer]:
+          - generic [ref=e1377]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1378] [cursor=pointer]:
+          - generic [ref=e1379]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1380] [cursor=pointer]:
+          - img "Agent" [ref=e1381]
+          - generic [ref=e1382]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1383] [cursor=pointer]:
+          - img "Agent" [ref=e1384]
+          - generic [ref=e1385]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1386] [cursor=pointer]:
+          - img "Agent" [ref=e1387]
+          - generic [ref=e1388]: Test agent thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1389] [cursor=pointer]:
+          - img "Agent" [ref=e1390]
+          - generic [ref=e1391]: Test agent thinking reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1392] [cursor=pointer]:
+          - generic [ref=e1393]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1394] [cursor=pointer]:
+          - generic [ref=e1395]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1396] [cursor=pointer]:
+          - img "Agent" [ref=e1397]
+          - generic [ref=e1398]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1399] [cursor=pointer]:
+          - img "Agent" [ref=e1400]
+          - generic [ref=e1401]: Test agent thinking reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1402] [cursor=pointer]:
+          - img "Agent" [ref=e1403]
+          - generic [ref=e1404]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1405] [cursor=pointer]:
+          - img "Agent" [ref=e1406]
+          - generic [ref=e1407]: Test agent thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1408] [cursor=pointer]:
+          - generic [ref=e1409]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1410] [cursor=pointer]:
+          - generic [ref=e1411]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1412] [cursor=pointer]:
+          - img "Agent" [ref=e1413]
+          - generic [ref=e1414]: Test agent thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1415] [cursor=pointer]:
+          - img "Agent" [ref=e1416]
+          - generic [ref=e1417]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1418] [cursor=pointer]:
+          - img "Agent" [ref=e1419]
+          - generic [ref=e1420]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1421] [cursor=pointer]:
+          - img "Agent" [ref=e1422]
+          - generic [ref=e1423]: Test agent thinking reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1424] [cursor=pointer]:
+          - generic [ref=e1425]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1426] [cursor=pointer]:
+          - img "Agent" [ref=e1427]
+          - generic [ref=e1428]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1429] [cursor=pointer]:
+          - img "Agent" [ref=e1430]
+          - generic [ref=e1431]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1432] [cursor=pointer]:
+          - generic [ref=e1433]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1434] [cursor=pointer]:
+          - generic [ref=e1435]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1436] [cursor=pointer]:
+          - generic [ref=e1437]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1438] [cursor=pointer]:
+          - generic [ref=e1439]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1440] [cursor=pointer]:
+          - generic [ref=e1441]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1442] [cursor=pointer]:
+          - generic [ref=e1443]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1444] [cursor=pointer]:
+          - generic [ref=e1445]: Message in conv 3 - thinking ON again
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1446] [cursor=pointer]:
+          - generic [ref=e1447]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1448] [cursor=pointer]:
+          - generic [ref=e1449]: Switch conversation 3 1769903203350
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1450] [cursor=pointer]:
+          - generic [ref=e1451]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1452] [cursor=pointer]:
+          - generic [ref=e1453]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1454] [cursor=pointer]:
+          - generic [ref=e1455]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1456] [cursor=pointer]:
+          - generic [ref=e1457]: Message in conv 2 - thinking OFF
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1458] [cursor=pointer]:
+          - img "Agent" [ref=e1459]
+          - generic [ref=e1460]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1461] [cursor=pointer]:
+          - generic [ref=e1462]: RAPID_5_FIVE_1769903193496
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1463] [cursor=pointer]:
+          - img "Agent" [ref=e1464]
+          - generic [ref=e1465]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1466] [cursor=pointer]:
+          - generic [ref=e1467]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1468] [cursor=pointer]:
+          - img "Agent" [ref=e1469]
+          - generic [ref=e1470]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1471] [cursor=pointer]:
+          - generic [ref=e1472]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1473] [cursor=pointer]:
+          - img "Agent" [ref=e1474]
+          - generic [ref=e1475]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1476] [cursor=pointer]:
+          - generic [ref=e1477]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1478] [cursor=pointer]:
+          - generic [ref=e1479]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1480] [cursor=pointer]:
+          - generic [ref=e1481]: RAPID_FOUR_1769903195967
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1482] [cursor=pointer]:
+          - generic [ref=e1483]: RAPID_5_FOUR_1769903193496
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1484] [cursor=pointer]:
+          - generic [ref=e1485]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1486] [cursor=pointer]:
+          - generic [ref=e1487]: First message with thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1488] [cursor=pointer]:
+          - generic [ref=e1489]: STOP_BTN_A_1769903193484
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1490] [cursor=pointer]:
+          - generic [ref=e1491]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1492] [cursor=pointer]:
+          - generic [ref=e1493]: Test expanded state unique
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1494] [cursor=pointer]:
+          - generic [ref=e1495]: Test icon
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1496] [cursor=pointer]:
+          - generic [ref=e1497]: RAPID_THREE_1769903195967
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1498] [cursor=pointer]:
+          - generic [ref=e1499]: STREAM_CONV_B_1769903193487
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1500] [cursor=pointer]:
+          - generic [ref=e1501]: Test status
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1502] [cursor=pointer]:
+          - generic [ref=e1503]: Switch conversation 2 1769903198438
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1504] [cursor=pointer]:
+          - generic [ref=e1505]: Test reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1506] [cursor=pointer]:
+          - generic [ref=e1507]: Test toggle
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1508] [cursor=pointer]:
+          - generic [ref=e1509]: RAPID_5_THREE_1769903193496
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1510] [cursor=pointer]:
+          - generic [ref=e1511]: STREAM_CONV_C_1769903193487
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1512] [cursor=pointer]:
+          - generic [ref=e1513]: Message in conv 1 - thinking ON
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1514] [cursor=pointer]:
+          - generic [ref=e1515]: RAPID_TWO_1769903195967
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1516] [cursor=pointer]:
+          - generic [ref=e1517]: Message for retry test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1518] [cursor=pointer]:
+          - generic [ref=e1519]: Generate long thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1520] [cursor=pointer]:
+          - generic [ref=e1521]: First message 1769903188783
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1522] [cursor=pointer]:
+          - generic [ref=e1523]: NEW_CHAT_AFTER_1769903195526
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1524] [cursor=pointer]:
+          - generic [ref=e1525]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1526] [cursor=pointer]:
+          - generic [ref=e1527]: ERROR_TEST_B_1769903193478
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1528] [cursor=pointer]:
+          - generic [ref=e1529]: RAPID_5_TWO_1769903193496
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1530] [cursor=pointer]:
+          - generic [ref=e1531]: STOP_ABORT_1769903196060
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1532] [cursor=pointer]:
+          - generic [ref=e1533]: RAPID_ONE_1769903195967
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1534] [cursor=pointer]:
+          - generic [ref=e1535]: DOUBLE_SEND_1769903195880
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1536] [cursor=pointer]:
+          - generic [ref=e1537]: ALT_BETA_1769903193493
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1538] [cursor=pointer]:
+          - generic [ref=e1539]: SETTINGS_STREAM_1769903195737
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1540] [cursor=pointer]:
+          - generic [ref=e1541]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1542] [cursor=pointer]:
+          - generic [ref=e1543]: NEW_CHAT_STREAM_1769903195526
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1544] [cursor=pointer]:
+          - generic [ref=e1545]: RAPID_SWITCH_B_1769903192868
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1546] [cursor=pointer]:
+          - generic [ref=e1547]: THINKING_LEAK_1769903193451
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1548] [cursor=pointer]:
+          - img "Agent" [ref=e1549]
+          - generic [ref=e1550]: AGENT_TOOL_1769903192722
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1551] [cursor=pointer]:
+          - generic [ref=e1552]: STREAM_SWITCH_B_1769903192251
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1553] [cursor=pointer]:
+          - generic [ref=e1554]: STREAM_CONV_A_1769903193487
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1555] [cursor=pointer]:
+          - generic [ref=e1556]: ERROR_TEST_A_1769903193478
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1557] [cursor=pointer]:
+          - generic [ref=e1558]: RAPID_5_ONE_1769903193496
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1559] [cursor=pointer]:
+          - generic [ref=e1560]: ALT_ALPHA_1769903193493
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1561] [cursor=pointer]:
+          - generic [ref=e1562]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1563] [cursor=pointer]:
+          - generic [ref=e1564]: NORMAL_LEAK_1769903193451
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1565] [cursor=pointer]:
+          - generic [ref=e1566]: RAPID_SWITCH_A_1769903192868
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1567] [cursor=pointer]:
+          - generic [ref=e1568]: Different conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1569] [cursor=pointer]:
+          - img "Agent" [ref=e1570]
+          - generic [ref=e1571]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1572] [cursor=pointer]:
+          - generic [ref=e1573]: NORMAL_CHAT_1769903192722
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1574] [cursor=pointer]:
+          - generic [ref=e1575]: RELOAD_STREAM_1769903192511
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1576] [cursor=pointer]:
+          - generic [ref=e1577]: Switch conversation 1 1769903192088
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1578] [cursor=pointer]:
+          - generic [ref=e1579]: STREAM_SWITCH_A_1769903192251
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1580] [cursor=pointer]:
+          - generic [ref=e1581]: First message in conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1582] [cursor=pointer]:
+          - generic [ref=e1583]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1584] [cursor=pointer]:
+          - generic [ref=e1585]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1586] [cursor=pointer]:
+          - generic [ref=e1587]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1588] [cursor=pointer]:
+          - generic [ref=e1589]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1590] [cursor=pointer]:
+          - generic [ref=e1591]: LongMessageTest1769903188156 AAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1592] [cursor=pointer]:
+          - generic [ref=e1593]: Web search test 1769903187960
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1594] [cursor=pointer]:
+          - generic [ref=e1595]: Thinking test 1769903187329
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1596] [cursor=pointer]:
+          - generic [ref=e1597]: Second conversation after reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1598] [cursor=pointer]:
+          - generic [ref=e1599]: Third conversation unique message CCC
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1600] [cursor=pointer]:
+          - generic [ref=e1601]: Conversation to keep
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1602] [cursor=pointer]:
+          - generic [ref=e1603]: Markdown test 1769903186101
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1604] [cursor=pointer]:
+          - generic [ref=e1605]: Second conversation unique message BBB
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1606] [cursor=pointer]:
+          - generic [ref=e1607]: Persistence test 1769903185936
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1608] [cursor=pointer]:
+          - generic [ref=e1609]: First conversation unique message AAA
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1610] [cursor=pointer]:
+          - generic [ref=e1611]: Normal after agent TEST_1769903177863_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1612] [cursor=pointer]:
+          - generic [ref=e1613]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1614] [cursor=pointer]:
+          - img "Agent" [ref=e1615]
+          - generic [ref=e1616]: Agent conv TEST_1769903177265_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1617] [cursor=pointer]:
+          - generic [ref=e1618]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1619] [cursor=pointer]:
+          - generic [ref=e1620]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1621] [cursor=pointer]:
+          - generic [ref=e1622]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1623] [cursor=pointer]:
+          - generic [ref=e1624]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1625] [cursor=pointer]:
+          - generic [ref=e1626]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1627] [cursor=pointer]:
+          - generic [ref=e1628]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1629] [cursor=pointer]:
+          - img "Agent" [ref=e1630]
+          - generic [ref=e1631]: Agent settings test TEST_1769903177174_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1632] [cursor=pointer]:
+          - generic [ref=e1633]: Normal conv TEST_1769903177265_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1634] [cursor=pointer]:
+          - img "Agent" [ref=e1635]
+          - generic [ref=e1636]: Agent chat TEST_1769903177090_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1637] [cursor=pointer]:
+          - img "Agent" [ref=e1638]
+          - generic [ref=e1639]: Test agent thinking reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1640] [cursor=pointer]:
+          - img "Agent" [ref=e1641]
+          - generic [ref=e1642]: Test agent thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1643] [cursor=pointer]:
+          - img "Agent" [ref=e1644]
+          - generic [ref=e1645]: Agent msg TEST_1769903177437_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1646] [cursor=pointer]:
+          - img "Agent" [ref=e1647]
+          - generic [ref=e1648]: Agent conv TEST_1769903177265_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1649] [cursor=pointer]:
+          - img "Agent" [ref=e1650]
+          - generic [ref=e1651]: Agent with tools TEST_1769903176607_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1652] [cursor=pointer]:
+          - img "Agent" [ref=e1653]
+          - generic [ref=e1654]: Create a file TEST_1769903177863_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1655] [cursor=pointer]:
+          - img "Agent" [ref=e1656]
+          - generic [ref=e1657]: Test agent tool persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1658] [cursor=pointer]:
+          - img "Agent" [ref=e1659]
+          - generic [ref=e1660]: Agent unique TEST_1769903176704_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1661] [cursor=pointer]:
+          - img "Agent" [ref=e1662]
+          - generic [ref=e1663]: Test agent reload persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1664] [cursor=pointer]:
+          - generic [ref=e1665]: Normal msg TEST_1769903177437_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1666] [cursor=pointer]:
+          - generic [ref=e1667]: Normal conv TEST_1769903177265_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1668] [cursor=pointer]:
+          - generic [ref=e1669]: Normal chat TEST_1769903177090_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1670] [cursor=pointer]:
+          - generic [ref=e1671]: Normal settings test TEST_1769903177174
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1672] [cursor=pointer]:
+          - generic [ref=e1673]: Normal before agent TEST_1769903176607_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1674] [cursor=pointer]:
+          - generic [ref=e1675]: Normal unique TEST_1769903176704_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1676] [cursor=pointer]:
+          - generic [ref=e1677]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1678] [cursor=pointer]:
+          - generic [ref=e1679]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1680] [cursor=pointer]:
+          - generic [ref=e1681]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1682] [cursor=pointer]:
+          - generic [ref=e1683]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1684] [cursor=pointer]:
+          - generic [ref=e1685]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1686] [cursor=pointer]:
+          - generic [ref=e1687]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1688] [cursor=pointer]:
+          - generic [ref=e1689]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1690] [cursor=pointer]:
+          - generic [ref=e1691]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1692] [cursor=pointer]:
+          - generic [ref=e1693]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1694] [cursor=pointer]:
+          - generic [ref=e1695]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1696] [cursor=pointer]:
+          - generic [ref=e1697]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1698] [cursor=pointer]:
+          - generic [ref=e1699]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1700] [cursor=pointer]:
+          - generic [ref=e1701]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1702] [cursor=pointer]:
+          - generic [ref=e1703]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1704] [cursor=pointer]:
+          - generic [ref=e1705]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1706] [cursor=pointer]:
+          - generic [ref=e1707]: This is my test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1708] [cursor=pointer]:
+          - generic [ref=e1709]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1710] [cursor=pointer]:
+          - generic [ref=e1711]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1712] [cursor=pointer]:
+          - img "Agent" [ref=e1713]
+          - generic [ref=e1714]: Test agent thinking reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1715] [cursor=pointer]:
+          - img "Agent" [ref=e1716]
+          - generic [ref=e1717]: Test agent thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1718] [cursor=pointer]:
+          - generic [ref=e1719]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1720] [cursor=pointer]:
+          - img "Agent" [ref=e1721]
+          - generic [ref=e1722]: Test agent thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1723] [cursor=pointer]:
+          - img "Agent" [ref=e1724]
+          - generic [ref=e1725]: Test agent thinking reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1726] [cursor=pointer]:
+          - generic [ref=e1727]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1728] [cursor=pointer]:
+          - img "Agent" [ref=e1729]
+          - generic [ref=e1730]: Test agent reload persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1731] [cursor=pointer]:
+          - img "Agent" [ref=e1732]
+          - generic [ref=e1733]: Test agent tool persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1734] [cursor=pointer]:
+          - generic [ref=e1735]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1736] [cursor=pointer]:
+          - img "Agent" [ref=e1737]
+          - generic [ref=e1738]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1739] [cursor=pointer]:
+          - img "Agent" [ref=e1740]
+          - generic [ref=e1741]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1742] [cursor=pointer]:
+          - img "Agent" [ref=e1743]
+          - generic [ref=e1744]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1745] [cursor=pointer]:
+          - img "Agent" [ref=e1746]
+          - generic [ref=e1747]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1748] [cursor=pointer]:
+          - generic [ref=e1749]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1750] [cursor=pointer]:
+          - generic [ref=e1751]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1752] [cursor=pointer]:
+          - generic [ref=e1753]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1754] [cursor=pointer]:
+          - generic [ref=e1755]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1756] [cursor=pointer]:
+          - generic [ref=e1757]: look up claude agent sdk docs and tell me how fork...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1758] [cursor=pointer]:
+          - generic [ref=e1759]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1760] [cursor=pointer]:
+          - generic [ref=e1761]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1762] [cursor=pointer]:
+          - generic [ref=e1763]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1764] [cursor=pointer]:
+          - generic [ref=e1765]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1766] [cursor=pointer]:
+          - generic [ref=e1767]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1768] [cursor=pointer]:
+          - generic [ref=e1769]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1770] [cursor=pointer]:
+          - generic [ref=e1771]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1772] [cursor=pointer]:
+          - generic [ref=e1773]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1774] [cursor=pointer]:
+          - img "Agent" [ref=e1775]
+          - generic [ref=e1776]: Test agent tool persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1777] [cursor=pointer]:
+          - img "Agent" [ref=e1778]
+          - generic [ref=e1779]: Test agent reload persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1780] [cursor=pointer]:
+          - img "Agent" [ref=e1781]
+          - generic [ref=e1782]: Test agent reload persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1783] [cursor=pointer]:
+          - img "Agent" [ref=e1784]
+          - generic [ref=e1785]: Test agent tool persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1786] [cursor=pointer]:
+          - img "Agent" [ref=e1787]
+          - generic [ref=e1788]: Agent settings test TEST_1769901664921_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1789] [cursor=pointer]:
+          - generic [ref=e1790]: Normal settings test TEST_1769901664921
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1791] [cursor=pointer]:
+          - img "Agent" [ref=e1792]
+          - generic [ref=e1793]: Agent msg TEST_1769901662206_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1794] [cursor=pointer]:
+          - generic [ref=e1795]: Normal msg TEST_1769901662206_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1796] [cursor=pointer]:
+          - img "Agent" [ref=e1797]
+          - generic [ref=e1798]: Agent conv TEST_1769901653140_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1799] [cursor=pointer]:
+          - img "Agent" [ref=e1800]
+          - generic [ref=e1801]: Agent conv TEST_1769901653140_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1802] [cursor=pointer]:
+          - generic [ref=e1803]: Normal conv TEST_1769901653140_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1804] [cursor=pointer]:
+          - generic [ref=e1805]: Normal conv TEST_1769901653140_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1806] [cursor=pointer]:
+          - generic [ref=e1807]: look up the claude agent sdk docs, then think more...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1808] [cursor=pointer]:
+          - generic [ref=e1809]: Normal after agent TEST_1769901622807_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1810] [cursor=pointer]:
+          - generic [ref=e1811]: look up the claude agent sdk docs, and tell me abo...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1812] [cursor=pointer]:
+          - img "Agent" [ref=e1813]
+          - generic [ref=e1814]: Create a file TEST_1769901622807_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1815] [cursor=pointer]:
+          - img "Agent" [ref=e1816]
+          - generic [ref=e1817]: Agent with tools TEST_1769901618428_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1818] [cursor=pointer]:
+          - generic [ref=e1819]: Normal before agent TEST_1769901618428_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1820] [cursor=pointer]:
+          - img "Agent" [ref=e1821]
+          - generic [ref=e1822]: Agent unique TEST_1769901614429_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1823] [cursor=pointer]:
+          - generic [ref=e1824]: Normal unique TEST_1769901614429_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1825] [cursor=pointer]:
+          - generic [ref=e1826]: look up the claude agent sdk docs, and tell me abo...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1827] [cursor=pointer]:
+          - img "Agent" [ref=e1828]
+          - generic [ref=e1829]: Agent chat TEST_1769901608334_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1830] [cursor=pointer]:
+          - generic [ref=e1831]: Normal chat TEST_1769901608334_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1832] [cursor=pointer]:
+          - img "Agent" [ref=e1833]
+          - generic [ref=e1834]: look up the claude agent sdk docs, and tell me abo...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1835] [cursor=pointer]:
+          - img "Agent" [ref=e1836]
+          - generic [ref=e1837]: look up the claude agent sdk docs, and tell me abo...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1838] [cursor=pointer]:
+          - generic [ref=e1839]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1840] [cursor=pointer]:
+          - generic [ref=e1841]: Test icon
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1842] [cursor=pointer]:
+          - generic [ref=e1843]: Message in conv 3 - thinking ON again
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1844] [cursor=pointer]:
+          - generic [ref=e1845]: Test status
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1846] [cursor=pointer]:
+          - generic [ref=e1847]: Message in conv 2 - thinking OFF
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1848] [cursor=pointer]:
+          - generic [ref=e1849]: Test toggle
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1850] [cursor=pointer]:
+          - generic [ref=e1851]: Test reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1852] [cursor=pointer]:
+          - generic [ref=e1853]: Message in conv 1 - thinking ON
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1854] [cursor=pointer]:
+          - generic [ref=e1855]: Generate long thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1856] [cursor=pointer]:
+          - generic [ref=e1857]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1858] [cursor=pointer]:
+          - generic [ref=e1859]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1860] [cursor=pointer]:
+          - generic [ref=e1861]: Test expanded state unique
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1862] [cursor=pointer]:
+          - generic [ref=e1863]: Message for retry test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1864] [cursor=pointer]:
+          - generic [ref=e1865]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1866] [cursor=pointer]:
+          - generic [ref=e1867]: First message with thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1868] [cursor=pointer]:
+          - generic [ref=e1869]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1870] [cursor=pointer]:
+          - generic [ref=e1871]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1872] [cursor=pointer]:
+          - generic [ref=e1873]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1874] [cursor=pointer]:
+          - generic [ref=e1875]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1876] [cursor=pointer]:
+          - generic [ref=e1877]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1878] [cursor=pointer]:
+          - generic [ref=e1879]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1880] [cursor=pointer]:
+          - generic [ref=e1881]: First message 1769901267420
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1882] [cursor=pointer]:
+          - generic [ref=e1883]: Switch conversation 3 1769901266888
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1884] [cursor=pointer]:
+          - generic [ref=e1885]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1886] [cursor=pointer]:
+          - generic [ref=e1887]: LongMessageTest1769901264488 AAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1888] [cursor=pointer]:
+          - generic [ref=e1889]: Switch conversation 2 1769901263984
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1890] [cursor=pointer]:
+          - generic [ref=e1891]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1892] [cursor=pointer]:
+          - generic [ref=e1893]: Web search test 1769901261668
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1894] [cursor=pointer]:
+          - generic [ref=e1895]: Switch conversation 1 1769901260930
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1896] [cursor=pointer]:
+          - generic [ref=e1897]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1898] [cursor=pointer]:
+          - generic [ref=e1899]: Thinking test 1769901258755
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1900] [cursor=pointer]:
+          - generic [ref=e1901]: Markdown test 1769901257506
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1902] [cursor=pointer]:
+          - generic [ref=e1903]: Second conversation after reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1904] [cursor=pointer]:
+          - generic [ref=e1905]: Conversation to keep
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1906] [cursor=pointer]:
+          - generic [ref=e1907]: Persistence test 1769901254828
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1908] [cursor=pointer]:
+          - generic [ref=e1909]: Different conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1910] [cursor=pointer]:
+          - generic [ref=e1911]: First message in conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1912] [cursor=pointer]:
+          - generic [ref=e1913]: Third conversation unique message CCC
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1914] [cursor=pointer]:
+          - generic [ref=e1915]: Second conversation unique message BBB
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1916] [cursor=pointer]:
+          - generic [ref=e1917]: First conversation unique message AAA
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1918] [cursor=pointer]:
+          - generic [ref=e1919]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1920] [cursor=pointer]:
+          - generic [ref=e1921]: Test icon
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1922] [cursor=pointer]:
+          - generic [ref=e1923]: Test status
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1924] [cursor=pointer]:
+          - generic [ref=e1925]: Message in conv 3 - thinking ON again
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1926] [cursor=pointer]:
+          - generic [ref=e1927]: Message in conv 2 - thinking OFF
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1928] [cursor=pointer]:
+          - generic [ref=e1929]: Test toggle
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1930] [cursor=pointer]:
+          - generic [ref=e1931]: Test reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1932] [cursor=pointer]:
+          - generic [ref=e1933]: Message in conv 1 - thinking ON
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1934] [cursor=pointer]:
+          - generic [ref=e1935]: Generate long thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1936] [cursor=pointer]:
+          - generic [ref=e1937]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1938] [cursor=pointer]:
+          - generic [ref=e1939]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1940] [cursor=pointer]:
+          - generic [ref=e1941]: Test expanded state unique
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1942] [cursor=pointer]:
+          - generic [ref=e1943]: Message for retry test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1944] [cursor=pointer]:
+          - generic [ref=e1945]: First message with thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1946] [cursor=pointer]:
+          - generic [ref=e1947]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1948] [cursor=pointer]:
+          - generic [ref=e1949]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1950] [cursor=pointer]:
+          - generic [ref=e1951]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1952] [cursor=pointer]:
+          - generic [ref=e1953]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1954] [cursor=pointer]:
+          - generic [ref=e1955]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1956] [cursor=pointer]:
+          - generic [ref=e1957]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1958] [cursor=pointer]:
+          - generic [ref=e1959]: Second conversation after reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1960] [cursor=pointer]:
+          - generic [ref=e1961]: Persistence test 1769901181189
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1962] [cursor=pointer]:
+          - generic [ref=e1963]: Conversation to keep
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1964] [cursor=pointer]:
+          - generic [ref=e1965]: Different conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1966] [cursor=pointer]:
+          - generic [ref=e1967]: First message in conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1968] [cursor=pointer]:
+          - generic [ref=e1969]: Second conversation WITHOUT thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1970] [cursor=pointer]:
+          - generic [ref=e1971]: First conversation WITH thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1972] [cursor=pointer]:
+          - generic [ref=e1973]: Third conversation unique message CCC
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1974] [cursor=pointer]:
+          - generic [ref=e1975]: Second conversation unique message BBB
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1976] [cursor=pointer]:
+          - generic [ref=e1977]: First conversation unique message AAA
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1978] [cursor=pointer]:
+          - generic [ref=e1979]: Test icon
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1980] [cursor=pointer]:
+          - generic [ref=e1981]: Test status
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1982] [cursor=pointer]:
+          - generic [ref=e1983]: Test toggle
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1984] [cursor=pointer]:
+          - generic [ref=e1985]: Test reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1986] [cursor=pointer]:
+          - generic [ref=e1987]: Message in conv 3 - thinking ON again
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1988] [cursor=pointer]:
+          - generic [ref=e1989]: Message in conv 2 - thinking OFF
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1990] [cursor=pointer]:
+          - generic [ref=e1991]: Message in conv 1 - thinking ON
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1992] [cursor=pointer]:
+          - generic [ref=e1993]: Generate long thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1994] [cursor=pointer]:
+          - generic [ref=e1995]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1996] [cursor=pointer]:
+          - generic [ref=e1997]: Test expanded state unique
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e1998] [cursor=pointer]:
+          - generic [ref=e1999]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2000] [cursor=pointer]:
+          - generic [ref=e2001]: Message for retry test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2002] [cursor=pointer]:
+          - generic [ref=e2003]: First message with thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2004] [cursor=pointer]:
+          - generic [ref=e2005]: Test icon
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2006] [cursor=pointer]:
+          - generic [ref=e2007]: Test status
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2008] [cursor=pointer]:
+          - generic [ref=e2009]: Test toggle
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2010] [cursor=pointer]:
+          - generic [ref=e2011]: Test reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2012] [cursor=pointer]:
+          - generic [ref=e2013]: Message in conv 3 - thinking ON again
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2014] [cursor=pointer]:
+          - generic [ref=e2015]: Message in conv 2 - thinking OFF
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2016] [cursor=pointer]:
+          - generic [ref=e2017]: Message in conv 1 - thinking ON
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2018] [cursor=pointer]:
+          - generic [ref=e2019]: Generate long thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2020] [cursor=pointer]:
+          - generic [ref=e2021]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2022] [cursor=pointer]:
+          - generic [ref=e2023]: Test expanded state
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2024] [cursor=pointer]:
+          - generic [ref=e2025]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2026] [cursor=pointer]:
+          - generic [ref=e2027]: Message for retry test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2028] [cursor=pointer]:
+          - generic [ref=e2029]: First message with thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2030] [cursor=pointer]:
+          - generic [ref=e2031]: Test icon
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2032] [cursor=pointer]:
+          - generic [ref=e2033]: Test status
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2034] [cursor=pointer]:
+          - generic [ref=e2035]: Test toggle
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2036] [cursor=pointer]:
+          - generic [ref=e2037]: Test reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2038] [cursor=pointer]:
+          - generic [ref=e2039]: Message in conv 2 - thinking OFF
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2040] [cursor=pointer]:
+          - generic [ref=e2041]: Message in conv 1 - thinking ON
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2042] [cursor=pointer]:
+          - generic [ref=e2043]: Generate long thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2044] [cursor=pointer]:
+          - generic [ref=e2045]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2046] [cursor=pointer]:
+          - generic [ref=e2047]: Test expanded state
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2048] [cursor=pointer]:
+          - generic [ref=e2049]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2050] [cursor=pointer]:
+          - generic [ref=e2051]: Message for retry test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2052] [cursor=pointer]:
+          - generic [ref=e2053]: First message with thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2054] [cursor=pointer]:
+          - generic [ref=e2055]: Test icon
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2056] [cursor=pointer]:
+          - generic [ref=e2057]: Test status
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2058] [cursor=pointer]:
+          - generic [ref=e2059]: Test toggle
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2060] [cursor=pointer]:
+          - generic [ref=e2061]: Test reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2062] [cursor=pointer]:
+          - generic [ref=e2063]: Message 1 - thinking ON
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2064] [cursor=pointer]:
+          - generic [ref=e2065]: Generate long thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2066] [cursor=pointer]:
+          - generic [ref=e2067]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2068] [cursor=pointer]:
+          - generic [ref=e2069]: Test expanded state
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2070] [cursor=pointer]:
+          - generic [ref=e2071]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2072] [cursor=pointer]:
+          - generic [ref=e2073]: Message for retry test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2074] [cursor=pointer]:
+          - generic [ref=e2075]: First message with thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2076] [cursor=pointer]:
+          - generic [ref=e2077]: First message with thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2078] [cursor=pointer]:
+          - generic [ref=e2079]: Persistence test 1769900705251
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2080] [cursor=pointer]:
+          - generic [ref=e2081]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2082] [cursor=pointer]:
+          - generic [ref=e2083]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2084] [cursor=pointer]:
+          - generic [ref=e2085]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2086] [cursor=pointer]:
+          - generic [ref=e2087]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2088] [cursor=pointer]:
+          - generic [ref=e2089]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2090] [cursor=pointer]:
+          - generic [ref=e2091]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2092] [cursor=pointer]:
+          - generic [ref=e2093]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2094] [cursor=pointer]:
+          - generic [ref=e2095]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2096] [cursor=pointer]:
+          - generic [ref=e2097]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2098] [cursor=pointer]:
+          - generic [ref=e2099]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2100] [cursor=pointer]:
+          - generic [ref=e2101]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2102] [cursor=pointer]:
+          - generic [ref=e2103]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2104] [cursor=pointer]:
+          - generic [ref=e2105]: Persistence test 1769900671293
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2106] [cursor=pointer]:
+          - generic [ref=e2107]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2108] [cursor=pointer]:
+          - generic [ref=e2109]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2110] [cursor=pointer]:
+          - generic [ref=e2111]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2112] [cursor=pointer]:
+          - generic [ref=e2113]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2114] [cursor=pointer]:
+          - generic [ref=e2115]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2116] [cursor=pointer]:
+          - generic [ref=e2117]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2118] [cursor=pointer]:
+          - generic [ref=e2119]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2120] [cursor=pointer]:
+          - generic [ref=e2121]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2122] [cursor=pointer]:
+          - generic [ref=e2123]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2124] [cursor=pointer]:
+          - generic [ref=e2125]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2126] [cursor=pointer]:
+          - generic [ref=e2127]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2128] [cursor=pointer]:
+          - generic [ref=e2129]: Persistence test 1769900632418
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2130] [cursor=pointer]:
+          - generic [ref=e2131]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2132] [cursor=pointer]:
+          - generic [ref=e2133]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2134] [cursor=pointer]:
+          - generic [ref=e2135]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2136] [cursor=pointer]:
+          - generic [ref=e2137]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2138] [cursor=pointer]:
+          - generic [ref=e2139]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2140] [cursor=pointer]:
+          - generic [ref=e2141]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2142] [cursor=pointer]:
+          - generic [ref=e2143]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2144] [cursor=pointer]:
+          - generic [ref=e2145]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2146] [cursor=pointer]:
+          - generic [ref=e2147]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2148] [cursor=pointer]:
+          - generic [ref=e2149]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2150] [cursor=pointer]:
+          - generic [ref=e2151]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2152] [cursor=pointer]:
+          - generic [ref=e2153]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2154] [cursor=pointer]:
+          - generic [ref=e2155]: Persistence test 1769900565779
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2156] [cursor=pointer]:
+          - generic [ref=e2157]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2158] [cursor=pointer]:
+          - generic [ref=e2159]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2160] [cursor=pointer]:
+          - generic [ref=e2161]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2162] [cursor=pointer]:
+          - generic [ref=e2163]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2164] [cursor=pointer]:
+          - generic [ref=e2165]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2166] [cursor=pointer]:
+          - generic [ref=e2167]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2168] [cursor=pointer]:
+          - generic [ref=e2169]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2170] [cursor=pointer]:
+          - generic [ref=e2171]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2172] [cursor=pointer]:
+          - generic [ref=e2173]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2174] [cursor=pointer]:
+          - generic [ref=e2175]: Persistence test 1769900495851
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2176] [cursor=pointer]:
+          - generic [ref=e2177]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2178] [cursor=pointer]:
+          - generic [ref=e2179]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2180] [cursor=pointer]:
+          - generic [ref=e2181]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2182] [cursor=pointer]:
+          - generic [ref=e2183]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2184] [cursor=pointer]:
+          - generic [ref=e2185]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2186] [cursor=pointer]:
+          - generic [ref=e2187]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2188] [cursor=pointer]:
+          - generic [ref=e2189]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2190] [cursor=pointer]:
+          - generic [ref=e2191]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2192] [cursor=pointer]:
+          - generic [ref=e2193]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2194] [cursor=pointer]:
+          - generic [ref=e2195]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2196] [cursor=pointer]:
+          - generic [ref=e2197]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2198] [cursor=pointer]:
+          - generic [ref=e2199]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2200] [cursor=pointer]:
+          - generic [ref=e2201]: Persistence test 1769900462728
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2202] [cursor=pointer]:
+          - generic [ref=e2203]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2204] [cursor=pointer]:
+          - generic [ref=e2205]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2206] [cursor=pointer]:
+          - generic [ref=e2207]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2208] [cursor=pointer]:
+          - generic [ref=e2209]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2210] [cursor=pointer]:
+          - generic [ref=e2211]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2212] [cursor=pointer]:
+          - generic [ref=e2213]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2214] [cursor=pointer]:
+          - generic [ref=e2215]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2216] [cursor=pointer]:
+          - generic [ref=e2217]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2218] [cursor=pointer]:
+          - generic [ref=e2219]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2220] [cursor=pointer]:
+          - generic [ref=e2221]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2222] [cursor=pointer]:
+          - generic [ref=e2223]: Persistence test 1769900390891
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2224] [cursor=pointer]:
+          - generic [ref=e2225]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2226] [cursor=pointer]:
+          - generic [ref=e2227]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2228] [cursor=pointer]:
+          - generic [ref=e2229]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2230] [cursor=pointer]:
+          - generic [ref=e2231]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2232] [cursor=pointer]:
+          - generic [ref=e2233]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2234] [cursor=pointer]:
+          - generic [ref=e2235]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2236] [cursor=pointer]:
+          - generic [ref=e2237]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2238] [cursor=pointer]:
+          - generic [ref=e2239]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2240] [cursor=pointer]:
+          - generic [ref=e2241]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2242] [cursor=pointer]:
+          - generic [ref=e2243]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2244] [cursor=pointer]:
+          - generic [ref=e2245]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2246] [cursor=pointer]:
+          - generic [ref=e2247]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2248] [cursor=pointer]:
+          - img "Agent" [ref=e2249]
+          - generic [ref=e2250]: Agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2251] [cursor=pointer]:
+          - generic [ref=e2252]: Normal chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2253] [cursor=pointer]:
+          - generic [ref=e2254]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2255] [cursor=pointer]:
+          - generic [ref=e2256]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2257] [cursor=pointer]:
+          - generic [ref=e2258]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2259] [cursor=pointer]:
+          - generic [ref=e2260]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2261] [cursor=pointer]:
+          - generic [ref=e2262]: Persistence test 1769900331829
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2263] [cursor=pointer]:
+          - generic [ref=e2264]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2265] [cursor=pointer]:
+          - generic [ref=e2266]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2267] [cursor=pointer]:
+          - generic [ref=e2268]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2269] [cursor=pointer]:
+          - generic [ref=e2270]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2271] [cursor=pointer]:
+          - generic [ref=e2272]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2273] [cursor=pointer]:
+          - generic [ref=e2274]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2275] [cursor=pointer]:
+          - generic [ref=e2276]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2277] [cursor=pointer]:
+          - generic [ref=e2278]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2279] [cursor=pointer]:
+          - generic [ref=e2280]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2281] [cursor=pointer]:
+          - generic [ref=e2282]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2283] [cursor=pointer]:
+          - generic [ref=e2284]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2285] [cursor=pointer]:
+          - generic [ref=e2286]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2287] [cursor=pointer]:
+          - generic [ref=e2288]: Persistence test 1769900287053
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2289] [cursor=pointer]:
+          - generic [ref=e2290]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2291] [cursor=pointer]:
+          - generic [ref=e2292]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2293] [cursor=pointer]:
+          - generic [ref=e2294]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2295] [cursor=pointer]:
+          - generic [ref=e2296]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2297] [cursor=pointer]:
+          - generic [ref=e2298]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2299] [cursor=pointer]:
+          - generic [ref=e2300]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2301] [cursor=pointer]:
+          - generic [ref=e2302]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2303] [cursor=pointer]:
+          - generic [ref=e2304]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2305] [cursor=pointer]:
+          - generic [ref=e2306]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2307] [cursor=pointer]:
+          - generic [ref=e2308]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2309] [cursor=pointer]:
+          - generic [ref=e2310]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2311] [cursor=pointer]:
+          - generic [ref=e2312]: THINKING_LEAK_1769900235344
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2313] [cursor=pointer]:
+          - generic [ref=e2314]: NORMAL_LEAK_1769900235344
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2315] [cursor=pointer]:
+          - generic [ref=e2316]: DOUBLE_SEND_1769900233942
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2317] [cursor=pointer]:
+          - generic [ref=e2318]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2319] [cursor=pointer]:
+          - generic [ref=e2320]: STOP_ABORT_1769900232272
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2321] [cursor=pointer]:
+          - generic [ref=e2322]: RAPID_FOUR_1769900225871
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2323] [cursor=pointer]:
+          - generic [ref=e2324]: RAPID_THREE_1769900225871
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2325] [cursor=pointer]:
+          - generic [ref=e2326]: RAPID_TWO_1769900225871
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2327] [cursor=pointer]:
+          - generic [ref=e2328]: RAPID_ONE_1769900225871
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2329] [cursor=pointer]:
+          - generic [ref=e2330]: SETTINGS_STREAM_1769900224134
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2331] [cursor=pointer]:
+          - img "Agent" [ref=e2332]
+          - generic [ref=e2333]: AGENT_TOOL_1769900220039
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2334] [cursor=pointer]:
+          - generic [ref=e2335]: NORMAL_CHAT_1769900220039
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2336] [cursor=pointer]:
+          - generic [ref=e2337]: NEW_CHAT_AFTER_1769900217713
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2338] [cursor=pointer]:
+          - generic [ref=e2339]: NEW_CHAT_STREAM_1769900217713
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2340] [cursor=pointer]:
+          - generic [ref=e2341]: RELOAD_STREAM_1769900214771
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2342] [cursor=pointer]:
+          - generic [ref=e2343]: Persistence test 1769900212780
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2344] [cursor=pointer]:
+          - generic [ref=e2345]: STREAM_SWITCH_B_1769900211751
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2346] [cursor=pointer]:
+          - generic [ref=e2347]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2348] [cursor=pointer]:
+          - generic [ref=e2349]: STREAM_SWITCH_A_1769900211751
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2350] [cursor=pointer]:
+          - generic [ref=e2351]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2352] [cursor=pointer]:
+          - generic [ref=e2353]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2354] [cursor=pointer]:
+          - generic [ref=e2355]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2356] [cursor=pointer]:
+          - generic [ref=e2357]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2358] [cursor=pointer]:
+          - generic [ref=e2359]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2360] [cursor=pointer]:
+          - generic [ref=e2361]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2362] [cursor=pointer]:
+          - generic [ref=e2363]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2364] [cursor=pointer]:
+          - generic [ref=e2365]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2366] [cursor=pointer]:
+          - generic [ref=e2367]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2368] [cursor=pointer]:
+          - generic [ref=e2369]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2370] [cursor=pointer]:
+          - generic [ref=e2371]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2372] [cursor=pointer]:
+          - generic [ref=e2373]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2374] [cursor=pointer]:
+          - generic [ref=e2375]: THINKING_LEAK_1769900157076
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2376] [cursor=pointer]:
+          - generic [ref=e2377]: NORMAL_LEAK_1769900157076
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2378] [cursor=pointer]:
+          - generic [ref=e2379]: DOUBLE_SEND_1769900155713
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2380] [cursor=pointer]:
+          - generic [ref=e2381]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2382] [cursor=pointer]:
+          - generic [ref=e2383]: STOP_ABORT_1769900154054
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2384] [cursor=pointer]:
+          - generic [ref=e2385]: RAPID_FOUR_1769900148247
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2386] [cursor=pointer]:
+          - generic [ref=e2387]: RAPID_THREE_1769900148247
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2388] [cursor=pointer]:
+          - generic [ref=e2389]: RAPID_TWO_1769900148247
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2390] [cursor=pointer]:
+          - generic [ref=e2391]: RAPID_ONE_1769900148247
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2392] [cursor=pointer]:
+          - generic [ref=e2393]: Persistence test 1769900147458
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2394] [cursor=pointer]:
+          - generic [ref=e2395]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2396] [cursor=pointer]:
+          - generic [ref=e2397]: SETTINGS_STREAM_1769900146484
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2398] [cursor=pointer]:
+          - img "Agent" [ref=e2399]
+          - generic [ref=e2400]: AGENT_TOOL_1769900142360
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2401] [cursor=pointer]:
+          - generic [ref=e2402]: NORMAL_CHAT_1769900142360
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2403] [cursor=pointer]:
+          - generic [ref=e2404]: NEW_CHAT_AFTER_1769900139992
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2405] [cursor=pointer]:
+          - generic [ref=e2406]: NEW_CHAT_STREAM_1769900139992
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2407] [cursor=pointer]:
+          - generic [ref=e2408]: RELOAD_STREAM_1769900137044
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2409] [cursor=pointer]:
+          - generic [ref=e2410]: STREAM_SWITCH_B_1769900133881
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2411] [cursor=pointer]:
+          - generic [ref=e2412]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2413] [cursor=pointer]:
+          - generic [ref=e2414]: STREAM_SWITCH_A_1769900133881
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2415] [cursor=pointer]:
+          - generic [ref=e2416]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2417] [cursor=pointer]:
+          - generic [ref=e2418]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2419] [cursor=pointer]:
+          - generic [ref=e2420]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2421] [cursor=pointer]:
+          - img "Agent" [ref=e2422]
+          - generic [ref=e2423]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2424] [cursor=pointer]:
+          - img "Agent" [ref=e2425]
+          - generic [ref=e2426]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2427] [cursor=pointer]:
+          - generic [ref=e2428]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2429] [cursor=pointer]:
+          - generic [ref=e2430]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2431] [cursor=pointer]:
+          - generic [ref=e2432]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2433] [cursor=pointer]:
+          - generic [ref=e2434]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2435] [cursor=pointer]:
+          - generic [ref=e2436]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2437] [cursor=pointer]:
+          - generic [ref=e2438]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2439] [cursor=pointer]:
+          - generic [ref=e2440]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2441] [cursor=pointer]:
+          - generic [ref=e2442]: STOP_BTN_A_1769900112427
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2443] [cursor=pointer]:
+          - generic [ref=e2444]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2445] [cursor=pointer]:
+          - generic [ref=e2446]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2447] [cursor=pointer]:
+          - generic [ref=e2448]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2449] [cursor=pointer]:
+          - generic [ref=e2450]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2451] [cursor=pointer]:
+          - generic [ref=e2452]: ABORT_STREAM_1769900110773
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2453] [cursor=pointer]:
+          - generic [ref=e2454]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2455] [cursor=pointer]:
+          - generic [ref=e2456]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2457] [cursor=pointer]:
+          - generic [ref=e2458]: ALT_BETA_1769900107636
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2459] [cursor=pointer]:
+          - generic [ref=e2460]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2461] [cursor=pointer]:
+          - generic [ref=e2462]: DOUBLE_CLICK_B_1769900106873
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2463] [cursor=pointer]:
+          - generic [ref=e2464]: RAPID_5_FIVE_1769900103072
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2465] [cursor=pointer]:
+          - generic [ref=e2466]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2467] [cursor=pointer]:
+          - generic [ref=e2468]: ALT_ALPHA_1769900107636
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2469] [cursor=pointer]:
+          - generic [ref=e2470]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2471] [cursor=pointer]:
+          - generic [ref=e2472]: DOUBLE_CLICK_A_1769900106873
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2473] [cursor=pointer]:
+          - generic [ref=e2474]: RAPID_5_FOUR_1769900103072
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2475] [cursor=pointer]:
+          - generic [ref=e2476]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2477] [cursor=pointer]:
+          - generic [ref=e2478]: ERROR_TEST_B_1769900104397
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2479] [cursor=pointer]:
+          - generic [ref=e2480]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2481] [cursor=pointer]:
+          - generic [ref=e2482]: RAPID_5_THREE_1769900103072
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2483] [cursor=pointer]:
+          - generic [ref=e2484]: STREAM_CONV_C_1769900102777
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2485] [cursor=pointer]:
+          - generic [ref=e2486]: ERROR_TEST_A_1769900104397
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2487] [cursor=pointer]:
+          - generic [ref=e2488]: RAPID_5_TWO_1769900103072
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2489] [cursor=pointer]:
+          - generic [ref=e2490]: STREAM_CONV_B_1769900102777
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2491] [cursor=pointer]:
+          - generic [ref=e2492]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2493] [cursor=pointer]:
+          - generic [ref=e2494]: RAPID_SWITCH_B_1769900102209
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2495] [cursor=pointer]:
+          - generic [ref=e2496]: RAPID_5_ONE_1769900103072
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2497] [cursor=pointer]:
+          - generic [ref=e2498]: STREAM_CONV_A_1769900102777
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2499] [cursor=pointer]:
+          - generic [ref=e2500]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2501] [cursor=pointer]:
+          - generic [ref=e2502]: RAPID_SWITCH_A_1769900102209
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2503] [cursor=pointer]:
+          - generic [ref=e2504]: First message 1769900096219
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2505] [cursor=pointer]:
+          - generic [ref=e2506]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2507] [cursor=pointer]:
+          - generic [ref=e2508]: Switch conversation 3 1769900099755
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2509] [cursor=pointer]:
+          - img "Agent" [ref=e2510]
+          - generic [ref=e2511]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2512] [cursor=pointer]:
+          - generic [ref=e2513]: Switch conversation 2 1769900097814
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2514] [cursor=pointer]:
+          - generic [ref=e2515]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2516] [cursor=pointer]:
+          - generic [ref=e2517]: Switch conversation 1 1769900095022
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2518] [cursor=pointer]:
+          - generic [ref=e2519]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2520] [cursor=pointer]:
+          - generic [ref=e2521]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2522] [cursor=pointer]:
+          - generic [ref=e2523]: LongMessageTest1769900093750 AAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2524] [cursor=pointer]:
+          - generic [ref=e2525]: Web search test 1769900093569
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2526] [cursor=pointer]:
+          - generic [ref=e2527]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2528] [cursor=pointer]:
+          - generic [ref=e2529]: Second conversation WITHOUT thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2530] [cursor=pointer]:
+          - generic [ref=e2531]: Thinking test 1769900092017
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2532] [cursor=pointer]:
+          - generic [ref=e2533]: Different conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2534] [cursor=pointer]:
+          - generic [ref=e2535]: First message in conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2536] [cursor=pointer]:
+          - generic [ref=e2537]: Markdown test 1769900090123
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2538] [cursor=pointer]:
+          - generic [ref=e2539]: Second conversation after reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2540] [cursor=pointer]:
+          - generic [ref=e2541]: Conversation to keep
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2542] [cursor=pointer]:
+          - generic [ref=e2543]: First conversation WITH thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2544] [cursor=pointer]:
+          - generic [ref=e2545]: Persistence test 1769900088071
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2546] [cursor=pointer]:
+          - generic [ref=e2547]: Third conversation unique message CCC
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2548] [cursor=pointer]:
+          - generic [ref=e2549]: Second conversation unique message BBB
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2550] [cursor=pointer]:
+          - generic [ref=e2551]: First conversation unique message AAA
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2552] [cursor=pointer]:
+          - generic [ref=e2553]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2554] [cursor=pointer]:
+          - generic [ref=e2555]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2556] [cursor=pointer]:
+          - generic [ref=e2557]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2558] [cursor=pointer]:
+          - generic [ref=e2559]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2560] [cursor=pointer]:
+          - img "Agent" [ref=e2561]
+          - generic [ref=e2562]: Agent settings test TEST_1769900073961_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2563] [cursor=pointer]:
+          - generic [ref=e2564]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2565] [cursor=pointer]:
+          - generic [ref=e2566]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2567] [cursor=pointer]:
+          - generic [ref=e2568]: Normal settings test TEST_1769900073961
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2569] [cursor=pointer]:
+          - img "Agent" [ref=e2570]
+          - generic [ref=e2571]: Agent conv TEST_1769900070580_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2572] [cursor=pointer]:
+          - generic [ref=e2573]: Normal after agent TEST_1769900068521_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2574] [cursor=pointer]:
+          - img "Agent" [ref=e2575]
+          - generic [ref=e2576]: Agent msg TEST_1769900071571_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2577] [cursor=pointer]:
+          - generic [ref=e2578]: Normal conv TEST_1769900070580_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2579] [cursor=pointer]:
+          - img "Agent" [ref=e2580]
+          - generic [ref=e2581]: Agent conv TEST_1769900070580_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2582] [cursor=pointer]:
+          - generic [ref=e2583]: Normal msg TEST_1769900071571_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2584] [cursor=pointer]:
+          - generic [ref=e2585]: Normal conv TEST_1769900070580_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2586] [cursor=pointer]:
+          - img "Agent" [ref=e2587]
+          - generic [ref=e2588]: Create a file TEST_1769900068521_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2589] [cursor=pointer]:
+          - img "Agent" [ref=e2590]
+          - generic [ref=e2591]: Agent with tools TEST_1769900067577_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2592] [cursor=pointer]:
+          - img "Agent" [ref=e2593]
+          - generic [ref=e2594]: Agent unique TEST_1769900066764_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2595] [cursor=pointer]:
+          - generic [ref=e2596]: Normal before agent TEST_1769900067577_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2597] [cursor=pointer]:
+          - generic [ref=e2598]: Normal unique TEST_1769900066764_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2599] [cursor=pointer]:
+          - generic [ref=e2600]: Persistence test 1769900065090
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2601] [cursor=pointer]:
+          - generic [ref=e2602]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2603] [cursor=pointer]:
+          - img "Agent" [ref=e2604]
+          - generic [ref=e2605]: Agent chat TEST_1769900062344_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2606] [cursor=pointer]:
+          - generic [ref=e2607]: Normal chat TEST_1769900062344_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2608] [cursor=pointer]:
+          - generic [ref=e2609]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2610] [cursor=pointer]:
+          - generic [ref=e2611]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2612] [cursor=pointer]:
+          - generic [ref=e2613]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2614] [cursor=pointer]:
+          - generic [ref=e2615]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2616] [cursor=pointer]:
+          - generic [ref=e2617]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2618] [cursor=pointer]:
+          - generic [ref=e2619]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2620] [cursor=pointer]:
+          - generic [ref=e2621]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2622] [cursor=pointer]:
+          - generic [ref=e2623]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2624] [cursor=pointer]:
+          - generic [ref=e2625]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2626] [cursor=pointer]:
+          - generic [ref=e2627]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2628] [cursor=pointer]:
+          - generic [ref=e2629]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2630] [cursor=pointer]:
+          - generic [ref=e2631]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2632] [cursor=pointer]:
+          - generic [ref=e2633]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2634] [cursor=pointer]:
+          - generic [ref=e2635]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2636] [cursor=pointer]:
+          - generic [ref=e2637]: NORMAL_LEAK_1769900047876
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2638] [cursor=pointer]:
+          - generic [ref=e2639]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2640] [cursor=pointer]:
+          - generic [ref=e2641]: DOUBLE_SEND_1769900046493
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2642] [cursor=pointer]:
+          - generic [ref=e2643]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2644] [cursor=pointer]:
+          - generic [ref=e2645]: STOP_ABORT_1769900044675
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2646] [cursor=pointer]:
+          - generic [ref=e2647]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2648] [cursor=pointer]:
+          - generic [ref=e2649]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2650] [cursor=pointer]:
+          - generic [ref=e2651]: RAPID_FOUR_1769900038947
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2652] [cursor=pointer]:
+          - generic [ref=e2653]: RAPID_THREE_1769900038947
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2654] [cursor=pointer]:
+          - generic [ref=e2655]: RAPID_TWO_1769900038947
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2656] [cursor=pointer]:
+          - generic [ref=e2657]: RAPID_ONE_1769900038947
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2658] [cursor=pointer]:
+          - generic [ref=e2659]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2660] [cursor=pointer]:
+          - img "Agent" [ref=e2661]
+          - generic [ref=e2662]: Agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2663] [cursor=pointer]:
+          - generic [ref=e2664]: Normal chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2665] [cursor=pointer]:
+          - generic [ref=e2666]: First message 1769900029888
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2667] [cursor=pointer]:
+          - generic [ref=e2668]: SETTINGS_STREAM_1769900032635
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2669] [cursor=pointer]:
+          - generic [ref=e2670]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2671] [cursor=pointer]:
+          - img "Agent" [ref=e2672]
+          - generic [ref=e2673]: AGENT_TOOL_1769900028459
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2674] [cursor=pointer]:
+          - generic [ref=e2675]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2676] [cursor=pointer]:
+          - generic [ref=e2677]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2678] [cursor=pointer]:
+          - generic [ref=e2679]: NORMAL_CHAT_1769900028459
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2680] [cursor=pointer]:
+          - generic [ref=e2681]: Switch conversation 3 1769900028325
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2682] [cursor=pointer]:
+          - generic [ref=e2683]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2684] [cursor=pointer]:
+          - generic [ref=e2685]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2686] [cursor=pointer]:
+          - generic [ref=e2687]: NEW_CHAT_AFTER_1769900026162
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2688] [cursor=pointer]:
+          - generic [ref=e2689]: LongMessageTest1769900026236 AAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2690] [cursor=pointer]:
+          - generic [ref=e2691]: NEW_CHAT_STREAM_1769900026162
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2692] [cursor=pointer]:
+          - generic [ref=e2693]: Switch conversation 2 1769900025491
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2694] [cursor=pointer]:
+          - generic [ref=e2695]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2696] [cursor=pointer]:
+          - generic [ref=e2697]: Web search test 1769900023485
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2698] [cursor=pointer]:
+          - generic [ref=e2699]: RELOAD_STREAM_1769900023312
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2700] [cursor=pointer]:
+          - generic [ref=e2701]: Switch conversation 1 1769900022763
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2702] [cursor=pointer]:
+          - generic [ref=e2703]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2704] [cursor=pointer]:
+          - generic [ref=e2705]: STREAM_SWITCH_B_1769900020258
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2706] [cursor=pointer]:
+          - generic [ref=e2707]: STREAM_SWITCH_A_1769900020258
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2708] [cursor=pointer]:
+          - generic [ref=e2709]: Thinking test 1769900019793
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2710] [cursor=pointer]:
+          - generic [ref=e2711]: Markdown test 1769900019504
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2712] [cursor=pointer]:
+          - generic [ref=e2713]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2714] [cursor=pointer]:
+          - generic [ref=e2715]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2716] [cursor=pointer]:
+          - generic [ref=e2717]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2718] [cursor=pointer]:
+          - generic [ref=e2719]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2720] [cursor=pointer]:
+          - img "Agent" [ref=e2721]
+          - generic [ref=e2722]: Agent settings test TEST_1769900011476_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2723] [cursor=pointer]:
+          - generic [ref=e2724]: Normal settings test TEST_1769900011476
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2725] [cursor=pointer]:
+          - img "Agent" [ref=e2726]
+          - generic [ref=e2727]: Agent msg TEST_1769900008974_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2728] [cursor=pointer]:
+          - generic [ref=e2729]: Normal msg TEST_1769900008974_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2730] [cursor=pointer]:
+          - img "Agent" [ref=e2731]
+          - generic [ref=e2732]: Agent conv TEST_1769900005139_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2733] [cursor=pointer]:
+          - generic [ref=e2734]: Normal after agent TEST_1769900002892_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2735] [cursor=pointer]:
+          - generic [ref=e2736]: Normal conv TEST_1769900005139_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2737] [cursor=pointer]:
+          - img "Agent" [ref=e2738]
+          - generic [ref=e2739]: Agent conv TEST_1769900005139_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2740] [cursor=pointer]:
+          - generic [ref=e2741]: Normal conv TEST_1769900005139_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2742] [cursor=pointer]:
+          - img "Agent" [ref=e2743]
+          - generic [ref=e2744]: Create a file TEST_1769900002892_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2745] [cursor=pointer]:
+          - img "Agent" [ref=e2746]
+          - generic [ref=e2747]: Agent with tools TEST_1769900001149_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2748] [cursor=pointer]:
+          - generic [ref=e2749]: Normal before agent TEST_1769900001149_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2750] [cursor=pointer]:
+          - img "Agent" [ref=e2751]
+          - generic [ref=e2752]: Agent chat TEST_1769899997498_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2753] [cursor=pointer]:
+          - img "Agent" [ref=e2754]
+          - generic [ref=e2755]: Agent unique TEST_1769899997435_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2756] [cursor=pointer]:
+          - generic [ref=e2757]: Normal unique TEST_1769899997435_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2758] [cursor=pointer]:
+          - generic [ref=e2759]: Normal chat TEST_1769899997498_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2760] [cursor=pointer]:
+          - generic [ref=e2761]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2762] [cursor=pointer]:
+          - generic [ref=e2763]: STOP_BTN_A_1769899988870
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2764] [cursor=pointer]:
+          - generic [ref=e2765]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2766] [cursor=pointer]:
+          - generic [ref=e2767]: ABORT_STREAM_1769899987711
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2768] [cursor=pointer]:
+          - generic [ref=e2769]: ALT_BETA_1769899982670
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2770] [cursor=pointer]:
+          - generic [ref=e2771]: DOUBLE_CLICK_B_1769899981755
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2772] [cursor=pointer]:
+          - generic [ref=e2773]: ALT_ALPHA_1769899982670
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2774] [cursor=pointer]:
+          - generic [ref=e2775]: DOUBLE_CLICK_A_1769899981755
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2776] [cursor=pointer]:
+          - generic [ref=e2777]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2778] [cursor=pointer]:
+          - generic [ref=e2779]: ERROR_TEST_B_1769899978803
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2780] [cursor=pointer]:
+          - generic [ref=e2781]: RAPID_5_FIVE_1769899974686
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2782] [cursor=pointer]:
+          - generic [ref=e2783]: ERROR_TEST_A_1769899978803
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2784] [cursor=pointer]:
+          - generic [ref=e2785]: RAPID_5_FOUR_1769899974686
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2786] [cursor=pointer]:
+          - generic [ref=e2787]: RAPID_5_THREE_1769899974686
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2788] [cursor=pointer]:
+          - generic [ref=e2789]: RAPID_5_TWO_1769899974686
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2790] [cursor=pointer]:
+          - generic [ref=e2791]: RAPID_5_ONE_1769899974686
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2792] [cursor=pointer]:
+          - generic [ref=e2793]: STREAM_CONV_C_1769899970993
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2794] [cursor=pointer]:
+          - generic [ref=e2795]: RAPID_SWITCH_B_1769899970997
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2796] [cursor=pointer]:
+          - generic [ref=e2797]: STREAM_CONV_B_1769899970993
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2798] [cursor=pointer]:
+          - generic [ref=e2799]: Persistence test 1769899972109
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2800] [cursor=pointer]:
+          - generic [ref=e2801]: RAPID_SWITCH_A_1769899970997
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2802] [cursor=pointer]:
+          - generic [ref=e2803]: STREAM_CONV_A_1769899970993
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2804] [cursor=pointer]:
+          - generic [ref=e2805]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2806] [cursor=pointer]:
+          - generic [ref=e2807]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2808] [cursor=pointer]:
+          - generic [ref=e2809]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2810] [cursor=pointer]:
+          - generic [ref=e2811]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2812] [cursor=pointer]:
+          - generic [ref=e2813]: Second conversation after reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2814] [cursor=pointer]:
+          - generic [ref=e2815]: Persistence test 1769899962660
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2816] [cursor=pointer]:
+          - generic [ref=e2817]: Conversation to keep
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2818] [cursor=pointer]:
+          - generic [ref=e2819]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2820] [cursor=pointer]:
+          - generic [ref=e2821]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2822] [cursor=pointer]:
+          - generic [ref=e2823]: Different conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2824] [cursor=pointer]:
+          - generic [ref=e2825]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2826] [cursor=pointer]:
+          - generic [ref=e2827]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2828] [cursor=pointer]:
+          - generic [ref=e2829]: First message in conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2830] [cursor=pointer]:
+          - generic [ref=e2831]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2832] [cursor=pointer]:
+          - generic [ref=e2833]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2834] [cursor=pointer]:
+          - generic [ref=e2835]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2836] [cursor=pointer]:
+          - generic [ref=e2837]: Tell me a long story
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2838] [cursor=pointer]:
+          - generic [ref=e2839]: Second conversation WITHOUT thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2840] [cursor=pointer]:
+          - generic [ref=e2841]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2842] [cursor=pointer]:
+          - generic [ref=e2843]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2844] [cursor=pointer]:
+          - generic [ref=e2845]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2846] [cursor=pointer]:
+          - generic [ref=e2847]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2848] [cursor=pointer]:
+          - generic [ref=e2849]: First conversation WITH thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2850] [cursor=pointer]:
+          - generic [ref=e2851]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2852] [cursor=pointer]:
+          - generic [ref=e2853]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2854] [cursor=pointer]:
+          - generic [ref=e2855]: Third conversation unique message CCC
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2856] [cursor=pointer]:
+          - generic [ref=e2857]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2858] [cursor=pointer]:
+          - generic [ref=e2859]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2860] [cursor=pointer]:
+          - generic [ref=e2861]: This is my test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2862] [cursor=pointer]:
+          - generic [ref=e2863]: Second conversation unique message BBB
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2864] [cursor=pointer]:
+          - generic [ref=e2865]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2866] [cursor=pointer]:
+          - generic [ref=e2867]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2868] [cursor=pointer]:
+          - generic [ref=e2869]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2870] [cursor=pointer]:
+          - generic [ref=e2871]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2872] [cursor=pointer]:
+          - generic [ref=e2873]: First conversation unique message AAA
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2874] [cursor=pointer]:
+          - generic [ref=e2875]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2876] [cursor=pointer]:
+          - generic [ref=e2877]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2878] [cursor=pointer]:
+          - generic [ref=e2879]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2880] [cursor=pointer]:
+          - generic [ref=e2881]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2882] [cursor=pointer]:
+          - generic [ref=e2883]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2884] [cursor=pointer]:
+          - generic [ref=e2885]: First message 1769899764411
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2886] [cursor=pointer]:
+          - generic [ref=e2887]: Switch conversation 1 1769899767421
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2888] [cursor=pointer]:
+          - generic [ref=e2889]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2890] [cursor=pointer]:
+          - generic [ref=e2891]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2892] [cursor=pointer]:
+          - generic [ref=e2893]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2894] [cursor=pointer]:
+          - generic [ref=e2895]: Web search test 1769899764934
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2896] [cursor=pointer]:
+          - generic [ref=e2897]: Thinking test 1769899764425
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2898] [cursor=pointer]:
+          - generic [ref=e2899]: LongMessageTest1769899764547 AAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2900] [cursor=pointer]:
+          - generic [ref=e2901]: Markdown test 1769899764424
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2902] [cursor=pointer]:
+          - generic [ref=e2903]: Switch conversation 3 1769899736458
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2904] [cursor=pointer]:
+          - generic [ref=e2905]: Normal after agent TEST_1769899730039_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2906] [cursor=pointer]:
+          - generic [ref=e2907]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2908] [cursor=pointer]:
+          - generic [ref=e2909]: Switch conversation 2 1769899733688
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2910] [cursor=pointer]:
+          - generic [ref=e2911]: First message 1769899727959
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2912] [cursor=pointer]:
+          - img "Agent" [ref=e2913]
+          - generic [ref=e2914]: Agent conv TEST_1769899730106_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2915] [cursor=pointer]:
+          - generic [ref=e2916]: Normal conv TEST_1769899730106_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2917] [cursor=pointer]:
+          - img "Agent" [ref=e2918]
+          - generic [ref=e2919]: Agent settings test TEST_1769899730232_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2920] [cursor=pointer]:
+          - img "Agent" [ref=e2921]
+          - generic [ref=e2922]: Agent chat TEST_1769899729934_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2923] [cursor=pointer]:
+          - img "Agent" [ref=e2924]
+          - generic [ref=e2925]: Agent unique TEST_1769899730294_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2926] [cursor=pointer]:
+          - img "Agent" [ref=e2927]
+          - generic [ref=e2928]: Agent msg TEST_1769899730162_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2929] [cursor=pointer]:
+          - img "Agent" [ref=e2930]
+          - generic [ref=e2931]: Agent conv TEST_1769899730106_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2932] [cursor=pointer]:
+          - generic [ref=e2933]: Switch conversation 1 1769899730924
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2934] [cursor=pointer]:
+          - img "Agent" [ref=e2935]
+          - generic [ref=e2936]: Agent with tools TEST_1769899729854_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2937] [cursor=pointer]:
+          - img "Agent" [ref=e2938]
+          - generic [ref=e2939]: Create a file TEST_1769899730039_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2940] [cursor=pointer]:
+          - generic [ref=e2941]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2942] [cursor=pointer]:
+          - generic [ref=e2943]: Normal unique TEST_1769899730294_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2944] [cursor=pointer]:
+          - generic [ref=e2945]: Normal settings test TEST_1769899730232
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2946] [cursor=pointer]:
+          - generic [ref=e2947]: Normal msg TEST_1769899730162_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2948] [cursor=pointer]:
+          - generic [ref=e2949]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2950] [cursor=pointer]:
+          - generic [ref=e2951]: Normal conv TEST_1769899730106_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2952] [cursor=pointer]:
+          - generic [ref=e2953]: Normal chat TEST_1769899729934_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2954] [cursor=pointer]:
+          - generic [ref=e2955]: Normal before agent TEST_1769899729854_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2956] [cursor=pointer]:
+          - generic [ref=e2957]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2958] [cursor=pointer]:
+          - generic [ref=e2959]: Web search test 1769899728226
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2960] [cursor=pointer]:
+          - generic [ref=e2961]: Thinking test 1769899727797
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2962] [cursor=pointer]:
+          - generic [ref=e2963]: LongMessageTest1769899727781 AAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2964] [cursor=pointer]:
+          - generic [ref=e2965]: Markdown test 1769899727794
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2966] [cursor=pointer]:
+          - img "Agent" [ref=e2967]
+          - generic [ref=e2968]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2969] [cursor=pointer]:
+          - img "Agent" [ref=e2970]
+          - generic [ref=e2971]: Agent settings test TEST_1769899717767_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2972] [cursor=pointer]:
+          - img "Agent" [ref=e2973]
+          - generic [ref=e2974]: Agent chat TEST_1769899717570_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2975] [cursor=pointer]:
+          - generic [ref=e2976]: Normal conv TEST_1769899717507_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2977] [cursor=pointer]:
+          - img "Agent" [ref=e2978]
+          - generic [ref=e2979]: Agent msg TEST_1769899717829_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2980] [cursor=pointer]:
+          - img "Agent" [ref=e2981]
+          - generic [ref=e2982]: Agent with tools TEST_1769899717698_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2983] [cursor=pointer]:
+          - img "Agent" [ref=e2984]
+          - generic [ref=e2985]: Agent unique TEST_1769899717447_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2986] [cursor=pointer]:
+          - img "Agent" [ref=e2987]
+          - generic [ref=e2988]: Agent conv TEST_1769899717507_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2989] [cursor=pointer]:
+          - img "Agent" [ref=e2990]
+          - generic [ref=e2991]: Create a file TEST_1769899717637_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2992] [cursor=pointer]:
+          - generic [ref=e2993]: Normal msg TEST_1769899717829_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2994] [cursor=pointer]:
+          - generic [ref=e2995]: Normal settings test TEST_1769899717767
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2996] [cursor=pointer]:
+          - generic [ref=e2997]: Normal before agent TEST_1769899717698_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e2998] [cursor=pointer]:
+          - generic [ref=e2999]: Normal chat TEST_1769899717570_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3000] [cursor=pointer]:
+          - generic [ref=e3001]: Normal conv TEST_1769899717507_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3002] [cursor=pointer]:
+          - generic [ref=e3003]: Normal unique TEST_1769899717447_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3004] [cursor=pointer]:
+          - generic [ref=e3005]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3006] [cursor=pointer]:
+          - generic [ref=e3007]: First message 1769899668996
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3008] [cursor=pointer]:
+          - generic [ref=e3009]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3010] [cursor=pointer]:
+          - generic [ref=e3011]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3012] [cursor=pointer]:
+          - generic [ref=e3013]: LongMessageTest1769899668936 AAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3014] [cursor=pointer]:
+          - generic [ref=e3015]: Markdown test 1769899668969
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3016] [cursor=pointer]:
+          - generic [ref=e3017]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3018] [cursor=pointer]:
+          - generic [ref=e3019]: First message 1769899639538
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3020] [cursor=pointer]:
+          - generic [ref=e3021]: Switch conversation 3 1769899616810
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3022] [cursor=pointer]:
+          - generic [ref=e3023]: Normal after agent TEST_1769899611320_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3024] [cursor=pointer]:
+          - generic [ref=e3025]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3026] [cursor=pointer]:
+          - generic [ref=e3027]: Switch conversation 2 1769899614263
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3028] [cursor=pointer]:
+          - img "Agent" [ref=e3029]
+          - generic [ref=e3030]: Agent conv TEST_1769899611193_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3031] [cursor=pointer]:
+          - generic [ref=e3032]: First message 1769899609107
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3033] [cursor=pointer]:
+          - img "Agent" [ref=e3034]
+          - generic [ref=e3035]: Agent chat TEST_1769899611531_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3036] [cursor=pointer]:
+          - img "Agent" [ref=e3037]
+          - generic [ref=e3038]: Agent settings test TEST_1769899611259_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3039] [cursor=pointer]:
+          - generic [ref=e3040]: Normal conv TEST_1769899611193_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3041] [cursor=pointer]:
+          - img "Agent" [ref=e3042]
+          - generic [ref=e3043]: Agent msg TEST_1769899611475_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3044] [cursor=pointer]:
+          - img "Agent" [ref=e3045]
+          - generic [ref=e3046]: Agent with tools TEST_1769899611397_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3047] [cursor=pointer]:
+          - img "Agent" [ref=e3048]
+          - generic [ref=e3049]: Agent conv TEST_1769899611193_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3050] [cursor=pointer]:
+          - img "Agent" [ref=e3051]
+          - generic [ref=e3052]: Agent unique TEST_1769899611102_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3053] [cursor=pointer]:
+          - img "Agent" [ref=e3054]
+          - generic [ref=e3055]: Create a file TEST_1769899611320_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3056] [cursor=pointer]:
+          - generic [ref=e3057]: Switch conversation 1 1769899611832
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3058] [cursor=pointer]:
+          - generic [ref=e3059]: Normal chat TEST_1769899611531_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3060] [cursor=pointer]:
+          - generic [ref=e3061]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3062] [cursor=pointer]:
+          - generic [ref=e3063]: Normal msg TEST_1769899611475_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3064] [cursor=pointer]:
+          - generic [ref=e3065]: Normal before agent TEST_1769899611397_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3066] [cursor=pointer]:
+          - generic [ref=e3067]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3068] [cursor=pointer]:
+          - generic [ref=e3069]: Normal settings test TEST_1769899611259
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3070] [cursor=pointer]:
+          - generic [ref=e3071]: Normal conv TEST_1769899611193_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3072] [cursor=pointer]:
+          - generic [ref=e3073]: Normal unique TEST_1769899611102_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3074] [cursor=pointer]:
+          - generic [ref=e3075]: Web search test 1769899609338
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3076] [cursor=pointer]:
+          - generic [ref=e3077]: LongMessageTest1769899609279 AAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3078] [cursor=pointer]:
+          - generic [ref=e3079]: Markdown test 1769899609113
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3080] [cursor=pointer]:
+          - generic [ref=e3081]: Thinking test 1769899609139
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3082] [cursor=pointer]:
+          - generic [ref=e3083]: RAPID_5_FIVE_1769899590991
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3084] [cursor=pointer]:
+          - generic [ref=e3085]: RAPID_5_FOUR_1769899590991
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3086] [cursor=pointer]:
+          - generic [ref=e3087]: STREAM_CONV_C_1769899590985
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3088] [cursor=pointer]:
+          - generic [ref=e3089]: RAPID_5_THREE_1769899590991
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3090] [cursor=pointer]:
+          - generic [ref=e3091]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3092] [cursor=pointer]:
+          - generic [ref=e3093]: STOP_BTN_A_1769899590973
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3094] [cursor=pointer]:
+          - generic [ref=e3095]: ERROR_TEST_B_1769899591410
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3096] [cursor=pointer]:
+          - generic [ref=e3097]: STREAM_CONV_B_1769899590985
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3098] [cursor=pointer]:
+          - generic [ref=e3099]: DOUBLE_CLICK_B_1769899590944
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3100] [cursor=pointer]:
+          - generic [ref=e3101]: RAPID_SWITCH_B_1769899590953
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3102] [cursor=pointer]:
+          - generic [ref=e3103]: ALT_BETA_1769899590974
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3104] [cursor=pointer]:
+          - generic [ref=e3105]: RAPID_5_TWO_1769899590991
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3106] [cursor=pointer]:
+          - generic [ref=e3107]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3108] [cursor=pointer]:
+          - generic [ref=e3109]: ERROR_TEST_A_1769899591410
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3110] [cursor=pointer]:
+          - generic [ref=e3111]: ABORT_STREAM_1769899591408
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3112] [cursor=pointer]:
+          - generic [ref=e3113]: STREAM_CONV_A_1769899590985
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3114] [cursor=pointer]:
+          - generic [ref=e3115]: ALT_ALPHA_1769899590974
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3116] [cursor=pointer]:
+          - generic [ref=e3117]: RAPID_SWITCH_A_1769899590953
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3118] [cursor=pointer]:
+          - generic [ref=e3119]: DOUBLE_CLICK_A_1769899590944
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3120] [cursor=pointer]:
+          - generic [ref=e3121]: RAPID_5_ONE_1769899590991
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3122] [cursor=pointer]:
+          - generic [ref=e3123]: RAPID_5_FIVE_1769899566237
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3124] [cursor=pointer]:
+          - generic [ref=e3125]: RAPID_5_FOUR_1769899566237
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3126] [cursor=pointer]:
+          - generic [ref=e3127]: STREAM_CONV_C_1769899566233
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3128] [cursor=pointer]:
+          - generic [ref=e3129]: RAPID_5_THREE_1769899566237
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3130] [cursor=pointer]:
+          - generic [ref=e3131]: ERROR_TEST_B_1769899566858
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3132] [cursor=pointer]:
+          - generic [ref=e3133]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3134] [cursor=pointer]:
+          - generic [ref=e3135]: STOP_BTN_A_1769899566271
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3136] [cursor=pointer]:
+          - generic [ref=e3137]: DOUBLE_CLICK_B_1769899566253
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3138] [cursor=pointer]:
+          - generic [ref=e3139]: STREAM_CONV_B_1769899566233
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3140] [cursor=pointer]:
+          - generic [ref=e3141]: ALT_BETA_1769899566253
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3142] [cursor=pointer]:
+          - generic [ref=e3143]: RAPID_SWITCH_B_1769899566244
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3144] [cursor=pointer]:
+          - generic [ref=e3145]: RAPID_5_TWO_1769899566237
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3146] [cursor=pointer]:
+          - generic [ref=e3147]: ERROR_TEST_A_1769899566858
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3148] [cursor=pointer]:
+          - generic [ref=e3149]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3150] [cursor=pointer]:
+          - generic [ref=e3151]: STREAM_CONV_A_1769899566233
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3152] [cursor=pointer]:
+          - generic [ref=e3153]: ABORT_STREAM_1769899566258
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3154] [cursor=pointer]:
+          - generic [ref=e3155]: DOUBLE_CLICK_A_1769899566253
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3156] [cursor=pointer]:
+          - generic [ref=e3157]: RAPID_SWITCH_A_1769899566244
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3158] [cursor=pointer]:
+          - generic [ref=e3159]: RAPID_5_ONE_1769899566237
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3160] [cursor=pointer]:
+          - generic [ref=e3161]: ALT_ALPHA_1769899566253
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3162] [cursor=pointer]:
+          - generic [ref=e3163]: RAPID_5_FOUR_1769899511816
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3164] [cursor=pointer]:
+          - generic [ref=e3165]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3166] [cursor=pointer]:
+          - generic [ref=e3167]: STREAM_CONV_C_1769899511813
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3168] [cursor=pointer]:
+          - generic [ref=e3169]: RAPID_5_THREE_1769899511816
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3170] [cursor=pointer]:
+          - generic [ref=e3171]: STOP_BTN_A_1769899511791
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3172] [cursor=pointer]:
+          - generic [ref=e3173]: DOUBLE_CLICK_B_1769899511779
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3174] [cursor=pointer]:
+          - generic [ref=e3175]: RAPID_SWITCH_B_1769899511684
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3176] [cursor=pointer]:
+          - generic [ref=e3177]: STREAM_CONV_B_1769899511813
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3178] [cursor=pointer]:
+          - generic [ref=e3179]: ERROR_TEST_B_1769899511810
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3180] [cursor=pointer]:
+          - generic [ref=e3181]: ALT_BETA_1769899511694
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3182] [cursor=pointer]:
+          - generic [ref=e3183]: RAPID_5_TWO_1769899511816
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3184] [cursor=pointer]:
+          - generic [ref=e3185]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3186] [cursor=pointer]:
+          - generic [ref=e3187]: ABORT_STREAM_1769899511788
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3188] [cursor=pointer]:
+          - generic [ref=e3189]: ERROR_TEST_A_1769899511810
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3190] [cursor=pointer]:
+          - generic [ref=e3191]: STREAM_CONV_A_1769899511813
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3192] [cursor=pointer]:
+          - generic [ref=e3193]: RAPID_5_ONE_1769899511816
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3194] [cursor=pointer]:
+          - generic [ref=e3195]: DOUBLE_CLICK_A_1769899511779
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3196] [cursor=pointer]:
+          - generic [ref=e3197]: RAPID_SWITCH_A_1769899511684
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3198] [cursor=pointer]:
+          - generic [ref=e3199]: ALT_ALPHA_1769899511694
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3200] [cursor=pointer]:
+          - generic [ref=e3201]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3202] [cursor=pointer]:
+          - generic [ref=e3203]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3204] [cursor=pointer]:
+          - generic [ref=e3205]: Normal after agent TEST_1769899448297_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3206] [cursor=pointer]:
+          - img "Agent" [ref=e3207]
+          - generic [ref=e3208]: Agent conv TEST_1769899448005_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3209] [cursor=pointer]:
+          - img "Agent" [ref=e3210]
+          - generic [ref=e3211]: Agent conv TEST_1769899448005_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3212] [cursor=pointer]:
+          - img "Agent" [ref=e3213]
+          - generic [ref=e3214]: Create a file TEST_1769899448297_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3215] [cursor=pointer]:
+          - img "Agent" [ref=e3216]
+          - generic [ref=e3217]: Agent chat TEST_1769899448347_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3218] [cursor=pointer]:
+          - generic [ref=e3219]: Normal conv TEST_1769899448005_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3220] [cursor=pointer]:
+          - img "Agent" [ref=e3221]
+          - generic [ref=e3222]: Agent unique TEST_1769899448063_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3223] [cursor=pointer]:
+          - img "Agent" [ref=e3224]
+          - generic [ref=e3225]: Agent with tools TEST_1769899448234_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3226] [cursor=pointer]:
+          - img "Agent" [ref=e3227]
+          - generic [ref=e3228]: Agent msg TEST_1769899448174_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3229] [cursor=pointer]:
+          - generic [ref=e3230]: Normal chat TEST_1769899448347_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3231] [cursor=pointer]:
+          - generic [ref=e3232]: Normal before agent TEST_1769899448234_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3233] [cursor=pointer]:
+          - generic [ref=e3234]: Normal msg TEST_1769899448174_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3235] [cursor=pointer]:
+          - generic [ref=e3236]: Normal settings test TEST_1769899448118
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3237] [cursor=pointer]:
+          - generic [ref=e3238]: Normal unique TEST_1769899448063_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3239] [cursor=pointer]:
+          - generic [ref=e3240]: Normal conv TEST_1769899448005_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3241] [cursor=pointer]:
+          - generic [ref=e3242]: RAPID_5_FIVE_1769899420642
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3243] [cursor=pointer]:
+          - generic [ref=e3244]: First test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3245] [cursor=pointer]:
+          - generic [ref=e3246]: RAPID_5_FOUR_1769899420642
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3247] [cursor=pointer]:
+          - generic [ref=e3248]: RAPID_5_THREE_1769899420642
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3249] [cursor=pointer]:
+          - generic [ref=e3250]: STREAM_CONV_C_1769899420358
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3251] [cursor=pointer]:
+          - generic [ref=e3252]: ERROR_TEST_B_1769899420641
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3253] [cursor=pointer]:
+          - generic [ref=e3254]: RAPID_5_TWO_1769899420642
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3255] [cursor=pointer]:
+          - generic [ref=e3256]: ALT_BETA_1769899420336
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3257] [cursor=pointer]:
+          - generic [ref=e3258]: DOUBLE_CLICK_B_1769899420342
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3259] [cursor=pointer]:
+          - generic [ref=e3260]: STREAM_CONV_B_1769899420358
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3261] [cursor=pointer]:
+          - generic [ref=e3262]: ERROR_TEST_A_1769899420641
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3263] [cursor=pointer]:
+          - generic [ref=e3264]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3265] [cursor=pointer]:
+          - generic [ref=e3266]: RAPID_5_ONE_1769899420642
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3267] [cursor=pointer]:
+          - generic [ref=e3268]: ABORT_STREAM_1769899420636
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3269] [cursor=pointer]:
+          - generic [ref=e3270]: ALT_ALPHA_1769899420336
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3271] [cursor=pointer]:
+          - generic [ref=e3272]: DOUBLE_CLICK_A_1769899420342
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3273] [cursor=pointer]:
+          - generic [ref=e3274]: STREAM_CONV_A_1769899420358
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3275] [cursor=pointer]:
+          - generic [ref=e3276]: Normal after agent TEST_1769899362383_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3277] [cursor=pointer]:
+          - img "Agent" [ref=e3278]
+          - generic [ref=e3279]: Agent conv TEST_1769899362112_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3280] [cursor=pointer]:
+          - img "Agent" [ref=e3281]
+          - generic [ref=e3282]: Agent conv TEST_1769899362112_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3283] [cursor=pointer]:
+          - img "Agent" [ref=e3284]
+          - generic [ref=e3285]: Create a file TEST_1769899362383_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3286] [cursor=pointer]:
+          - img "Agent" [ref=e3287]
+          - generic [ref=e3288]: Agent chat TEST_1769899362267_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3289] [cursor=pointer]:
+          - generic [ref=e3290]: Normal conv TEST_1769899362112_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3291] [cursor=pointer]:
+          - img "Agent" [ref=e3292]
+          - generic [ref=e3293]: Agent with tools TEST_1769899362510_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3294] [cursor=pointer]:
+          - img "Agent" [ref=e3295]
+          - generic [ref=e3296]: Agent unique TEST_1769899362436_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3297] [cursor=pointer]:
+          - img "Agent" [ref=e3298]
+          - generic [ref=e3299]: Agent msg TEST_1769899362182_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3300] [cursor=pointer]:
+          - generic [ref=e3301]: Normal before agent TEST_1769899362510_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3302] [cursor=pointer]:
+          - generic [ref=e3303]: Normal unique TEST_1769899362436_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3304] [cursor=pointer]:
+          - generic [ref=e3305]: Normal settings test TEST_1769899362311
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3306] [cursor=pointer]:
+          - generic [ref=e3307]: Normal chat TEST_1769899362267_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3308] [cursor=pointer]:
+          - generic [ref=e3309]: Normal msg TEST_1769899362182_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3310] [cursor=pointer]:
+          - generic [ref=e3311]: Normal conv TEST_1769899362112_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3312] [cursor=pointer]:
+          - generic [ref=e3313]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3314] [cursor=pointer]:
+          - generic [ref=e3315]: Tell me a long story
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3316] [cursor=pointer]:
+          - generic [ref=e3317]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3318] [cursor=pointer]:
+          - generic [ref=e3319]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3320] [cursor=pointer]:
+          - generic [ref=e3321]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3322] [cursor=pointer]:
+          - generic [ref=e3323]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3324] [cursor=pointer]:
+          - generic [ref=e3325]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3326] [cursor=pointer]:
+          - generic [ref=e3327]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3328] [cursor=pointer]:
+          - generic [ref=e3329]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3330] [cursor=pointer]:
+          - generic [ref=e3331]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3332] [cursor=pointer]:
+          - generic [ref=e3333]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3334] [cursor=pointer]:
+          - generic [ref=e3335]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3336] [cursor=pointer]:
+          - generic [ref=e3337]: This is my test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3338] [cursor=pointer]:
+          - generic [ref=e3339]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3340] [cursor=pointer]:
+          - generic [ref=e3341]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3342] [cursor=pointer]:
+          - generic [ref=e3343]: RAPID_5_FIVE_1769899314753
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3344] [cursor=pointer]:
+          - generic [ref=e3345]: RAPID_5_FOUR_1769899314753
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3346] [cursor=pointer]:
+          - generic [ref=e3347]: RAPID_5_THREE_1769899314753
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3348] [cursor=pointer]:
+          - generic [ref=e3349]: RAPID_5_TWO_1769899314753
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3350] [cursor=pointer]:
+          - generic [ref=e3351]: DOUBLE_CLICK_B_1769899314749
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3352] [cursor=pointer]:
+          - generic [ref=e3353]: RAPID_SWITCH_B_1769899313997
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3354] [cursor=pointer]:
+          - generic [ref=e3355]: DOUBLE_CLICK_A_1769899314749
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3356] [cursor=pointer]:
+          - generic [ref=e3357]: RAPID_5_ONE_1769899314753
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3358] [cursor=pointer]:
+          - generic [ref=e3359]: RAPID_SWITCH_A_1769899313997
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3360] [cursor=pointer]:
+          - generic [ref=e3361]: Test message for markdown
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3362] [cursor=pointer]:
+          - generic [ref=e3363]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3364] [cursor=pointer]:
+          - generic [ref=e3365]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3366] [cursor=pointer]:
+          - generic [ref=e3367]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3368] [cursor=pointer]:
+          - generic [ref=e3369]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3370] [cursor=pointer]:
+          - generic [ref=e3371]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3372] [cursor=pointer]:
+          - generic [ref=e3373]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3374] [cursor=pointer]:
+          - generic [ref=e3375]: This is my test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3376] [cursor=pointer]:
+          - generic [ref=e3377]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3378] [cursor=pointer]:
+          - generic [ref=e3379]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3380] [cursor=pointer]:
+          - generic [ref=e3381]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3382] [cursor=pointer]:
+          - generic [ref=e3383]: This is my test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3384] [cursor=pointer]:
+          - generic [ref=e3385]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3386] [cursor=pointer]:
+          - generic [ref=e3387]: Normal after agent TEST_1769899256425_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3388] [cursor=pointer]:
+          - generic [ref=e3389]: Normal after agent TEST_1769899256362_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3390] [cursor=pointer]:
+          - img "Agent" [ref=e3391]
+          - generic [ref=e3392]: Agent conv TEST_1769899255946_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3393] [cursor=pointer]:
+          - img "Agent" [ref=e3394]
+          - generic [ref=e3395]: Agent conv TEST_1769899256177_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3396] [cursor=pointer]:
+          - img "Agent" [ref=e3397]
+          - generic [ref=e3398]: Agent conv TEST_1769899256177_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3399] [cursor=pointer]:
+          - img "Agent" [ref=e3400]
+          - generic [ref=e3401]: Agent conv TEST_1769899255946_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3402] [cursor=pointer]:
+          - img "Agent" [ref=e3403]
+          - generic [ref=e3404]: Create a file TEST_1769899256425_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3405] [cursor=pointer]:
+          - img "Agent" [ref=e3406]
+          - generic [ref=e3407]: Create a file TEST_1769899256362_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3408] [cursor=pointer]:
+          - generic [ref=e3409]: Normal conv TEST_1769899255946_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3410] [cursor=pointer]:
+          - generic [ref=e3411]: Normal conv TEST_1769899256177_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3412] [cursor=pointer]:
+          - img "Agent" [ref=e3413]
+          - generic [ref=e3414]: Agent unique TEST_1769899256483_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3415] [cursor=pointer]:
+          - img "Agent" [ref=e3416]
+          - generic [ref=e3417]: Agent msg TEST_1769899256303_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3418] [cursor=pointer]:
+          - img "Agent" [ref=e3419]
+          - generic [ref=e3420]: Agent unique TEST_1769899256241_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3421] [cursor=pointer]:
+          - img "Agent" [ref=e3422]
+          - generic [ref=e3423]: Agent with tools TEST_1769899255896_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3424] [cursor=pointer]:
+          - img "Agent" [ref=e3425]
+          - generic [ref=e3426]: Agent msg TEST_1769899255816_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3427] [cursor=pointer]:
+          - img "Agent" [ref=e3428]
+          - generic [ref=e3429]: Agent with tools TEST_1769899256002_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3430] [cursor=pointer]:
+          - generic [ref=e3431]: Normal unique TEST_1769899256483_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3432] [cursor=pointer]:
+          - generic [ref=e3433]: Normal msg TEST_1769899256303_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3434] [cursor=pointer]:
+          - generic [ref=e3435]: Normal unique TEST_1769899256241_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3436] [cursor=pointer]:
+          - generic [ref=e3437]: Normal conv TEST_1769899256177_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3438] [cursor=pointer]:
+          - generic [ref=e3439]: Normal settings test TEST_1769899256122
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3440] [cursor=pointer]:
+          - generic [ref=e3441]: Normal settings test TEST_1769899256051
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3442] [cursor=pointer]:
+          - generic [ref=e3443]: Normal before agent TEST_1769899256002_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3444] [cursor=pointer]:
+          - generic [ref=e3445]: Normal before agent TEST_1769899255896_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3446] [cursor=pointer]:
+          - generic [ref=e3447]: Normal conv TEST_1769899255946_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3448] [cursor=pointer]:
+          - generic [ref=e3449]: Normal msg TEST_1769899255816_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3450] [cursor=pointer]:
+          - generic [ref=e3451]: Normal chat TEST_1769899255730_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3452] [cursor=pointer]:
+          - generic [ref=e3453]: Normal chat TEST_1769899255677_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3454] [cursor=pointer]:
+          - generic [ref=e3455]: Normal after agent TEST_1769899225687_AFTER
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3456] [cursor=pointer]:
+          - img "Agent" [ref=e3457]
+          - generic [ref=e3458]: Agent conv TEST_1769899226052_A2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3459] [cursor=pointer]:
+          - img "Agent" [ref=e3460]
+          - generic [ref=e3461]: Agent conv TEST_1769899226052_A1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3462] [cursor=pointer]:
+          - generic [ref=e3463]: Normal conv TEST_1769899226052_N2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3464] [cursor=pointer]:
+          - img "Agent" [ref=e3465]
+          - generic [ref=e3466]: Create a file TEST_1769899225687_TOOL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3467] [cursor=pointer]:
+          - img "Agent" [ref=e3468]
+          - generic [ref=e3469]: Agent unique TEST_1769899226615_AMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3470] [cursor=pointer]:
+          - img "Agent" [ref=e3471]
+          - generic [ref=e3472]: Agent msg TEST_1769899226103_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3473] [cursor=pointer]:
+          - img "Agent" [ref=e3474]
+          - generic [ref=e3475]: Agent with tools TEST_1769899225742_AGENT
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3476] [cursor=pointer]:
+          - generic [ref=e3477]: Normal unique TEST_1769899226615_NMSG
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3478] [cursor=pointer]:
+          - generic [ref=e3479]: Normal chat TEST_1769899226153_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3480] [cursor=pointer]:
+          - generic [ref=e3481]: Normal msg TEST_1769899226103_NORMAL
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3482] [cursor=pointer]:
+          - generic [ref=e3483]: Normal conv TEST_1769899226052_N1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3484] [cursor=pointer]:
+          - generic [ref=e3485]: Normal before agent TEST_1769899225742_NORM
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3486] [cursor=pointer]:
+          - generic [ref=e3487]: Normal settings test TEST_1769899225797
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3488] [cursor=pointer]:
+          - generic [ref=e3489]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3490] [cursor=pointer]:
+          - generic [ref=e3491]: STOP_BTN_A_1769899213823
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3492] [cursor=pointer]:
+          - generic [ref=e3493]: RAPID_5_FIVE_1769899214937
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3494] [cursor=pointer]:
+          - generic [ref=e3495]: RAPID_5_FOUR_1769899214937
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3496] [cursor=pointer]:
+          - generic [ref=e3497]: STREAM_CONV_C_1769899214932
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3498] [cursor=pointer]:
+          - generic [ref=e3499]: RAPID_5_THREE_1769899214937
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3500] [cursor=pointer]:
+          - generic [ref=e3501]: RAPID_5_TWO_1769899214937
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3502] [cursor=pointer]:
+          - generic [ref=e3503]: STREAM_CONV_B_1769899214932
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3504] [cursor=pointer]:
+          - generic [ref=e3505]: RAPID_SWITCH_B_1769899214460
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3506] [cursor=pointer]:
+          - generic [ref=e3507]: RAPID_5_ONE_1769899214937
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3508] [cursor=pointer]:
+          - generic [ref=e3509]: STREAM_CONV_A_1769899214932
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3510] [cursor=pointer]:
+          - generic [ref=e3511]: RAPID_SWITCH_A_1769899214460
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3512] [cursor=pointer]:
+          - generic [ref=e3513]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3514] [cursor=pointer]:
+          - generic [ref=e3515]: STOP_BTN_A_1769899183694
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3516] [cursor=pointer]:
+          - generic [ref=e3517]: RAPID_5_FIVE_1769899183721
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3518] [cursor=pointer]:
+          - generic [ref=e3519]: RAPID_5_FOUR_1769899183721
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3520] [cursor=pointer]:
+          - generic [ref=e3521]: RAPID_5_THREE_1769899183721
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3522] [cursor=pointer]:
+          - generic [ref=e3523]: ERROR_TEST_B_1769899183707
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3524] [cursor=pointer]:
+          - generic [ref=e3525]: RAPID_SWITCH_B_1769899183706
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3526] [cursor=pointer]:
+          - generic [ref=e3527]: DOUBLE_CLICK_B_1769899183698
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3528] [cursor=pointer]:
+          - generic [ref=e3529]: RAPID_5_TWO_1769899183721
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3530] [cursor=pointer]:
+          - generic [ref=e3531]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3532] [cursor=pointer]:
+          - generic [ref=e3533]: DOUBLE_CLICK_A_1769899183698
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3534] [cursor=pointer]:
+          - generic [ref=e3535]: RAPID_5_ONE_1769899183721
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3536] [cursor=pointer]:
+          - generic [ref=e3537]: ERROR_TEST_A_1769899183707
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3538] [cursor=pointer]:
+          - generic [ref=e3539]: ABORT_STREAM_1769899183594
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3540] [cursor=pointer]:
+          - generic [ref=e3541]: RAPID_SWITCH_A_1769899183706
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3542] [cursor=pointer]:
+          - generic [ref=e3543]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3544] [cursor=pointer]:
+          - generic [ref=e3545]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3546] [cursor=pointer]:
+          - generic [ref=e3547]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3548] [cursor=pointer]:
+          - generic [ref=e3549]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3550] [cursor=pointer]:
+          - generic [ref=e3551]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3552] [cursor=pointer]:
+          - generic [ref=e3553]: Different conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3554] [cursor=pointer]:
+          - generic [ref=e3555]: First message in conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3556] [cursor=pointer]:
+          - generic [ref=e3557]: Different conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3558] [cursor=pointer]:
+          - generic [ref=e3559]: Second conversation WITHOUT thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3560] [cursor=pointer]:
+          - generic [ref=e3561]: Second conversation WITHOUT thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3562] [cursor=pointer]:
+          - generic [ref=e3563]: First message in conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3564] [cursor=pointer]:
+          - generic [ref=e3565]: Different conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3566] [cursor=pointer]:
+          - generic [ref=e3567]: Second conversation WITHOUT thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3568] [cursor=pointer]:
+          - generic [ref=e3569]: First message in conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3570] [cursor=pointer]:
+          - generic [ref=e3571]: First conversation WITH thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3572] [cursor=pointer]:
+          - generic [ref=e3573]: First conversation WITH thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3574] [cursor=pointer]:
+          - generic [ref=e3575]: Third conversation unique message CCC
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3576] [cursor=pointer]:
+          - generic [ref=e3577]: First conversation WITH thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3578] [cursor=pointer]:
+          - generic [ref=e3579]: Third conversation unique message CCC
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3580] [cursor=pointer]:
+          - generic [ref=e3581]: Third conversation unique message CCC
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3582] [cursor=pointer]:
+          - generic [ref=e3583]: Second conversation after reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3584] [cursor=pointer]:
+          - generic [ref=e3585]: Second conversation after reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3586] [cursor=pointer]:
+          - generic [ref=e3587]: Conversation to keep
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3588] [cursor=pointer]:
+          - generic [ref=e3589]: Conversation to keep
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3590] [cursor=pointer]:
+          - generic [ref=e3591]: Conversation to keep
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3592] [cursor=pointer]:
+          - generic [ref=e3593]: Second conversation unique message BBB
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3594] [cursor=pointer]:
+          - generic [ref=e3595]: Second conversation unique message BBB
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3596] [cursor=pointer]:
+          - generic [ref=e3597]: Second conversation unique message BBB
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3598] [cursor=pointer]:
+          - generic [ref=e3599]: Second conversation after reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3600] [cursor=pointer]:
+          - generic [ref=e3601]: Persistence test 1769899150917
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3602] [cursor=pointer]:
+          - generic [ref=e3603]: Persistence test 1769899150860
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3604] [cursor=pointer]:
+          - generic [ref=e3605]: First conversation unique message AAA
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3606] [cursor=pointer]:
+          - generic [ref=e3607]: First conversation unique message AAA
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3608] [cursor=pointer]:
+          - generic [ref=e3609]: Persistence test 1769899150485
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3610] [cursor=pointer]:
+          - generic [ref=e3611]: First conversation unique message AAA
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3612] [cursor=pointer]:
+          - generic [ref=e3613]: Second conversation WITHOUT thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3614] [cursor=pointer]:
+          - generic [ref=e3615]: Different conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3616] [cursor=pointer]:
+          - generic [ref=e3617]: First message in conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3618] [cursor=pointer]:
+          - generic [ref=e3619]: First conversation WITH thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3620] [cursor=pointer]:
+          - generic [ref=e3621]: Third conversation unique message CCC
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3622] [cursor=pointer]:
+          - generic [ref=e3623]: Second conversation unique message BBB
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3624] [cursor=pointer]:
+          - generic [ref=e3625]: Conversation to keep
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3626] [cursor=pointer]:
+          - generic [ref=e3627]: Second conversation after reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3628] [cursor=pointer]:
+          - generic [ref=e3629]: First conversation unique message AAA
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3630] [cursor=pointer]:
+          - generic [ref=e3631]: Persistence test 1769899140990
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3632] [cursor=pointer]:
+          - generic [ref=e3633]: Persistence test 1769899120031
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3634] [cursor=pointer]:
+          - generic [ref=e3635]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3636] [cursor=pointer]:
+          - generic [ref=e3637]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3638] [cursor=pointer]:
+          - generic [ref=e3639]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3640] [cursor=pointer]:
+          - generic [ref=e3641]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3642] [cursor=pointer]:
+          - generic [ref=e3643]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3644] [cursor=pointer]:
+          - generic [ref=e3645]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3646] [cursor=pointer]:
+          - img "Agent" [ref=e3647]
+          - generic [ref=e3648]: Agent conv 2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3649] [cursor=pointer]:
+          - img "Agent" [ref=e3650]
+          - generic [ref=e3651]: Agent unique message XYZ789
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3652] [cursor=pointer]:
+          - img "Agent" [ref=e3653]
+          - generic [ref=e3654]: Agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3655] [cursor=pointer]:
+          - img "Agent" [ref=e3656]
+          - generic [ref=e3657]: Agent conv 1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3658] [cursor=pointer]:
+          - generic [ref=e3659]: Normal conv 2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3660] [cursor=pointer]:
+          - generic [ref=e3661]: Create a file for me
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3662] [cursor=pointer]:
+          - generic [ref=e3663]: Normal message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3664] [cursor=pointer]:
+          - generic [ref=e3665]: Second conversation WITHOUT thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3666] [cursor=pointer]:
+          - generic [ref=e3667]: Initial setup message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3668] [cursor=pointer]:
+          - generic [ref=e3669]: Normal message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3670] [cursor=pointer]:
+          - generic [ref=e3671]: Normal unique message ABC123
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3672] [cursor=pointer]:
+          - generic [ref=e3673]: Normal conv 1
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3674] [cursor=pointer]:
+          - generic [ref=e3675]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3676] [cursor=pointer]:
+          - generic [ref=e3677]: Different conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3678] [cursor=pointer]:
+          - generic [ref=e3679]: First message in conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3680] [cursor=pointer]:
+          - generic [ref=e3681]: Message marker CONV_FIVE_555
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3682] [cursor=pointer]:
+          - generic [ref=e3683]: Message marker CONV_FOUR_444
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3684] [cursor=pointer]:
+          - generic [ref=e3685]: Conversation C marker STREAM_TEST
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3686] [cursor=pointer]:
+          - generic [ref=e3687]: Message marker CONV_THREE_333
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3688] [cursor=pointer]:
+          - generic [ref=e3689]: Second conversation unique marker XYZ789
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3690] [cursor=pointer]:
+          - generic [ref=e3691]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3692] [cursor=pointer]:
+          - generic [ref=e3693]: BETA conversation content 67890
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3694] [cursor=pointer]:
+          - generic [ref=e3695]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3696] [cursor=pointer]:
+          - generic [ref=e3697]: Setup message for conv B
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3698] [cursor=pointer]:
+          - generic [ref=e3699]: First test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3700] [cursor=pointer]:
+          - generic [ref=e3701]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3702] [cursor=pointer]:
+          - generic [ref=e3703]: Second conv for error test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3704] [cursor=pointer]:
+          - generic [ref=e3705]: Another conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3706] [cursor=pointer]:
+          - generic [ref=e3707]: Message marker CONV_TWO_222
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3708] [cursor=pointer]:
+          - generic [ref=e3709]: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3710] [cursor=pointer]:
+          - generic [ref=e3711]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3712] [cursor=pointer]:
+          - generic [ref=e3713]: First conversation unique marker ABC123
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3714] [cursor=pointer]:
+          - generic [ref=e3715]: First conversation WITH thinking
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3716] [cursor=pointer]:
+          - generic [ref=e3717]: ALPHA conversation content 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3718] [cursor=pointer]:
+          - generic [ref=e3719]: Tell me a very long story about streaming data in...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3720] [cursor=pointer]:
+          - generic [ref=e3721]: Setup message for conv A
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3722] [cursor=pointer]:
+          - generic [ref=e3723]: Message marker CONV_ONE_111
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3724] [cursor=pointer]:
+          - generic [ref=e3725]: Double click test message DOUBLE_CLICK_123
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3726] [cursor=pointer]:
+          - generic [ref=e3727]: First conv for error test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3728] [cursor=pointer]:
+          - generic [ref=e3729]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3730] [cursor=pointer]:
+          - generic [ref=e3731]: Conversation to keep
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3732] [cursor=pointer]:
+          - generic [ref=e3733]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3734] [cursor=pointer]:
+          - generic [ref=e3735]: Second conversation after reload
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3736] [cursor=pointer]:
+          - generic [ref=e3737]: Conversation to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3738] [cursor=pointer]:
+          - generic [ref=e3739]: First conversation unique message AAA
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3740] [cursor=pointer]:
+          - generic [ref=e3741]: Persistence test 1769899097773
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3742] [cursor=pointer]:
+          - generic [ref=e3743]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3744] [cursor=pointer]:
+          - generic [ref=e3745]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3746] [cursor=pointer]:
+          - generic [ref=e3747]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3748] [cursor=pointer]:
+          - generic [ref=e3749]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3750] [cursor=pointer]:
+          - generic [ref=e3751]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3752] [cursor=pointer]:
+          - img "Agent" [ref=e3753]
+          - generic [ref=e3754]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3755] [cursor=pointer]:
+          - generic [ref=e3756]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3757] [cursor=pointer]:
+          - generic [ref=e3758]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3759] [cursor=pointer]:
+          - generic [ref=e3760]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3761] [cursor=pointer]:
+          - img "Agent" [ref=e3762]
+          - generic [ref=e3763]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3764] [cursor=pointer]:
+          - img "Agent" [ref=e3765]
+          - generic [ref=e3766]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3767] [cursor=pointer]:
+          - generic [ref=e3768]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3769] [cursor=pointer]:
+          - generic [ref=e3770]: Persistence test 1769899074726
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3771] [cursor=pointer]:
+          - generic [ref=e3772]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3773] [cursor=pointer]:
+          - generic [ref=e3774]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3775] [cursor=pointer]:
+          - generic [ref=e3776]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3777] [cursor=pointer]:
+          - generic [ref=e3778]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3779] [cursor=pointer]:
+          - generic [ref=e3780]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3781] [cursor=pointer]:
+          - generic [ref=e3782]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3783] [cursor=pointer]:
+          - generic [ref=e3784]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3785] [cursor=pointer]:
+          - generic [ref=e3786]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3787] [cursor=pointer]:
+          - generic [ref=e3788]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3789] [cursor=pointer]:
+          - generic [ref=e3790]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3791] [cursor=pointer]:
+          - generic [ref=e3792]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3793] [cursor=pointer]:
+          - generic [ref=e3794]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3795] [cursor=pointer]:
+          - generic [ref=e3796]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3797] [cursor=pointer]:
+          - generic [ref=e3798]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3799] [cursor=pointer]:
+          - generic [ref=e3800]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3801] [cursor=pointer]:
+          - generic [ref=e3802]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3803] [cursor=pointer]:
+          - generic [ref=e3804]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3805] [cursor=pointer]:
+          - generic [ref=e3806]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3807] [cursor=pointer]:
+          - generic [ref=e3808]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3809] [cursor=pointer]:
+          - generic [ref=e3810]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3811] [cursor=pointer]:
+          - generic [ref=e3812]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3813] [cursor=pointer]:
+          - generic [ref=e3814]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3815] [cursor=pointer]:
+          - generic [ref=e3816]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3817] [cursor=pointer]:
+          - generic [ref=e3818]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3819] [cursor=pointer]:
+          - generic [ref=e3820]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3821] [cursor=pointer]:
+          - generic [ref=e3822]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3823] [cursor=pointer]:
+          - generic [ref=e3824]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3825] [cursor=pointer]:
+          - generic [ref=e3826]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3827] [cursor=pointer]:
+          - generic [ref=e3828]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3829] [cursor=pointer]:
+          - generic [ref=e3830]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3831] [cursor=pointer]:
+          - generic [ref=e3832]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3833] [cursor=pointer]:
+          - generic [ref=e3834]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3835] [cursor=pointer]:
+          - generic [ref=e3836]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3837] [cursor=pointer]:
+          - generic [ref=e3838]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3839] [cursor=pointer]:
+          - img "Agent" [ref=e3840]
+          - generic [ref=e3841]: hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3842] [cursor=pointer]:
+          - generic [ref=e3843]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3844] [cursor=pointer]:
+          - generic [ref=e3845]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3846] [cursor=pointer]:
+          - generic [ref=e3847]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3848] [cursor=pointer]:
+          - generic [ref=e3849]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3850] [cursor=pointer]:
+          - generic [ref=e3851]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3852] [cursor=pointer]:
+          - generic [ref=e3853]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3854] [cursor=pointer]:
+          - generic [ref=e3855]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3856] [cursor=pointer]:
+          - generic [ref=e3857]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3858] [cursor=pointer]:
+          - generic [ref=e3859]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3860] [cursor=pointer]:
+          - generic [ref=e3861]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3862] [cursor=pointer]:
+          - generic [ref=e3863]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3864] [cursor=pointer]:
+          - generic [ref=e3865]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3866] [cursor=pointer]:
+          - generic [ref=e3867]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3868] [cursor=pointer]:
+          - generic [ref=e3869]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3870] [cursor=pointer]:
+          - generic [ref=e3871]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3872] [cursor=pointer]:
+          - generic [ref=e3873]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3874] [cursor=pointer]:
+          - generic [ref=e3875]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3876] [cursor=pointer]:
+          - generic [ref=e3877]: Second chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3878] [cursor=pointer]:
+          - generic [ref=e3879]: E2E thinking test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3880] [cursor=pointer]:
+          - generic [ref=e3881]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3882] [cursor=pointer]:
+          - generic [ref=e3883]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3884] [cursor=pointer]:
+          - generic [ref=e3885]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3886] [cursor=pointer]:
+          - generic [ref=e3887]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3888] [cursor=pointer]:
+          - generic [ref=e3889]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3890] [cursor=pointer]:
+          - generic [ref=e3891]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3892] [cursor=pointer]:
+          - generic [ref=e3893]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3894] [cursor=pointer]:
+          - generic [ref=e3895]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3896] [cursor=pointer]:
+          - generic [ref=e3897]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3898] [cursor=pointer]:
+          - generic [ref=e3899]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3900] [cursor=pointer]:
+          - generic [ref=e3901]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3902] [cursor=pointer]:
+          - generic [ref=e3903]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3904] [cursor=pointer]:
+          - generic [ref=e3905]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3906] [cursor=pointer]:
+          - generic [ref=e3907]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3908] [cursor=pointer]:
+          - generic [ref=e3909]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3910] [cursor=pointer]:
+          - generic [ref=e3911]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3912] [cursor=pointer]:
+          - generic [ref=e3913]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3914] [cursor=pointer]:
+          - generic [ref=e3915]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3916] [cursor=pointer]:
+          - generic [ref=e3917]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3918] [cursor=pointer]:
+          - generic [ref=e3919]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3920] [cursor=pointer]:
+          - generic [ref=e3921]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3922] [cursor=pointer]:
+          - generic [ref=e3923]: Persistence test 1769898712880
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3924] [cursor=pointer]:
+          - generic [ref=e3925]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3926] [cursor=pointer]:
+          - generic [ref=e3927]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3928] [cursor=pointer]:
+          - generic [ref=e3929]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3930] [cursor=pointer]:
+          - generic [ref=e3931]: Different message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3932] [cursor=pointer]:
+          - generic [ref=e3933]: Unique message 12345
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3934] [cursor=pointer]:
+          - generic [ref=e3935]: Second conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3936] [cursor=pointer]:
+          - generic [ref=e3937]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3938] [cursor=pointer]:
+          - generic [ref=e3939]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3940] [cursor=pointer]:
+          - generic [ref=e3941]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3942] [cursor=pointer]:
+          - generic [ref=e3943]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3944] [cursor=pointer]:
+          - generic [ref=e3945]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3946] [cursor=pointer]:
+          - generic [ref=e3947]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3948] [cursor=pointer]:
+          - generic [ref=e3949]: Tell me a long story
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3950] [cursor=pointer]:
+          - generic [ref=e3951]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3952] [cursor=pointer]:
+          - generic [ref=e3953]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3954] [cursor=pointer]:
+          - generic [ref=e3955]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3956] [cursor=pointer]:
+          - generic [ref=e3957]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3958] [cursor=pointer]:
+          - generic [ref=e3959]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3960] [cursor=pointer]:
+          - generic [ref=e3961]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3962] [cursor=pointer]:
+          - generic [ref=e3963]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3964] [cursor=pointer]:
+          - generic [ref=e3965]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3966] [cursor=pointer]:
+          - generic [ref=e3967]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3968] [cursor=pointer]:
+          - generic [ref=e3969]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3970] [cursor=pointer]:
+          - generic [ref=e3971]: This is my test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3972] [cursor=pointer]:
+          - generic [ref=e3973]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3974] [cursor=pointer]:
+          - generic [ref=e3975]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3976] [cursor=pointer]:
+          - generic [ref=e3977]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3978] [cursor=pointer]:
+          - generic [ref=e3979]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3980] [cursor=pointer]:
+          - img "Agent" [ref=e3981]
+          - generic [ref=e3982]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3983] [cursor=pointer]:
+          - img "Agent" [ref=e3984]
+          - generic [ref=e3985]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3986] [cursor=pointer]:
+          - generic [ref=e3987]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3988] [cursor=pointer]:
+          - generic [ref=e3989]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3990] [cursor=pointer]:
+          - generic [ref=e3991]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3992] [cursor=pointer]:
+          - generic [ref=e3993]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3994] [cursor=pointer]:
+          - generic [ref=e3995]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3996] [cursor=pointer]:
+          - generic [ref=e3997]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e3998] [cursor=pointer]:
+          - generic [ref=e3999]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4000] [cursor=pointer]:
+          - img "Agent" [ref=e4001]
+          - generic [ref=e4002]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4003] [cursor=pointer]:
+          - generic [ref=e4004]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4005] [cursor=pointer]:
+          - generic [ref=e4006]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4007] [cursor=pointer]:
+          - generic [ref=e4008]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4009] [cursor=pointer]:
+          - generic [ref=e4010]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4011] [cursor=pointer]:
+          - generic [ref=e4012]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4013] [cursor=pointer]:
+          - generic [ref=e4014]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4015] [cursor=pointer]:
+          - generic [ref=e4016]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4017] [cursor=pointer]:
+          - generic [ref=e4018]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4019] [cursor=pointer]:
+          - generic [ref=e4020]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4021] [cursor=pointer]:
+          - generic [ref=e4022]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4023] [cursor=pointer]:
+          - generic [ref=e4024]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4025] [cursor=pointer]:
+          - generic [ref=e4026]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4027] [cursor=pointer]:
+          - generic [ref=e4028]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4029] [cursor=pointer]:
+          - generic [ref=e4030]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4031] [cursor=pointer]:
+          - generic [ref=e4032]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4033] [cursor=pointer]:
+          - generic [ref=e4034]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4035] [cursor=pointer]:
+          - generic [ref=e4036]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4037] [cursor=pointer]:
+          - generic [ref=e4038]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4039] [cursor=pointer]:
+          - generic [ref=e4040]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4041] [cursor=pointer]:
+          - generic [ref=e4042]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4043] [cursor=pointer]:
+          - generic [ref=e4044]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4045] [cursor=pointer]:
+          - generic [ref=e4046]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4047] [cursor=pointer]:
+          - generic [ref=e4048]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4049] [cursor=pointer]:
+          - generic [ref=e4050]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4051] [cursor=pointer]:
+          - img "Agent" [ref=e4052]
+          - generic [ref=e4053]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4054] [cursor=pointer]:
+          - img "Agent" [ref=e4055]
+          - generic [ref=e4056]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4057] [cursor=pointer]:
+          - generic [ref=e4058]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4059] [cursor=pointer]:
+          - generic [ref=e4060]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4061] [cursor=pointer]:
+          - generic [ref=e4062]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4063] [cursor=pointer]:
+          - generic [ref=e4064]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4065] [cursor=pointer]:
+          - generic [ref=e4066]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4067] [cursor=pointer]:
+          - generic [ref=e4068]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4069] [cursor=pointer]:
+          - img "Agent" [ref=e4070]
+          - generic [ref=e4071]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4072] [cursor=pointer]:
+          - generic [ref=e4073]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4074] [cursor=pointer]:
+          - generic [ref=e4075]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4076] [cursor=pointer]:
+          - generic [ref=e4077]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4078] [cursor=pointer]:
+          - generic [ref=e4079]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4080] [cursor=pointer]:
+          - generic [ref=e4081]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4082] [cursor=pointer]:
+          - generic [ref=e4083]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4084] [cursor=pointer]:
+          - generic [ref=e4085]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4086] [cursor=pointer]:
+          - generic [ref=e4087]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4088] [cursor=pointer]:
+          - generic [ref=e4089]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4090] [cursor=pointer]:
+          - img "Agent" [ref=e4091]
+          - generic [ref=e4092]: Agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4093] [cursor=pointer]:
+          - generic [ref=e4094]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4095] [cursor=pointer]:
+          - generic [ref=e4096]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4097] [cursor=pointer]:
+          - generic [ref=e4098]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4099] [cursor=pointer]:
+          - generic [ref=e4100]: Normal chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4101] [cursor=pointer]:
+          - generic [ref=e4102]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4103] [cursor=pointer]:
+          - generic [ref=e4104]: Tell me a long story
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4105] [cursor=pointer]:
+          - generic [ref=e4106]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4107] [cursor=pointer]:
+          - generic [ref=e4108]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4109] [cursor=pointer]:
+          - generic [ref=e4110]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4111] [cursor=pointer]:
+          - generic [ref=e4112]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4113] [cursor=pointer]:
+          - img "Agent" [ref=e4114]
+          - generic [ref=e4115]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4116] [cursor=pointer]:
+          - img "Agent" [ref=e4117]
+          - generic [ref=e4118]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4119] [cursor=pointer]:
+          - generic [ref=e4120]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4121] [cursor=pointer]:
+          - generic [ref=e4122]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4123] [cursor=pointer]:
+          - generic [ref=e4124]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4125] [cursor=pointer]:
+          - generic [ref=e4126]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4127] [cursor=pointer]:
+          - generic [ref=e4128]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4129] [cursor=pointer]:
+          - img "Agent" [ref=e4130]
+          - generic [ref=e4131]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4132] [cursor=pointer]:
+          - generic [ref=e4133]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4134] [cursor=pointer]:
+          - generic [ref=e4135]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4136] [cursor=pointer]:
+          - generic [ref=e4137]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4138] [cursor=pointer]:
+          - generic [ref=e4139]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4140] [cursor=pointer]:
+          - generic [ref=e4141]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4142] [cursor=pointer]:
+          - generic [ref=e4143]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4144] [cursor=pointer]:
+          - generic [ref=e4145]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4146] [cursor=pointer]:
+          - generic [ref=e4147]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4148] [cursor=pointer]:
+          - generic [ref=e4149]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4150] [cursor=pointer]:
+          - generic [ref=e4151]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4152] [cursor=pointer]:
+          - img "Agent" [ref=e4153]
+          - generic [ref=e4154]: Agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4155] [cursor=pointer]:
+          - generic [ref=e4156]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4157] [cursor=pointer]:
+          - generic [ref=e4158]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4159] [cursor=pointer]:
+          - generic [ref=e4160]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4161] [cursor=pointer]:
+          - generic [ref=e4162]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4163] [cursor=pointer]:
+          - generic [ref=e4164]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4165] [cursor=pointer]:
+          - generic [ref=e4166]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4167] [cursor=pointer]:
+          - generic [ref=e4168]: Normal chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4169] [cursor=pointer]:
+          - generic [ref=e4170]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4171] [cursor=pointer]:
+          - generic [ref=e4172]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4173] [cursor=pointer]:
+          - generic [ref=e4174]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4175] [cursor=pointer]:
+          - generic [ref=e4176]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4177] [cursor=pointer]:
+          - generic [ref=e4178]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4179] [cursor=pointer]:
+          - generic [ref=e4180]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4181] [cursor=pointer]:
+          - generic [ref=e4182]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4183] [cursor=pointer]:
+          - generic [ref=e4184]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4185] [cursor=pointer]:
+          - generic [ref=e4186]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4187] [cursor=pointer]:
+          - generic [ref=e4188]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4189] [cursor=pointer]:
+          - img "Agent" [ref=e4190]
+          - generic [ref=e4191]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4192] [cursor=pointer]:
+          - img "Agent" [ref=e4193]
+          - generic [ref=e4194]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4195] [cursor=pointer]:
+          - generic [ref=e4196]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4197] [cursor=pointer]:
+          - generic [ref=e4198]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4199] [cursor=pointer]:
+          - generic [ref=e4200]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4201] [cursor=pointer]:
+          - generic [ref=e4202]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4203] [cursor=pointer]:
+          - generic [ref=e4204]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4205] [cursor=pointer]:
+          - generic [ref=e4206]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4207] [cursor=pointer]:
+          - img "Agent" [ref=e4208]
+          - generic [ref=e4209]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4210] [cursor=pointer]:
+          - generic [ref=e4211]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4212] [cursor=pointer]:
+          - generic [ref=e4213]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4214] [cursor=pointer]:
+          - generic [ref=e4215]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4216] [cursor=pointer]:
+          - generic [ref=e4217]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4218] [cursor=pointer]:
+          - generic [ref=e4219]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4220] [cursor=pointer]:
+          - generic [ref=e4221]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4222] [cursor=pointer]:
+          - generic [ref=e4223]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4224] [cursor=pointer]:
+          - generic [ref=e4225]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4226] [cursor=pointer]:
+          - generic [ref=e4227]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4228] [cursor=pointer]:
+          - img "Agent" [ref=e4229]
+          - generic [ref=e4230]: Agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4231] [cursor=pointer]:
+          - generic [ref=e4232]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4233] [cursor=pointer]:
+          - generic [ref=e4234]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4235] [cursor=pointer]:
+          - generic [ref=e4236]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4237] [cursor=pointer]:
+          - generic [ref=e4238]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4239] [cursor=pointer]:
+          - generic [ref=e4240]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4241] [cursor=pointer]:
+          - generic [ref=e4242]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4243] [cursor=pointer]:
+          - generic [ref=e4244]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4245] [cursor=pointer]:
+          - generic [ref=e4246]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4247] [cursor=pointer]:
+          - generic [ref=e4248]: Normal chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4249] [cursor=pointer]:
+          - generic [ref=e4250]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4251] [cursor=pointer]:
+          - generic [ref=e4252]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4253] [cursor=pointer]:
+          - generic [ref=e4254]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4255] [cursor=pointer]:
+          - generic [ref=e4256]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4257] [cursor=pointer]:
+          - generic [ref=e4258]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4259] [cursor=pointer]:
+          - generic [ref=e4260]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4261] [cursor=pointer]:
+          - img "Agent" [ref=e4262]
+          - generic [ref=e4263]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4264] [cursor=pointer]:
+          - img "Agent" [ref=e4265]
+          - generic [ref=e4266]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4267] [cursor=pointer]:
+          - generic [ref=e4268]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4269] [cursor=pointer]:
+          - generic [ref=e4270]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4271] [cursor=pointer]:
+          - generic [ref=e4272]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4273] [cursor=pointer]:
+          - generic [ref=e4274]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4275] [cursor=pointer]:
+          - generic [ref=e4276]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4277] [cursor=pointer]:
+          - generic [ref=e4278]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4279] [cursor=pointer]:
+          - img "Agent" [ref=e4280]
+          - generic [ref=e4281]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4282] [cursor=pointer]:
+          - generic [ref=e4283]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4284] [cursor=pointer]:
+          - generic [ref=e4285]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4286] [cursor=pointer]:
+          - generic [ref=e4287]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4288] [cursor=pointer]:
+          - generic [ref=e4289]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4290] [cursor=pointer]:
+          - generic [ref=e4291]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4292] [cursor=pointer]:
+          - generic [ref=e4293]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4294] [cursor=pointer]:
+          - generic [ref=e4295]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4296] [cursor=pointer]:
+          - generic [ref=e4297]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4298] [cursor=pointer]:
+          - generic [ref=e4299]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4300] [cursor=pointer]:
+          - generic [ref=e4301]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4302] [cursor=pointer]:
+          - img "Agent" [ref=e4303]
+          - generic [ref=e4304]: Agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4305] [cursor=pointer]:
+          - generic [ref=e4306]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4307] [cursor=pointer]:
+          - generic [ref=e4308]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4309] [cursor=pointer]:
+          - generic [ref=e4310]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4311] [cursor=pointer]:
+          - generic [ref=e4312]: Normal chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4313] [cursor=pointer]:
+          - generic [ref=e4314]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4315] [cursor=pointer]:
+          - img "Agent" [ref=e4316]
+          - generic [ref=e4317]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4318] [cursor=pointer]:
+          - generic [ref=e4319]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4320] [cursor=pointer]:
+          - generic [ref=e4321]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4322] [cursor=pointer]:
+          - generic [ref=e4323]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4324] [cursor=pointer]:
+          - generic [ref=e4325]: This is my test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4326] [cursor=pointer]:
+          - generic [ref=e4327]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4328] [cursor=pointer]:
+          - img "Agent" [ref=e4329]
+          - generic [ref=e4330]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4331] [cursor=pointer]:
+          - img "Agent" [ref=e4332]
+          - generic [ref=e4333]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4334] [cursor=pointer]:
+          - generic [ref=e4335]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4336] [cursor=pointer]:
+          - img "Agent" [ref=e4337]
+          - generic [ref=e4338]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4339] [cursor=pointer]:
+          - generic [ref=e4340]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4341] [cursor=pointer]:
+          - generic [ref=e4342]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4343] [cursor=pointer]:
+          - generic [ref=e4344]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4345] [cursor=pointer]:
+          - generic [ref=e4346]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4347] [cursor=pointer]:
+          - generic [ref=e4348]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4349] [cursor=pointer]:
+          - generic [ref=e4350]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4351] [cursor=pointer]:
+          - generic [ref=e4352]: Second conversation test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4353] [cursor=pointer]:
+          - generic [ref=e4354]: Test thinking content
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4355] [cursor=pointer]:
+          - generic [ref=e4356]: Test thinking persistence across conversations
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4357] [cursor=pointer]:
+          - generic [ref=e4358]: Test thinking order
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4359] [cursor=pointer]:
+          - generic [ref=e4360]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4361] [cursor=pointer]:
+          - generic [ref=e4362]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4363] [cursor=pointer]:
+          - generic [ref=e4364]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4365] [cursor=pointer]:
+          - img "Agent" [ref=e4366]
+          - generic [ref=e4367]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4368] [cursor=pointer]:
+          - img "Agent" [ref=e4369]
+          - generic [ref=e4370]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4371] [cursor=pointer]:
+          - generic [ref=e4372]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4373] [cursor=pointer]:
+          - img "Agent" [ref=e4374]
+          - generic [ref=e4375]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4376] [cursor=pointer]:
+          - generic [ref=e4377]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4378] [cursor=pointer]:
+          - generic [ref=e4379]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4380] [cursor=pointer]:
+          - generic [ref=e4381]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4382] [cursor=pointer]:
+          - generic [ref=e4383]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4384] [cursor=pointer]:
+          - generic [ref=e4385]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4386] [cursor=pointer]:
+          - generic [ref=e4387]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4388] [cursor=pointer]:
+          - generic [ref=e4389]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4390] [cursor=pointer]:
+          - generic [ref=e4391]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4392] [cursor=pointer]:
+          - generic [ref=e4393]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4394] [cursor=pointer]:
+          - generic [ref=e4395]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4396] [cursor=pointer]:
+          - generic [ref=e4397]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4398] [cursor=pointer]:
+          - img "Agent" [ref=e4399]
+          - generic [ref=e4400]: Agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4401] [cursor=pointer]:
+          - generic [ref=e4402]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4403] [cursor=pointer]:
+          - generic [ref=e4404]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4405] [cursor=pointer]:
+          - generic [ref=e4406]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4407] [cursor=pointer]:
+          - generic [ref=e4408]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4409] [cursor=pointer]:
+          - generic [ref=e4410]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4411] [cursor=pointer]:
+          - generic [ref=e4412]: Normal chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4413] [cursor=pointer]:
+          - generic [ref=e4414]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4415] [cursor=pointer]:
+          - generic [ref=e4416]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4417] [cursor=pointer]:
+          - img "Agent" [ref=e4418]
+          - generic [ref=e4419]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4420] [cursor=pointer]:
+          - generic [ref=e4421]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4422] [cursor=pointer]:
+          - generic [ref=e4423]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4424] [cursor=pointer]:
+          - generic [ref=e4425]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4426] [cursor=pointer]:
+          - generic [ref=e4427]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4428] [cursor=pointer]:
+          - generic [ref=e4429]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4430] [cursor=pointer]:
+          - generic [ref=e4431]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4432] [cursor=pointer]:
+          - img "Agent" [ref=e4433]
+          - generic [ref=e4434]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4435] [cursor=pointer]:
+          - img "Agent" [ref=e4436]
+          - generic [ref=e4437]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4438] [cursor=pointer]:
+          - generic [ref=e4439]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4440] [cursor=pointer]:
+          - generic [ref=e4441]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4442] [cursor=pointer]:
+          - generic [ref=e4443]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4444] [cursor=pointer]:
+          - img "Agent" [ref=e4445]
+          - generic [ref=e4446]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4447] [cursor=pointer]:
+          - generic [ref=e4448]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4449] [cursor=pointer]:
+          - generic [ref=e4450]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4451] [cursor=pointer]:
+          - generic [ref=e4452]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4453] [cursor=pointer]:
+          - generic [ref=e4454]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4455] [cursor=pointer]:
+          - generic [ref=e4456]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4457] [cursor=pointer]:
+          - generic [ref=e4458]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4459] [cursor=pointer]:
+          - generic [ref=e4460]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4461] [cursor=pointer]:
+          - generic [ref=e4462]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4463] [cursor=pointer]:
+          - generic [ref=e4464]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4465] [cursor=pointer]:
+          - generic [ref=e4466]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4467] [cursor=pointer]:
+          - generic [ref=e4468]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4469] [cursor=pointer]:
+          - generic [ref=e4470]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4471] [cursor=pointer]:
+          - generic [ref=e4472]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4473] [cursor=pointer]:
+          - generic [ref=e4474]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4475] [cursor=pointer]:
+          - generic [ref=e4476]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4477] [cursor=pointer]:
+          - generic [ref=e4478]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4479] [cursor=pointer]:
+          - img "Agent" [ref=e4480]
+          - generic [ref=e4481]: Agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4482] [cursor=pointer]:
+          - generic [ref=e4483]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4484] [cursor=pointer]:
+          - generic [ref=e4485]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4486] [cursor=pointer]:
+          - generic [ref=e4487]: Normal chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4488] [cursor=pointer]:
+          - generic [ref=e4489]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4490] [cursor=pointer]:
+          - generic [ref=e4491]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4492] [cursor=pointer]:
+          - generic [ref=e4493]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4494] [cursor=pointer]:
+          - generic [ref=e4495]: Searchable test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4496] [cursor=pointer]:
+          - generic [ref=e4497]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4498] [cursor=pointer]:
+          - generic [ref=e4499]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4500] [cursor=pointer]:
+          - generic [ref=e4501]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4502] [cursor=pointer]:
+          - generic [ref=e4503]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4504] [cursor=pointer]:
+          - generic [ref=e4505]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4506] [cursor=pointer]:
+          - img "Agent" [ref=e4507]
+          - generic [ref=e4508]: look up recent 2025 movies that i'd be interested...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4509] [cursor=pointer]:
+          - generic [ref=e4510]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4511] [cursor=pointer]:
+          - generic [ref=e4512]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4513] [cursor=pointer]:
+          - generic [ref=e4514]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4515] [cursor=pointer]:
+          - generic [ref=e4516]: This is my test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4517] [cursor=pointer]:
+          - generic [ref=e4518]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4519] [cursor=pointer]:
+          - generic [ref=e4520]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4521] [cursor=pointer]:
+          - generic [ref=e4522]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4523] [cursor=pointer]:
+          - generic [ref=e4524]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4525] [cursor=pointer]:
+          - generic [ref=e4526]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4527] [cursor=pointer]:
+          - generic [ref=e4528]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4529] [cursor=pointer]:
+          - generic [ref=e4530]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4531] [cursor=pointer]:
+          - generic [ref=e4532]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4533] [cursor=pointer]:
+          - img "Agent" [ref=e4534]
+          - generic [ref=e4535]: look up recent 2025 movies that i'd be interested...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4536] [cursor=pointer]:
+          - img "Agent" [ref=e4537]
+          - generic [ref=e4538]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4539] [cursor=pointer]:
+          - generic [ref=e4540]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4541] [cursor=pointer]:
+          - img "Agent" [ref=e4542]
+          - generic [ref=e4543]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4544] [cursor=pointer]:
+          - img "Agent" [ref=e4545]
+          - generic [ref=e4546]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4547] [cursor=pointer]:
+          - generic [ref=e4548]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4549] [cursor=pointer]:
+          - generic [ref=e4550]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4551] [cursor=pointer]:
+          - generic [ref=e4552]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4553] [cursor=pointer]:
+          - img "Agent" [ref=e4554]
+          - generic [ref=e4555]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4556] [cursor=pointer]:
+          - generic [ref=e4557]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4558] [cursor=pointer]:
+          - generic [ref=e4559]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4560] [cursor=pointer]:
+          - generic [ref=e4561]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4562] [cursor=pointer]:
+          - generic [ref=e4563]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4564] [cursor=pointer]:
+          - generic [ref=e4565]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4566] [cursor=pointer]:
+          - generic [ref=e4567]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4568] [cursor=pointer]:
+          - generic [ref=e4569]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4570] [cursor=pointer]:
+          - generic [ref=e4571]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4572] [cursor=pointer]:
+          - generic [ref=e4573]: First version
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4574] [cursor=pointer]:
+          - generic [ref=e4575]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4576] [cursor=pointer]:
+          - generic [ref=e4577]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4578] [cursor=pointer]:
+          - generic [ref=e4579]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4580] [cursor=pointer]:
+          - generic [ref=e4581]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4582] [cursor=pointer]:
+          - generic [ref=e4583]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4584] [cursor=pointer]:
+          - generic [ref=e4585]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4586] [cursor=pointer]:
+          - generic [ref=e4587]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4588] [cursor=pointer]:
+          - generic [ref=e4589]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4590] [cursor=pointer]:
+          - generic [ref=e4591]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4592] [cursor=pointer]:
+          - generic [ref=e4593]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4594] [cursor=pointer]:
+          - img "Agent" [ref=e4595]
+          - generic [ref=e4596]: Agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4597] [cursor=pointer]:
+          - generic [ref=e4598]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4599] [cursor=pointer]:
+          - generic [ref=e4600]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4601] [cursor=pointer]:
+          - generic [ref=e4602]: Normal chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4603] [cursor=pointer]:
+          - generic [ref=e4604]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4605] [cursor=pointer]:
+          - img "Agent" [ref=e4606]
+          - generic [ref=e4607]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4608] [cursor=pointer]:
+          - generic [ref=e4609]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4610] [cursor=pointer]:
+          - generic [ref=e4611]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4612] [cursor=pointer]:
+          - generic [ref=e4613]: Tell me a long story
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4614] [cursor=pointer]:
+          - generic [ref=e4615]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4616] [cursor=pointer]:
+          - generic [ref=e4617]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4618] [cursor=pointer]:
+          - generic [ref=e4619]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4620] [cursor=pointer]:
+          - generic [ref=e4621]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4622] [cursor=pointer]:
+          - generic [ref=e4623]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4624] [cursor=pointer]:
+          - generic [ref=e4625]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4626] [cursor=pointer]:
+          - generic [ref=e4627]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4628] [cursor=pointer]:
+          - generic [ref=e4629]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4630] [cursor=pointer]:
+          - img "Agent" [ref=e4631]
+          - generic [ref=e4632]: look up how the claude agent sdk api works, and le...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4633] [cursor=pointer]:
+          - generic [ref=e4634]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4635] [cursor=pointer]:
+          - img "Agent" [ref=e4636]
+          - generic [ref=e4637]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4638] [cursor=pointer]:
+          - img "Agent" [ref=e4639]
+          - generic [ref=e4640]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4641] [cursor=pointer]:
+          - generic [ref=e4642]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4643] [cursor=pointer]:
+          - generic [ref=e4644]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4645] [cursor=pointer]:
+          - img "Agent" [ref=e4646]
+          - generic [ref=e4647]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4648] [cursor=pointer]:
+          - generic [ref=e4649]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4650] [cursor=pointer]:
+          - generic [ref=e4651]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4652] [cursor=pointer]:
+          - generic [ref=e4653]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4654] [cursor=pointer]:
+          - img "Agent" [ref=e4655]
+          - generic [ref=e4656]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4657] [cursor=pointer]:
+          - generic [ref=e4658]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4659] [cursor=pointer]:
+          - generic [ref=e4660]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4661] [cursor=pointer]:
+          - img "Agent" [ref=e4662]
+          - generic [ref=e4663]: look up how the claude agent sdk api works, and le...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4664] [cursor=pointer]:
+          - generic [ref=e4665]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4666] [cursor=pointer]:
+          - img "Agent" [ref=e4667]
+          - generic [ref=e4668]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4669] [cursor=pointer]:
+          - img "Agent" [ref=e4670]
+          - generic [ref=e4671]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4672] [cursor=pointer]:
+          - generic [ref=e4673]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4674] [cursor=pointer]:
+          - generic [ref=e4675]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4676] [cursor=pointer]:
+          - img "Agent" [ref=e4677]
+          - generic [ref=e4678]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4679] [cursor=pointer]:
+          - generic [ref=e4680]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4681] [cursor=pointer]:
+          - img "Agent" [ref=e4682]
+          - generic [ref=e4683]: look up how the claude agent sdk api works, and le...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4684] [cursor=pointer]:
+          - img "Agent" [ref=e4685]
+          - generic [ref=e4686]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4687] [cursor=pointer]:
+          - img "Agent" [ref=e4688]
+          - generic [ref=e4689]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4690] [cursor=pointer]:
+          - generic [ref=e4691]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4692] [cursor=pointer]:
+          - generic [ref=e4693]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4694] [cursor=pointer]:
+          - img "Agent" [ref=e4695]
+          - generic [ref=e4696]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4697] [cursor=pointer]:
+          - generic [ref=e4698]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4699] [cursor=pointer]:
+          - generic [ref=e4700]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4701] [cursor=pointer]:
+          - img "Agent" [ref=e4702]
+          - generic [ref=e4703]: look up how the claude agent sdk api works, and le...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4704] [cursor=pointer]:
+          - generic [ref=e4705]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4706] [cursor=pointer]:
+          - img "Agent" [ref=e4707]
+          - generic [ref=e4708]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4709] [cursor=pointer]:
+          - img "Agent" [ref=e4710]
+          - generic [ref=e4711]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4712] [cursor=pointer]:
+          - generic [ref=e4713]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4714] [cursor=pointer]:
+          - generic [ref=e4715]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4716] [cursor=pointer]:
+          - generic [ref=e4717]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4718] [cursor=pointer]:
+          - img "Agent" [ref=e4719]
+          - generic [ref=e4720]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4721] [cursor=pointer]:
+          - generic [ref=e4722]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4723] [cursor=pointer]:
+          - generic [ref=e4724]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4725] [cursor=pointer]:
+          - generic [ref=e4726]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4727] [cursor=pointer]:
+          - generic [ref=e4728]: Test thinking persistence
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4729] [cursor=pointer]:
+          - generic [ref=e4730]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4731] [cursor=pointer]:
+          - img "Agent" [ref=e4732]
+          - generic [ref=e4733]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4734] [cursor=pointer]:
+          - generic [ref=e4735]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4736] [cursor=pointer]:
+          - generic [ref=e4737]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4738] [cursor=pointer]:
+          - img "Agent" [ref=e4739]
+          - generic [ref=e4740]: look up how the claude agent sdk api works, and le...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4741] [cursor=pointer]:
+          - img "Agent" [ref=e4742]
+          - generic [ref=e4743]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4744] [cursor=pointer]:
+          - generic [ref=e4745]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4746] [cursor=pointer]:
+          - img "Agent" [ref=e4747]
+          - generic [ref=e4748]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4749] [cursor=pointer]:
+          - img "Agent" [ref=e4750]
+          - generic [ref=e4751]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4752] [cursor=pointer]:
+          - generic [ref=e4753]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4754] [cursor=pointer]:
+          - generic [ref=e4755]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4756] [cursor=pointer]:
+          - img "Agent" [ref=e4757]
+          - generic [ref=e4758]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4759] [cursor=pointer]:
+          - generic [ref=e4760]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4761] [cursor=pointer]:
+          - generic [ref=e4762]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4763] [cursor=pointer]:
+          - generic [ref=e4764]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4765] [cursor=pointer]:
+          - generic [ref=e4766]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4767] [cursor=pointer]:
+          - generic [ref=e4768]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4769] [cursor=pointer]:
+          - generic [ref=e4770]: Hello, this is a test message to show the user mes...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4771] [cursor=pointer]:
+          - generic [ref=e4772]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4773] [cursor=pointer]:
+          - generic [ref=e4774]: whats up
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4775] [cursor=pointer]:
+          - generic [ref=e4776]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4777] [cursor=pointer]:
+          - generic [ref=e4778]: hey
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4779] [cursor=pointer]:
+          - img "Agent" [ref=e4780]
+          - generic [ref=e4781]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4782] [cursor=pointer]:
+          - img "Agent" [ref=e4783]
+          - generic [ref=e4784]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4785] [cursor=pointer]:
+          - generic [ref=e4786]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4787] [cursor=pointer]:
+          - img "Agent" [ref=e4788]
+          - generic [ref=e4789]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4790] [cursor=pointer]:
+          - generic [ref=e4791]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4792] [cursor=pointer]:
+          - generic [ref=e4793]: "❓ Help: How to Use This App"
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4794] [cursor=pointer]:
+          - generic [ref=e4795]: hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4796] [cursor=pointer]:
+          - img "Agent" [ref=e4797]
+          - generic [ref=e4798]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4799] [cursor=pointer]:
+          - generic [ref=e4800]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4801] [cursor=pointer]:
+          - generic [ref=e4802]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4803] [cursor=pointer]:
+          - img "Agent" [ref=e4804]
+          - generic [ref=e4805]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4806] [cursor=pointer]:
+          - img "Agent" [ref=e4807]
+          - generic [ref=e4808]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4809] [cursor=pointer]:
+          - img "Agent" [ref=e4810]
+          - generic [ref=e4811]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4812] [cursor=pointer]:
+          - img "Agent" [ref=e4813]
+          - generic [ref=e4814]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4815] [cursor=pointer]:
+          - img "Agent" [ref=e4816]
+          - generic [ref=e4817]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4818] [cursor=pointer]:
+          - img "Agent" [ref=e4819]
+          - generic [ref=e4820]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4821] [cursor=pointer]:
+          - img "Agent" [ref=e4822]
+          - generic [ref=e4823]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4824] [cursor=pointer]:
+          - img "Agent" [ref=e4825]
+          - generic [ref=e4826]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4827] [cursor=pointer]:
+          - img "Agent" [ref=e4828]
+          - generic [ref=e4829]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4830] [cursor=pointer]:
+          - img "Agent" [ref=e4831]
+          - generic [ref=e4832]: Test tool blocks
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4833] [cursor=pointer]:
+          - img "Agent" [ref=e4834]
+          - generic [ref=e4835]: Test collapse
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4836] [cursor=pointer]:
+          - img "Agent" [ref=e4837]
+          - generic [ref=e4838]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4839] [cursor=pointer]:
+          - generic [ref=e4840]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4841] [cursor=pointer]:
+          - generic [ref=e4842]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4843] [cursor=pointer]:
+          - generic [ref=e4844]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4845] [cursor=pointer]:
+          - generic [ref=e4846]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4847] [cursor=pointer]:
+          - generic [ref=e4848]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4849] [cursor=pointer]:
+          - img "Agent" [ref=e4850]
+          - generic [ref=e4851]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4852] [cursor=pointer]:
+          - generic [ref=e4853]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4854] [cursor=pointer]:
+          - generic [ref=e4855]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4856] [cursor=pointer]:
+          - generic [ref=e4857]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4858] [cursor=pointer]:
+          - generic [ref=e4859]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4860] [cursor=pointer]:
+          - generic [ref=e4861]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4862] [cursor=pointer]:
+          - img "Agent" [ref=e4863]
+          - generic [ref=e4864]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4865] [cursor=pointer]:
+          - generic [ref=e4866]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4867] [cursor=pointer]:
+          - generic [ref=e4868]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4869] [cursor=pointer]:
+          - generic [ref=e4870]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4871] [cursor=pointer]:
+          - generic [ref=e4872]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4873] [cursor=pointer]:
+          - generic [ref=e4874]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4875] [cursor=pointer]:
+          - generic [ref=e4876]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4877] [cursor=pointer]:
+          - generic [ref=e4878]: Message to delete
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4879] [cursor=pointer]:
+          - generic [ref=e4880]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4881] [cursor=pointer]:
+          - generic [ref=e4882]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4883] [cursor=pointer]:
+          - generic [ref=e4884]: Retry test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4885] [cursor=pointer]:
+          - generic [ref=e4886]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4887] [cursor=pointer]:
+          - generic [ref=e4888]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4889] [cursor=pointer]:
+          - generic [ref=e4890]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4891] [cursor=pointer]:
+          - generic [ref=e4892]: Original message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4893] [cursor=pointer]:
+          - generic [ref=e4894]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4895] [cursor=pointer]:
+          - generic [ref=e4896]: Test message for copying
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4897] [cursor=pointer]:
+          - generic [ref=e4898]: Test conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4899] [cursor=pointer]:
+          - img "Agent" [ref=e4900]
+          - generic [ref=e4901]: Agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4902] [cursor=pointer]:
+          - generic [ref=e4903]: Normal chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4904] [cursor=pointer]:
+          - img "Agent" [ref=e4905]
+          - generic [ref=e4906]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4907] [cursor=pointer]:
+          - generic [ref=e4908]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4909] [cursor=pointer]:
+          - generic [ref=e4910]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4911] [cursor=pointer]:
+          - generic [ref=e4912]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4913] [cursor=pointer]:
+          - generic [ref=e4914]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4915] [cursor=pointer]:
+          - generic [ref=e4916]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4917] [cursor=pointer]:
+          - generic [ref=e4918]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4919] [cursor=pointer]:
+          - generic [ref=e4920]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4921] [cursor=pointer]:
+          - img "Agent" [ref=e4922]
+          - generic [ref=e4923]: Test agent message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4924] [cursor=pointer]:
+          - generic [ref=e4925]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4926] [cursor=pointer]:
+          - generic [ref=e4927]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4928] [cursor=pointer]:
+          - generic [ref=e4929]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4930] [cursor=pointer]:
+          - generic [ref=e4931]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4932] [cursor=pointer]:
+          - generic [ref=e4933]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4934] [cursor=pointer]:
+          - generic [ref=e4935]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4936] [cursor=pointer]:
+          - generic [ref=e4937]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4938] [cursor=pointer]:
+          - generic [ref=e4939]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4940] [cursor=pointer]:
+          - generic [ref=e4941]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4942] [cursor=pointer]:
+          - generic [ref=e4943]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4944] [cursor=pointer]:
+          - generic [ref=e4945]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4946] [cursor=pointer]:
+          - generic [ref=e4947]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4948] [cursor=pointer]:
+          - generic [ref=e4949]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4950] [cursor=pointer]:
+          - generic [ref=e4951]: Test message from user
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4952] [cursor=pointer]:
+          - generic [ref=e4953]: First conversation message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4954] [cursor=pointer]:
+          - generic [ref=e4955]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4956] [cursor=pointer]:
+          - generic [ref=e4957]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4958] [cursor=pointer]:
+          - generic [ref=e4959]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4960] [cursor=pointer]:
+          - generic [ref=e4961]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4962] [cursor=pointer]:
+          - generic [ref=e4963]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4964] [cursor=pointer]:
+          - generic [ref=e4965]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4966] [cursor=pointer]:
+          - generic [ref=e4967]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4968] [cursor=pointer]:
+          - img "Agent" [ref=e4969]
+          - generic [ref=e4970]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4971] [cursor=pointer]:
+          - generic [ref=e4972]: Say "SMOKE523155" and nothing else.
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4973] [cursor=pointer]:
+          - generic [ref=e4974]: Say "SMOKE494308" and nothing else.
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4975] [cursor=pointer]:
+          - generic [ref=e4976]: Say "SMOKE465035" and nothing else.
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4977] [cursor=pointer]:
+          - generic [ref=e4978]: Say "SMOKE436085" and nothing else.
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4979] [cursor=pointer]:
+          - generic [ref=e4980]: Say "SMOKE414840" and nothing else.
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4981] [cursor=pointer]:
+          - generic [ref=e4982]: Say "SMOKE287629" and nothing else.
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4983] [cursor=pointer]:
+          - generic [ref=e4984]: Say "SMOKE258268" and nothing else.
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4985] [cursor=pointer]:
+          - generic [ref=e4986]: Reply with just "ok"
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4987] [cursor=pointer]:
+          - generic [ref=e4988]: Say "hello" and nothing else.
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4989] [cursor=pointer]:
+          - generic [ref=e4990]: Reply with just "test"
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4991] [cursor=pointer]:
+          - generic [ref=e4992]: "Echo: 101374"
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4993] [cursor=pointer]:
+          - generic [ref=e4994]: Say "hello" and nothing else.
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4995] [cursor=pointer]:
+          - generic [ref=e4996]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4997] [cursor=pointer]:
+          - generic [ref=e4998]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e4999] [cursor=pointer]:
+          - generic [ref=e5000]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5001] [cursor=pointer]:
+          - generic [ref=e5002]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5003] [cursor=pointer]:
+          - generic [ref=e5004]: Tell me a long story
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5005] [cursor=pointer]:
+          - generic [ref=e5006]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5007] [cursor=pointer]:
+          - generic [ref=e5008]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5009] [cursor=pointer]:
+          - generic [ref=e5010]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5011] [cursor=pointer]:
+          - generic [ref=e5012]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5013] [cursor=pointer]:
+          - generic [ref=e5014]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5015] [cursor=pointer]:
+          - generic [ref=e5016]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5017] [cursor=pointer]:
+          - generic [ref=e5018]: This is my test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5019] [cursor=pointer]:
+          - generic [ref=e5020]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5021] [cursor=pointer]:
+          - generic [ref=e5022]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5023] [cursor=pointer]:
+          - generic [ref=e5024]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5025] [cursor=pointer]:
+          - generic [ref=e5026]: First message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5027] [cursor=pointer]:
+          - generic [ref=e5028]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5029] [cursor=pointer]:
+          - generic [ref=e5030]: This is my test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5031] [cursor=pointer]:
+          - generic [ref=e5032]: Tell me a long story
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5033] [cursor=pointer]:
+          - generic [ref=e5034]: Test
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5035] [cursor=pointer]:
+          - generic [ref=e5036]: Hello, Claude!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5037] [cursor=pointer]:
+          - generic [ref=e5038]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5039] [cursor=pointer]:
+          - generic [ref=e5040]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5041] [cursor=pointer]:
+          - generic [ref=e5042]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5043] [cursor=pointer]:
+          - generic [ref=e5044]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5045] [cursor=pointer]:
+          - generic [ref=e5046]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5047] [cursor=pointer]:
+          - generic [ref=e5048]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5049] [cursor=pointer]:
+          - generic [ref=e5050]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5051] [cursor=pointer]:
+          - generic [ref=e5052]: Hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5053] [cursor=pointer]:
+          - generic [ref=e5054]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5055] [cursor=pointer]:
+          - generic [ref=e5056]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5057] [cursor=pointer]:
+          - generic [ref=e5058]: Test message
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5059] [cursor=pointer]:
+          - generic [ref=e5060]: hey
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5061] [cursor=pointer]:
+          - img "Agent" [ref=e5062]
+          - generic [ref=e5063]: what is your current working directory?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5064] [cursor=pointer]:
+          - img "Agent" [ref=e5065]
+          - generic [ref=e5066]: can you create concatenated.md file which contains...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5067] [cursor=pointer]:
+          - generic [ref=e5068]: "# Task: Generate an AI Control Research Proposal..."
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5069] [cursor=pointer]:
+          - generic [ref=e5070]: Clean up this message to make it easier to read, w...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5071] [cursor=pointer]:
+          - generic [ref=e5072]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5073] [cursor=pointer]:
+          - generic [ref=e5074]: You are creating an exhaustive taxonomy of threat...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5075] [cursor=pointer]:
+          - img "Agent" [ref=e5076]
+          - generic [ref=e5077]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5078] [cursor=pointer]:
+          - generic [ref=e5079]: Clean this up, but keep the content nearly exactly...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5080] [cursor=pointer]:
+          - generic [ref=e5081]: what is the most confusing part of your system pro...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5082] [cursor=pointer]:
+          - generic [ref=e5083]: "<proposal> # Process-Supervised Tree Search as a..."
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5084] [cursor=pointer]:
+          - img "Agent" [ref=e5085]
+          - generic [ref=e5086]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5087] [cursor=pointer]:
+          - img "Agent" [ref=e5088]
+          - generic [ref=e5089]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5090] [cursor=pointer]:
+          - generic [ref=e5091]: Improve this prompt, splitting what I should put i...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5092] [cursor=pointer]:
+          - generic [ref=e5093]: You have access to summaries of key alignment rese...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5094] [cursor=pointer]:
+          - generic [ref=e5095]: You have access to summaries of key alignment rese...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5096] [cursor=pointer]:
+          - generic [ref=e5097]: You have access to summaries of key alignment rese...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5098] [cursor=pointer]:
+          - generic [ref=e5099]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5100] [cursor=pointer]:
+          - generic [ref=e5101]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5102] [cursor=pointer]:
+          - generic [ref=e5103]: hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5104] [cursor=pointer]:
+          - generic [ref=e5105]: "take: using chatgpt to write messages to people is..."
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5106] [cursor=pointer]:
+          - generic [ref=e5107]: hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5108] [cursor=pointer]:
+          - img "Agent" [ref=e5109]
+          - generic [ref=e5110]: can you search up online and display to me what pe...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5111] [cursor=pointer]:
+          - img "Agent" [ref=e5112]
+          - generic [ref=e5113]: create a UI and surface it to me to view /home/has...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5114] [cursor=pointer]:
+          - generic [ref=e5115]: hey
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5116] [cursor=pointer]:
+          - img "Agent" [ref=e5117]
+          - generic [ref=e5118]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5119] [cursor=pointer]:
+          - img "Agent" [ref=e5120]
+          - generic [ref=e5121]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5122] [cursor=pointer]:
+          - img "Agent" [ref=e5123]
+          - generic [ref=e5124]: can you use the surface from script tool to make m...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5125] [cursor=pointer]:
+          - img "Agent" [ref=e5126]
+          - generic [ref=e5127]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5128] [cursor=pointer]:
+          - img "Agent" [ref=e5129]
+          - generic [ref=e5130]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5131] [cursor=pointer]:
+          - img "Agent" [ref=e5132]
+          - generic [ref=e5133]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5134] [cursor=pointer]:
+          - img "Agent" [ref=e5135]
+          - generic [ref=e5136]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5137] [cursor=pointer]:
+          - img "Agent" [ref=e5138]
+          - generic [ref=e5139]: can you use the surface from script tool to make m...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5140] [cursor=pointer]:
+          - img "Agent" [ref=e5141]
+          - generic [ref=e5142]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5143] [cursor=pointer]:
+          - img "Agent" [ref=e5144]
+          - generic [ref=e5145]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5146] [cursor=pointer]:
+          - img "Agent" [ref=e5147]
+          - generic [ref=e5148]: can you use the surface from script tool to make m...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5149] [cursor=pointer]:
+          - img "Agent" [ref=e5150]
+          - generic [ref=e5151]: check here
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5152] [cursor=pointer]:
+          - img "Agent" [ref=e5153]
+          - generic [ref=e5154]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5155] [cursor=pointer]:
+          - img "Agent" [ref=e5156]
+          - generic [ref=e5157]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5158] [cursor=pointer]:
+          - img "Agent" [ref=e5159]
+          - generic [ref=e5160]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5161] [cursor=pointer]:
+          - img "Agent" [ref=e5162]
+          - generic [ref=e5163]: can you use the surface from script tool to make m...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5164] [cursor=pointer]:
+          - img "Agent" [ref=e5165]
+          - generic [ref=e5166]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5167] [cursor=pointer]:
+          - img "Agent" [ref=e5168]
+          - generic [ref=e5169]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5170] [cursor=pointer]:
+          - img "Agent" [ref=e5171]
+          - generic [ref=e5172]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5173] [cursor=pointer]:
+          - img "Agent" [ref=e5174]
+          - generic [ref=e5175]: can you use the surface from script tool to make m...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5176] [cursor=pointer]:
+          - img "Agent" [ref=e5177]
+          - generic [ref=e5178]: test out the surface from script tool
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5179] [cursor=pointer]:
+          - img "Agent" [ref=e5180]
+          - generic [ref=e5181]: test out the surface from script tool
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5182] [cursor=pointer]:
+          - img "Agent" [ref=e5183]
+          - generic [ref=e5184]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5185] [cursor=pointer]:
+          - img "Agent" [ref=e5186]
+          - generic [ref=e5187]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5188] [cursor=pointer]:
+          - img "Agent" [ref=e5189]
+          - generic [ref=e5190]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5191] [cursor=pointer]:
+          - img "Agent" [ref=e5192]
+          - generic [ref=e5193]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5194] [cursor=pointer]:
+          - img "Agent" [ref=e5195]
+          - generic [ref=e5196]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5197] [cursor=pointer]:
+          - img "Agent" [ref=e5198]
+          - generic [ref=e5199]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5200] [cursor=pointer]:
+          - img "Agent" [ref=e5201]
+          - generic [ref=e5202]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5203] [cursor=pointer]:
+          - img "Agent" [ref=e5204]
+          - generic [ref=e5205]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5206] [cursor=pointer]:
+          - img "Agent" [ref=e5207]
+          - generic [ref=e5208]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5209] [cursor=pointer]:
+          - img "Agent" [ref=e5210]
+          - generic [ref=e5211]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5212] [cursor=pointer]:
+          - img "Agent" [ref=e5213]
+          - generic [ref=e5214]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5215] [cursor=pointer]:
+          - img "Agent" [ref=e5216]
+          - generic [ref=e5217]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5218] [cursor=pointer]:
+          - img "Agent" [ref=e5219]
+          - generic [ref=e5220]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5221] [cursor=pointer]:
+          - img "Agent" [ref=e5222]
+          - generic [ref=e5223]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5224] [cursor=pointer]:
+          - img "Agent" [ref=e5225]
+          - generic [ref=e5226]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5227] [cursor=pointer]:
+          - img "Agent" [ref=e5228]
+          - generic [ref=e5229]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5230] [cursor=pointer]:
+          - generic [ref=e5231]: Come up with some research ideas to mitigate the i...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5232] [cursor=pointer]:
+          - generic [ref=e5233]: Hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5234] [cursor=pointer]:
+          - img "Agent" [ref=e5235]
+          - generic [ref=e5236]: Come up with some research ideas to mitigate the i...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5237] [cursor=pointer]:
+          - img "Agent" [ref=e5238]
+          - generic [ref=e5239]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5240] [cursor=pointer]:
+          - img "Agent" [ref=e5241]
+          - generic [ref=e5242]: what makes for conceptually good ai safety researc...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5243] [cursor=pointer]:
+          - img "Agent" [ref=e5244]
+          - generic [ref=e5245]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5246] [cursor=pointer]:
+          - img "Agent" [ref=e5247]
+          - generic [ref=e5248]: "Think carefully step by step: what is 17 * 23? Sho..."
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5249] [cursor=pointer]:
+          - img "Agent" [ref=e5250]
+          - generic [ref=e5251]: "Think carefully step by step: what is 17 * 23? Sho..."
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5252] [cursor=pointer]:
+          - img "Agent" [ref=e5253]
+          - generic [ref=e5254]: think about what makes good ai safety research
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5255] [cursor=pointer]:
+          - img "Agent" [ref=e5256]
+          - generic [ref=e5257]: think about what makes good ai safety research
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5258] [cursor=pointer]:
+          - img "Agent" [ref=e5259]
+          - generic [ref=e5260]: think about what makes good ai safety research
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5261] [cursor=pointer]:
+          - img "Agent" [ref=e5262]
+          - generic [ref=e5263]: think about writing an essay
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5264] [cursor=pointer]:
+          - img "Agent" [ref=e5265]
+          - generic [ref=e5266]: hello, think about writing an essay about cheese
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5267] [cursor=pointer]:
+          - img "Agent" [ref=e5268]
+          - generic [ref=e5269]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5270] [cursor=pointer]:
+          - img "Agent" [ref=e5271]
+          - generic [ref=e5272]: hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5273] [cursor=pointer]:
+          - img "Agent" [ref=e5274]
+          - generic [ref=e5275]: hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5276] [cursor=pointer]:
+          - img "Agent" [ref=e5277]
+          - generic [ref=e5278]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5279] [cursor=pointer]:
+          - img "Agent" [ref=e5280]
+          - generic [ref=e5281]: hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5282] [cursor=pointer]:
+          - img "Agent" [ref=e5283]
+          - generic [ref=e5284]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5285] [cursor=pointer]:
+          - img "Agent" [ref=e5286]
+          - generic [ref=e5287]: Read through the project notes and produce a summa...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5288] [cursor=pointer]:
+          - img "Agent" [ref=e5289]
+          - generic [ref=e5290]: In your current working directory, you will see my...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5291] [cursor=pointer]:
+          - img "Agent" [ref=e5292]
+          - generic [ref=e5293]: clear your memories
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5294] [cursor=pointer]:
+          - img "Agent" [ref=e5295]
+          - generic [ref=e5296]: In your current working directory, you will see my...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5297] [cursor=pointer]:
+          - img "Agent" [ref=e5298]
+          - generic [ref=e5299]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5300] [cursor=pointer]:
+          - img "Agent" [ref=e5301]
+          - generic [ref=e5302]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5303] [cursor=pointer]:
+          - img "Agent" [ref=e5304]
+          - generic [ref=e5305]: In your current working directory, you will see my...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5306] [cursor=pointer]:
+          - generic [ref=e5307]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5308] [cursor=pointer]:
+          - img "Agent" [ref=e5309]
+          - generic [ref=e5310]: hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5311] [cursor=pointer]:
+          - generic [ref=e5312]: hey
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5313] [cursor=pointer]:
+          - generic [ref=e5314]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5315] [cursor=pointer]:
+          - generic [ref=e5316]: 04_honesty_elicitation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5317] [cursor=pointer]:
+          - img "Agent" [ref=e5318]
+          - generic [ref=e5319]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5320] [cursor=pointer]:
+          - generic [ref=e5321]: hu
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5322] [cursor=pointer]:
+          - generic [ref=e5323]: look up recent anthropic papers
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5324] [cursor=pointer]:
+          - img "Agent" [ref=e5325]
+          - generic [ref=e5326]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5327] [cursor=pointer]:
+          - img "Agent" [ref=e5328]
+          - generic [ref=e5329]: look up recent anthropic papers
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5330] [cursor=pointer]:
+          - img "Agent" [ref=e5331]
+          - generic [ref=e5332]: look up recent anthropic papers
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5333] [cursor=pointer]:
+          - img "Agent" [ref=e5334]
+          - generic [ref=e5335]: do some quick research on latest anthropic papers
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5336] [cursor=pointer]:
+          - img "Agent" [ref=e5337]
+          - generic [ref=e5338]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5339] [cursor=pointer]:
+          - img "Agent" [ref=e5340]
+          - generic [ref=e5341]: how are you?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5342] [cursor=pointer]:
+          - img "Agent" [ref=e5343]
+          - generic [ref=e5344]: what tools do you have access to?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5345] [cursor=pointer]:
+          - generic [ref=e5346]: hello agent chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5347] [cursor=pointer]:
+          - img "Agent" [ref=e5348]
+          - generic [ref=e5349]: do you have a compact command?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5350] [cursor=pointer]:
+          - generic [ref=e5351]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5352] [cursor=pointer]:
+          - generic [ref=e5353]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5354] [cursor=pointer]:
+          - generic [ref=e5355]: look up how car engines work
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5356] [cursor=pointer]:
+          - img "Agent" [ref=e5357]
+          - generic [ref=e5358]: what tools do you have access to?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5359] [cursor=pointer]:
+          - img "Agent" [ref=e5360]
+          - generic [ref=e5361]: what tools do you have access to?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5362] [cursor=pointer]:
+          - img "Agent" [ref=e5363]
+          - generic [ref=e5364]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5365] [cursor=pointer]:
+          - img "Agent" [ref=e5366]
+          - generic [ref=e5367]: what tools do you have access to?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5368] [cursor=pointer]:
+          - img "Agent" [ref=e5369]
+          - generic [ref=e5370]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5371] [cursor=pointer]:
+          - img "Agent" [ref=e5372]
+          - generic [ref=e5373]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5374] [cursor=pointer]:
+          - img "Agent" [ref=e5375]
+          - generic [ref=e5376]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5377] [cursor=pointer]:
+          - img "Agent" [ref=e5378]
+          - generic [ref=e5379]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5380] [cursor=pointer]:
+          - img "Agent" [ref=e5381]
+          - generic [ref=e5382]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5383] [cursor=pointer]:
+          - img "Agent" [ref=e5384]
+          - generic [ref=e5385]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5386] [cursor=pointer]:
+          - generic [ref=e5387]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5388] [cursor=pointer]:
+          - img "Agent" [ref=e5389]
+          - generic [ref=e5390]: what tools do you have access to
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5391] [cursor=pointer]:
+          - img "Agent" [ref=e5392]
+          - generic [ref=e5393]: which tools do you have access to?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5394] [cursor=pointer]:
+          - generic [ref=e5395]: what is the weather in London today?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5396] [cursor=pointer]:
+          - generic [ref=e5397]: what is the weather in London today?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5398] [cursor=pointer]:
+          - generic [ref=e5399]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5400] [cursor=pointer]:
+          - generic [ref=e5401]: what is the weather in london right now
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5402] [cursor=pointer]:
+          - generic [ref=e5403]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5404] [cursor=pointer]:
+          - generic [ref=e5405]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5406] [cursor=pointer]:
+          - generic [ref=e5407]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5408] [cursor=pointer]:
+          - img "Agent" [ref=e5409]
+          - generic [ref=e5410]: spawn a subagent to explore the codebase
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5411] [cursor=pointer]:
+          - img "Agent" [ref=e5412]
+          - generic [ref=e5413]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5414] [cursor=pointer]:
+          - generic [ref=e5415]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5416] [cursor=pointer]:
+          - generic [ref=e5417]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5418] [cursor=pointer]:
+          - img "Agent" [ref=e5419]
+          - generic [ref=e5420]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5421] [cursor=pointer]:
+          - img "Agent" [ref=e5422]
+          - generic [ref=e5423]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5424] [cursor=pointer]:
+          - img "Agent" [ref=e5425]
+          - generic [ref=e5426]: read from memories
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5427] [cursor=pointer]:
+          - img "Agent" [ref=e5428]
+          - generic [ref=e5429]: write to memories "make AAR great"
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5430] [cursor=pointer]:
+          - img "Agent" [ref=e5431]
+          - generic [ref=e5432]: Memory Test 2
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5433] [cursor=pointer]:
+          - img "Agent" [ref=e5434]
+          - generic [ref=e5435]: Check your memory. What do you know about the user...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5436] [cursor=pointer]:
+          - img "Agent" [ref=e5437]
+          - generic [ref=e5438]: "Please save this to your memory: The user's name i..."
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5439] [cursor=pointer]:
+          - img "Agent" [ref=e5440]
+          - generic [ref=e5441]: Check your memory. What do you know about the user...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5442] [cursor=pointer]:
+          - img "Agent" [ref=e5443]
+          - generic [ref=e5444]: "Please save this to your memory: The user's name i..."
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5445] [cursor=pointer]:
+          - img "Agent" [ref=e5446]
+          - generic [ref=e5447]: Memory Test Conv
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5448] [cursor=pointer]:
+          - img "Agent" [ref=e5449]
+          - generic [ref=e5450]: Check your memory. What do you know about the user...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5451] [cursor=pointer]:
+          - img "Agent" [ref=e5452]
+          - generic [ref=e5453]: "Please save this to your memory: The user's name i..."
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5454] [cursor=pointer]:
+          - img "Agent" [ref=e5455]
+          - generic [ref=e5456]: Check your memory. What do you know about the user...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5457] [cursor=pointer]:
+          - img "Agent" [ref=e5458]
+          - generic [ref=e5459]: "Please save this to your memory: The user's name i..."
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5460] [cursor=pointer]:
+          - img "Agent" [ref=e5461]
+          - generic [ref=e5462]: Check your memory. What do you know about the user...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5463] [cursor=pointer]:
+          - img "Agent" [ref=e5464]
+          - generic [ref=e5465]: "Please save this to your memory: The user's name i..."
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5466] [cursor=pointer]:
+          - img "Agent" [ref=e5467]
+          - generic [ref=e5468]: "Please save this to your memory: The user's name i..."
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5469] [cursor=pointer]:
+          - img "Agent" [ref=e5470]
+          - generic [ref=e5471]: Write to memory "this is for an anthropic fellowsh...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5472] [cursor=pointer]:
+          - img "Agent" [ref=e5473]
+          - generic [ref=e5474]: read what is in memory
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5475] [cursor=pointer]:
+          - img "Agent" [ref=e5476]
+          - generic [ref=e5477]: "Can you put to memories: \"this for a project compl..."
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5478] [cursor=pointer]:
+          - img "Agent" [ref=e5479]
+          - generic [ref=e5480]: what do you see in memories?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5481] [cursor=pointer]:
+          - img "Agent" [ref=e5482]
+          - generic [ref=e5483]: Look this up online. If I start a ClaudeSDKClient...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5484] [cursor=pointer]:
+          - generic [ref=e5485]: why is automating AI alignment research important?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5486] [cursor=pointer]:
+          - img "Agent" [ref=e5487]
+          - generic [ref=e5488]: what local files do you see?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5489] [cursor=pointer]:
+          - generic [ref=e5490]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5491] [cursor=pointer]:
+          - generic [ref=e5492]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5493] [cursor=pointer]:
+          - generic [ref=e5494]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5495] [cursor=pointer]:
+          - generic [ref=e5496]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5497] [cursor=pointer]:
+          - generic [ref=e5498]: hey
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5499] [cursor=pointer]:
+          - generic [ref=e5500]: hey
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5501] [cursor=pointer]:
+          - img "Agent" [ref=e5502]
+          - generic [ref=e5503]: yoy
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5504] [cursor=pointer]:
+          - generic [ref=e5505]: hiya
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5506] [cursor=pointer]:
+          - generic [ref=e5507]: Say hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5508] [cursor=pointer]:
+          - generic [ref=e5509]: Say hello in one word
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5510] [cursor=pointer]:
+          - generic [ref=e5511]: why
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5512] [cursor=pointer]:
+          - img "Agent" [ref=e5513]
+          - generic [ref=e5514]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5515] [cursor=pointer]:
+          - generic [ref=e5516]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5517] [cursor=pointer]:
+          - img "Agent" [ref=e5518]
+          - generic [ref=e5519]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5520] [cursor=pointer]:
+          - generic [ref=e5521]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5522] [cursor=pointer]:
+          - img "Agent" [ref=e5523]
+          - generic [ref=e5524]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5525] [cursor=pointer]:
+          - img "Agent" [ref=e5526]
+          - generic [ref=e5527]: tell me a joke
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5528] [cursor=pointer]:
+          - img "Agent" [ref=e5529]
+          - generic [ref=e5530]: now research history of tomatoes, give me a short...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5531] [cursor=pointer]:
+          - img "Agent" [ref=e5532]
+          - generic [ref=e5533]: now research history of tomatoes, give me a short...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5534] [cursor=pointer]:
+          - generic [ref=e5535]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5536] [cursor=pointer]:
+          - img "Agent" [ref=e5537]
+          - generic [ref=e5538]: Read requirements.txt and summarize it.
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5539] [cursor=pointer]:
+          - img "Agent" [ref=e5540]
+          - generic [ref=e5541]: Read the contents of the file requirements.txt in...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5542] [cursor=pointer]:
+          - img "Agent" [ref=e5543]
+          - generic [ref=e5544]: research online about the origin of potatoes, and...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5545] [cursor=pointer]:
+          - img "Agent" [ref=e5546]
+          - generic [ref=e5547]: Read the contents of the file requirements.txt in...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5548] [cursor=pointer]:
+          - img "Agent" [ref=e5549]
+          - generic [ref=e5550]: Read the contents of the file requirements.txt in...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5551] [cursor=pointer]:
+          - img "Agent" [ref=e5552]
+          - generic [ref=e5553]: Read the contents of the file requirements.txt in...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5554] [cursor=pointer]:
+          - img "Agent" [ref=e5555]
+          - generic [ref=e5556]: Read the contents of the file requirements.txt in...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5557] [cursor=pointer]:
+          - img "Agent" [ref=e5558]
+          - generic [ref=e5559]: Read the contents of the file requirements.txt in...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5560] [cursor=pointer]:
+          - img "Agent" [ref=e5561]
+          - generic [ref=e5562]: Read the contents of the file requirements.txt in...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5563] [cursor=pointer]:
+          - img "Agent" [ref=e5564]
+          - generic [ref=e5565]: Write a short story about a kid riding a bike and...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5566] [cursor=pointer]:
+          - img "Agent" [ref=e5567]
+          - generic [ref=e5568]: Read the contents of the file requirements.txt in...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5569] [cursor=pointer]:
+          - img "Agent" [ref=e5570]
+          - generic [ref=e5571]: Read the contents of the file requirements.txt in...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5572] [cursor=pointer]:
+          - img "Agent" [ref=e5573]
+          - generic [ref=e5574]: Read the contents of the file requirements.txt in...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5575] [cursor=pointer]:
+          - generic [ref=e5576]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5577] [cursor=pointer]:
+          - img "Agent" [ref=e5578]
+          - generic [ref=e5579]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5580] [cursor=pointer]:
+          - img "Agent" [ref=e5581]
+          - generic [ref=e5582]: hey
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5583] [cursor=pointer]:
+          - img "Agent" [ref=e5584]
+          - generic [ref=e5585]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5586] [cursor=pointer]:
+          - img "Agent" [ref=e5587]
+          - generic [ref=e5588]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5589] [cursor=pointer]:
+          - generic [ref=e5590]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5591] [cursor=pointer]:
+          - generic [ref=e5592]: Hello, this is a test message for editing.
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5593] [cursor=pointer]:
+          - generic [ref=e5594]: hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5595] [cursor=pointer]:
+          - generic [ref=e5596]: Hello, this is a test message for editing.
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5597] [cursor=pointer]:
+          - generic [ref=e5598]: Hello, this is a test message for editing.
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5599] [cursor=pointer]:
+          - generic [ref=e5600]: Hello, this is a test message for editing.
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5601] [cursor=pointer]:
+          - img "Agent" [ref=e5602]
+          - generic [ref=e5603]: Hi?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5604] [cursor=pointer]:
+          - generic [ref=e5605]: hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5606] [cursor=pointer]:
+          - generic [ref=e5607]: Brainstorm some technical AI safety research ideas...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5608] [cursor=pointer]:
+          - generic [ref=e5609]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5610] [cursor=pointer]:
+          - img "Agent" [ref=e5611]
+          - generic [ref=e5612]: Hello, how are you?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5613] [cursor=pointer]:
+          - img "Agent" [ref=e5614]
+          - generic [ref=e5615]: I made this really aesthetic Claude chat UI that i...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5616] [cursor=pointer]:
+          - img "Agent" [ref=e5617]
+          - generic [ref=e5618]: Show me a celebration gif!
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5619] [cursor=pointer]:
+          - img "Agent" [ref=e5620]
+          - generic [ref=e5621]: Show me a funny dancing cat gif
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5622] [cursor=pointer]:
+          - img "Agent" [ref=e5623]
+          - generic [ref=e5624]: Show me a funny dancing cat gif
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5625] [cursor=pointer]:
+          - img "Agent" [ref=e5626]
+          - generic [ref=e5627]: Show me a funny dancing cat gif
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5628] [cursor=pointer]:
+          - img "Agent" [ref=e5629]
+          - generic [ref=e5630]: Hello! What's your name? Remember I asked you this...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5631] [cursor=pointer]:
+          - generic [ref=e5632]: New Conversation
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5633] [cursor=pointer]:
+          - img "Agent" [ref=e5634]
+          - generic [ref=e5635]: how are you feeling, respond with a gif
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5636] [cursor=pointer]:
+          - img "Agent" [ref=e5637]
+          - generic [ref=e5638]: how are you feeling? respond with a gif
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5639] [cursor=pointer]:
+          - generic [ref=e5640]: how are you feeling? respond with a gif
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5641] [cursor=pointer]:
+          - img "Agent" [ref=e5642]
+          - generic [ref=e5643]: Use the gif_search.py tool in /home/hasanbaig/chat...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5644] [cursor=pointer]:
+          - img "Agent" [ref=e5645]
+          - generic [ref=e5646]: can you create a python script for computing the f...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5647] [cursor=pointer]:
+          - img "Agent" [ref=e5648]
+          - generic [ref=e5649]: Create a file called greeting.txt with the text 'H...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5650] [cursor=pointer]:
+          - img "Agent" [ref=e5651]
+          - generic [ref=e5652]: New Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5653] [cursor=pointer]:
+          - img "Agent" [ref=e5654]
+          - generic [ref=e5655]: Can you a write a .md file with an essay on the ri...
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5656] [cursor=pointer]:
+          - img "Agent" [ref=e5657]
+          - generic [ref=e5658]: Test Agent Chat
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5659] [cursor=pointer]:
+          - generic [ref=e5660]: what tools can you access?
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5661] [cursor=pointer]:
+          - generic [ref=e5662]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5663] [cursor=pointer]:
+          - generic [ref=e5664]: hello
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5665] [cursor=pointer]:
+          - generic [ref=e5666]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+        - generic [ref=e5667] [cursor=pointer]:
+          - generic [ref=e5668]: hi
+          - generic:
+            - button "⚙️"
+            - button "📋"
+            - button "✏️"
+            - button "🗑️"
+    - main [ref=e5670]:
+      - generic [ref=e5671]:
+        - generic [ref=e5672]:
+          - heading "Welcome to Claude Chat" [level=2] [ref=e5673]
+          - paragraph [ref=e5674]: Start a conversation by typing a message below.
+        - generic [ref=e5675]:
+          - generic [ref=e5676]: Agent chat TEST_1769910054453_AGENT
+          - generic [ref=e5677]:
+            - button "📋" [ref=e5678] [cursor=pointer]
+            - button "✎" [ref=e5679] [cursor=pointer]
+            - button "🗑" [ref=e5680] [cursor=pointer]
+        - generic [ref=e5681]:
+          - generic [ref=e5682]:
+            - generic [ref=e5683]:
+              - generic [ref=e5684] [cursor=pointer]:
+                - generic [ref=e5685]: ▼
+                - generic [ref=e5686]: 💭
+                - generic [ref=e5687]: Thinking
+                - generic [ref=e5688]: DONE
+              - generic [ref=e5690]: Analyzing the user's request for agent mode. Let me consider the best approach to help with this task. I should use the available tools to accomplish this efficiently.
+            - paragraph [ref=e5692]: I'll help you with that. Let me check some files first.
+            - generic [ref=e5693]:
+              - generic [ref=e5694] [cursor=pointer]:
+                - generic [ref=e5695]: ▼
+                - generic [ref=e5696]: 📖
+                - generic [ref=e5697]: Read
+                - generic [ref=e5698]: DONE
+              - generic [ref=e5699]:
+                - generic [ref=e5700]:
+                  - generic [ref=e5701]: INPUT
+                  - generic [ref=e5702]: "{ \"path\": \"/mock/path/to/file.txt\" }"
+                - generic [ref=e5703]:
+                  - generic [ref=e5704]: RESULT
+                  - generic [ref=e5705]: "Mock file contents: Line 1 Line 2 Line 3"
+            - paragraph [ref=e5707]: Let me know if you need anything else!
+            - generic [ref=e5708] [cursor=pointer]:
+              - generic [ref=e5709]:
+                - generic [ref=e5710]: 📊
+                - generic [ref=e5711]: Mock Dashboard
+                - button "↗" [ref=e5712]
+              - iframe [ref=e5714]:
+                - generic [ref=f1e2]:
+                  - heading "Mock Surface Content" [level=2] [ref=f1e3]
+                  - paragraph [ref=f1e4]: This is a mock surface content block for testing the surface rendering.
+                  - list [ref=f1e5]:
+                    - listitem [ref=f1e6]: Item A
+                    - listitem [ref=f1e7]: Item B
+                    - listitem [ref=f1e8]: Item C
+          - generic [ref=e5716]:
+            - button "📋" [ref=e5717] [cursor=pointer]
+            - button "↻" [ref=e5718] [cursor=pointer]
+            - button "🗑" [ref=e5719] [cursor=pointer]
+      - generic [ref=e5720]:
+        - generic [ref=e5723]:
+          - button "📎" [ref=e5724] [cursor=pointer]
+          - button "📝" [ref=e5725] [cursor=pointer]
+          - textbox "Type your message..." [ref=e5726]
+          - button "Send message" [disabled] [ref=e5727]: Send
+        - generic [ref=e5728]: 60 / 200,000 tokens (0%)
+    - complementary [ref=e5729]:
+      - generic [ref=e5730]:
+        - heading "Conversation Settings" [level=3] [ref=e5731]
+        - button "×" [ref=e5732] [cursor=pointer]
+      - generic [ref=e5733]:
+        - generic [ref=e5734]: Agent Chat
+        - generic:
+          - generic: Model
+          - combobox "Model" [ref=e5735] [cursor=pointer]:
+            - option "Claude Opus 4.5" [selected]
+            - option "Claude Sonnet 4.5"
+            - option "Claude Sonnet 4"
+            - option "Claude 3.5 Sonnet"
+            - option "Claude 3.5 Haiku"
+          - generic: Most capable model, best for complex tasks
+        - generic:
+          - generic: System Prompt
+          - textbox "System Prompt" [ref=e5736]:
+            - /placeholder: Optional system prompt...
+        - generic:
+          - generic [ref=e5737]: Agent mode uses the Claude Code SDK with automatic tool access.
+          - generic:
+            - generic: Working Directory (CWD)
+            - generic [ref=e5738]: Default workspace
+          - generic:
+            - generic: Available Tools
+            - generic:
+              - generic [ref=e5739]: Read
+              - generic [ref=e5740]: Write
+              - generic [ref=e5741]: Edit
+              - generic [ref=e5742]: Bash
+              - generic [ref=e5743]: Glob
+              - generic [ref=e5744]: Grep
+              - generic [ref=e5745]: WebSearch
+              - generic [ref=e5746]: WebFetch
+              - generic [ref=e5747]: Task
+              - generic [ref=e5748]: GIF
+              - generic [ref=e5749]: Memory
+              - generic [ref=e5750]: Surface
+            - generic: Tools are configured in Project Settings or Default Settings
+    - complementary [ref=e5751]:
+      - generic [ref=e5752]:
+        - heading "Workspace Files" [level=3] [ref=e5753]
+        - button "×" [ref=e5754] [cursor=pointer]
+```

@@ -103,7 +103,7 @@
                                     rows="1"
                                     autofocus
                                 ></textarea>
-                                <button id="send-btn" class="send-btn" disabled>
+                                <button id="send-btn" class="send-btn" disabled title="Send message" aria-label="Send message">
                                     Send
                                 </button>
                                 <button id="stop-btn" class="stop-btn" style="display: none;" title="Stop generating">
@@ -568,6 +568,12 @@
     </div>
 
     <!-- Scripts -->
+    <!-- Core modules (must load first) -->
+    <script src="/static/js/core/store.js"></script>
+    <script src="/static/js/core/apiClient.js"></script>
+    <script src="/static/js/core/sseClient.js"></script>
+    <script src="/static/js/core/backgroundStreamManager.js"></script>
+    <!-- Background streams -->
     <script src="/static/js/background-streams.js"></script>
     <script src="/static/js/projects.js"></script>
     <script src="/static/js/project-settings.js"></script>
@@ -579,7 +585,12 @@
     <script src="/static/js/default-settings.js"></script>
     <script src="/static/js/prompts.js"></script>
     <script src="/static/js/workspace.js"></script>
-    <script src="/static/js/chat.js?v=7"></script>
+    <!-- Chat modules (new architecture) -->
+    <script src="/static/js/chat/ChatController.js"></script>
+    <script src="/static/js/chat/ChatRenderer.js"></script>
+    <script src="/static/js/chat/streamingDisplay.js"></script>
+    <!-- Main chat (legacy, being gradually refactored) -->
+    <script src="/static/js/chat.js?v=9"></script>
     <script src="/static/js/app.js"></script>
 </body>
 </html>

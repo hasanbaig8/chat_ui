@@ -4,12 +4,9 @@ from typing import Optional, List, Any
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-from services.file_conversation_store import FileConversationStore
+from api.deps import get_store, get_session_manager
 
 router = APIRouter(prefix="/api/conversations", tags=["conversations"])
-
-# Initialize file store (SQLite removed)
-store = FileConversationStore()
 
 
 class ConversationSettings(BaseModel):
@@ -83,15 +80,10 @@ class DeleteMessagesRequest(BaseModel):
     branch: Optional[List[int]] = None
 
 
-@router.on_event("startup")
-async def startup():
-    """Initialize storage on startup."""
-    await store.initialize()
-
-
 @router.post("")
 async def create_conversation(request: CreateConversationRequest):
     """Create a new conversation."""
+    store = get_store()
     # Convert settings to dict if provided
     settings_dict = None
     if request.settings:
@@ -111,6 +103,7 @@ async def create_conversation(request: CreateConversationRequest):
 @router.get("")
 async def list_conversations():
     """List all conversations."""
+    store = get_store()
     conversations = await store.list_conversations()
     return {"conversations": conversations}
 
@@ -118,6 +111,7 @@ async def list_conversations():
 @router.get("/search")
 async def search_conversations(q: str = Query(..., min_length=1)):
     """Search conversations by title or message content (partial match)."""
+    store = get_store()
     conversations = await store.search_conversations(q)
     return {"conversations": conversations, "query": q}
 
@@ -125,10 +119,26 @@ async def search_conversations(q: str = Query(..., min_length=1)):
 @router.post("/{conversation_id}/duplicate")
 async def duplicate_conversation(conversation_id: str):
     """Duplicate a conversation with all its branches."""
+    store = get_store()
     new_conversation = await store.duplicate_conversation(conversation_id)
     if not new_conversation:
         raise HTTPException(status_code=404, detail="Conversation not found")
     return new_conversation
+
+
+def parse_branch(branch: Optional[str]) -> Optional[list]:
+    """Parse branch parameter from either '0,1,2' or '[0,1,2]' format."""
+    if not branch:
+        return None
+    try:
+        branch_str = branch.strip()
+        if branch_str.startswith("[") and branch_str.endswith("]"):
+            branch_str = branch_str[1:-1]
+        if branch_str:
+            return [int(x.strip()) for x in branch_str.split(",")]
+        return [0]
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid branch format")
 
 
 @router.get("/{conversation_id}")
@@ -137,12 +147,8 @@ async def get_conversation(
     branch: Optional[str] = Query(None, description="Branch array as comma-separated ints, e.g. '0,1,2'")
 ):
     """Get a specific conversation with messages from specified branch."""
-    branch_array = None
-    if branch:
-        try:
-            branch_array = [int(x) for x in branch.split(",")]
-        except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid branch format")
+    store = get_store()
+    branch_array = parse_branch(branch)
 
     conversation = await store.get_conversation(conversation_id, branch_array)
     if not conversation:
@@ -154,6 +160,7 @@ async def get_conversation(
 @router.put("/{conversation_id}")
 async def update_conversation(conversation_id: str, request: UpdateConversationRequest):
     """Update conversation metadata."""
+    store = get_store()
     # Convert settings to dict if provided
     settings_dict = None
     if request.settings:
@@ -174,6 +181,17 @@ async def update_conversation(conversation_id: str, request: UpdateConversationR
 @router.delete("/{conversation_id}")
 async def delete_conversation(conversation_id: str):
     """Delete a conversation."""
+    # Cleanup agent session if exists
+    try:
+        session_manager = get_session_manager()
+        if session_manager.has_session(conversation_id):
+            session_manager.remove_session(conversation_id)
+            print(f"[CONVERSATIONS] Cleaned up agent session for {conversation_id}")
+    except Exception as e:
+        # Don't fail deletion if session cleanup fails
+        print(f"[CONVERSATIONS] Warning: Failed to cleanup session: {e}")
+
+    store = get_store()
     success = await store.delete_conversation(conversation_id)
     if not success:
         raise HTTPException(status_code=404, detail="Conversation not found")
@@ -183,6 +201,7 @@ async def delete_conversation(conversation_id: str):
 @router.post("/{conversation_id}/messages")
 async def add_message(conversation_id: str, request: AddMessageRequest):
     """Add a message to a conversation branch."""
+    store = get_store()
     try:
         message = await store.add_message(
             conversation_id=conversation_id,
@@ -202,13 +221,8 @@ async def get_messages(
     branch: Optional[str] = Query(None)
 ):
     """Get all messages for a conversation branch."""
-    branch_array = None
-    if branch:
-        try:
-            branch_array = [int(x) for x in branch.split(",")]
-        except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid branch format")
-
+    store = get_store()
+    branch_array = parse_branch(branch)
     messages = await store.get_messages(conversation_id, branch_array)
     return {"messages": messages}
 
@@ -216,6 +230,7 @@ async def get_messages(
 @router.post("/{conversation_id}/edit")
 async def edit_message(conversation_id: str, request: EditMessageRequest):
     """Edit a user message, creating a new branch."""
+    store = get_store()
     try:
         result = await store.create_branch(
             conversation_id=conversation_id,
@@ -231,6 +246,7 @@ async def edit_message(conversation_id: str, request: EditMessageRequest):
 @router.post("/{conversation_id}/switch-branch")
 async def switch_branch(conversation_id: str, request: SwitchBranchRequest):
     """Switch to an adjacent branch at a user message position."""
+    store = get_store()
     new_branch = await store.switch_branch(
         conversation_id=conversation_id,
         current_branch=request.branch or [0],
@@ -251,6 +267,7 @@ async def switch_branch(conversation_id: str, request: SwitchBranchRequest):
 @router.post("/{conversation_id}/set-branch")
 async def set_branch(conversation_id: str, request: SetBranchRequest):
     """Set the current branch for a conversation."""
+    store = get_store()
     success = await store.set_current_branch(conversation_id, request.branch)
     if not success:
         raise HTTPException(status_code=404, detail="Conversation not found")
@@ -260,6 +277,7 @@ async def set_branch(conversation_id: str, request: SetBranchRequest):
 @router.post("/{conversation_id}/retry")
 async def retry_message(conversation_id: str, request: RetryMessageRequest):
     """Retry an assistant message, replacing it in the current branch."""
+    store = get_store()
     try:
         message = await store.retry_assistant_message(
             conversation_id=conversation_id,
@@ -280,13 +298,8 @@ async def get_messages_up_to(
     branch: Optional[str] = Query(None)
 ):
     """Get messages up to (not including) a position. Used for retries."""
-    branch_array = None
-    if branch:
-        try:
-            branch_array = [int(x) for x in branch.split(",")]
-        except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid branch format")
-
+    store = get_store()
+    branch_array = parse_branch(branch)
     messages = await store.get_messages_up_to(conversation_id, position, branch_array)
     return {"messages": messages}
 
@@ -294,6 +307,7 @@ async def get_messages_up_to(
 @router.get("/{conversation_id}/branches")
 async def list_branches(conversation_id: str):
     """List all branches in a conversation."""
+    store = get_store()
     branches = await store.get_branches(conversation_id)
     return {"branches": branches}
 
@@ -305,13 +319,8 @@ async def get_version_info(
     branch: Optional[str] = Query(None)
 ):
     """Get version info for a specific user message position."""
-    branch_array = [0]
-    if branch:
-        try:
-            branch_array = [int(x) for x in branch.split(",")]
-        except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid branch format")
-
+    store = get_store()
+    branch_array = parse_branch(branch) or [0]
     version_info = await store.get_version_info(conversation_id, branch_array, user_msg_index)
     return version_info
 
@@ -326,6 +335,7 @@ async def delete_messages_from(
 
     This removes the message at the specified position and all messages after it.
     """
+    store = get_store()
     success = await store.delete_messages_from(
         conversation_id=conversation_id,
         position=position,

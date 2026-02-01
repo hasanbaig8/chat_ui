@@ -1,0 +1,30 @@
+{
+  "name": "chat-ui-tests",
+  "version": "1.0.0",
+  "description": "Test suite for Claude Chat UI",
+  "scripts": {
+    "test": "pytest tests/",
+    "test:smoke": "playwright test tests/e2e/smoke.spec.ts",
+    "test:smoke:headed": "playwright test tests/e2e/smoke.spec.ts --headed",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:basics": "playwright test tests/e2e/01-basics.spec.ts",
+    "test:e2e:input": "playwright test tests/e2e/02-input.spec.ts",
+    "test:e2e:messaging": "playwright test tests/e2e/03-messaging.spec.ts",
+    "test:e2e:conversations": "playwright test tests/e2e/04-conversations.spec.ts",
+    "test:e2e:settings": "playwright test tests/e2e/05-settings.spec.ts",
+    "test:e2e:sidebar": "playwright test tests/e2e/06-sidebar.spec.ts",
+    "test:e2e:theme": "playwright test tests/e2e/07-theme.spec.ts",
+    "test:e2e:actions": "playwright test tests/e2e/08-message-actions.spec.ts",
+    "test:visual": "playwright test tests/visual/",
+    "test:visual:update": "playwright test tests/visual/ --update-snapshots",
+    "test:mock": "MOCK_LLM=1 pytest tests/ && MOCK_LLM=1 playwright test",
+    "test:backend": "pytest tests/backend/",
+    "test:all": "npm run test:backend && npm run test:e2e",
+    "dev:mock": "MOCK_LLM=1 python app.py"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.41.0"
+  }
+}

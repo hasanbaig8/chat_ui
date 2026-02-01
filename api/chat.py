@@ -2,31 +2,17 @@
 
 import json
 import asyncio
-from typing import List, Dict, Any, Optional, Set
+from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from services.anthropic_client import AnthropicClient
-from services.file_conversation_store import FileConversationStore
+from api.deps import get_store, get_anthropic_client
+from services.streaming_service import get_streaming_service, StreamType
+from services.mock_streams import is_mock_mode, mock_normal_chat_stream
 from config import DEFAULT_MODEL, DEFAULT_TEMPERATURE, DEFAULT_MAX_TOKENS, DEFAULT_THINKING_BUDGET
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
-
-# Initialize client and file store
-client = AnthropicClient()
-store = FileConversationStore()
-
-# Track which conversations are currently streaming
-streaming_conversations: Set[str] = set()
-
-
-@router.on_event("startup")
-async def startup():
-    """Initialize storage and warm up API connection on startup."""
-    await store.initialize()
-    # Warm up Anthropic API connection in background
-    asyncio.create_task(client.warmup())
 
 
 class ContentBlock(BaseModel):
@@ -73,17 +59,22 @@ async def stream_chat(request: ChatRequest):
     """
 
     async def event_generator():
+        # Get dependencies
+        store = get_store()
+        client = get_anthropic_client()
+
         message_id = None
-        text_content = ""
-        thinking_content = ""
         conversation_id = request.conversation_id
         branch = request.branch or [0]
 
-        # Track web search events for persistence
-        web_search_blocks = []
-        current_web_search = None
+        # Track content blocks in order (thinking, text, web_search interleaved)
+        content_blocks = []
+        current_text = ""
+        current_thinking = ""
+        in_thinking = False
 
-        # Use file store for all conversations
+        # Track web search events
+        current_web_search = None
 
         # Convert messages to API format
         api_messages = []
@@ -101,10 +92,11 @@ async def stream_chat(request: ChatRequest):
                 api_messages.append({"role": msg.role, "content": content_blocks})
 
         # If we have a conversation_id, create the message record first
+        streaming_service = get_streaming_service()
         if conversation_id:
-            streaming_conversations.add(conversation_id)
+            streaming_service.start_stream(conversation_id, StreamType.NORMAL)
             try:
-                print(f"[STREAM] Creating message for conversation {conversation_id} using store: {type(store).__name__}")
+                print(f"[STREAM] Creating message for conversation {conversation_id}")
                 msg_record = await store.add_message(
                     conversation_id=conversation_id,
                     role="assistant",
@@ -124,27 +116,57 @@ async def stream_chat(request: ChatRequest):
 
         update_counter = 0
         try:
-            async for event in client.stream_message(
-                messages=api_messages,
-                model=request.model,
-                system_prompt=request.system_prompt,
-                temperature=request.temperature,
-                max_tokens=request.max_tokens,
-                top_p=request.top_p,
-                top_k=request.top_k,
-                thinking_enabled=request.thinking_enabled,
-                thinking_budget=request.thinking_budget,
-                web_search_enabled=request.web_search_enabled,
-                web_search_max_uses=request.web_search_max_uses,
-            ):
+            # Use mock stream if MOCK_LLM=1
+            if is_mock_mode():
+                event_stream = mock_normal_chat_stream(
+                    conversation_id=conversation_id,
+                    thinking_enabled=request.thinking_enabled,
+                    web_search_enabled=request.web_search_enabled
+                )
+            else:
+                event_stream = client.stream_message(
+                    messages=api_messages,
+                    model=request.model,
+                    system_prompt=request.system_prompt,
+                    temperature=request.temperature,
+                    max_tokens=request.max_tokens,
+                    top_p=request.top_p,
+                    top_k=request.top_k,
+                    thinking_enabled=request.thinking_enabled,
+                    thinking_budget=request.thinking_budget,
+                    web_search_enabled=request.web_search_enabled,
+                    web_search_max_uses=request.web_search_max_uses,
+                )
+
+            async for event in event_stream:
                 yield f"data: {json.dumps(event)}\n\n"
 
-                # Accumulate content
+                # Accumulate content blocks in order
                 if event.get("type") == "thinking":
-                    thinking_content += event.get("content", "")
+                    # Start thinking phase - finalize any pending text first
+                    if not in_thinking:
+                        if current_text:
+                            content_blocks.append({"type": "text", "text": current_text})
+                            current_text = ""
+                        in_thinking = True
+                    current_thinking += event.get("content", "")
                 elif event.get("type") == "text":
-                    text_content += event.get("content", "")
+                    # End thinking phase if active
+                    if in_thinking:
+                        if current_thinking:
+                            content_blocks.append({"type": "thinking", "content": current_thinking})
+                            current_thinking = ""
+                        in_thinking = False
+                    current_text += event.get("content", "")
                 elif event.get("type") == "web_search_start":
+                    # Finalize any pending content
+                    if in_thinking and current_thinking:
+                        content_blocks.append({"type": "thinking", "content": current_thinking})
+                        current_thinking = ""
+                        in_thinking = False
+                    if current_text:
+                        content_blocks.append({"type": "text", "text": current_text})
+                        current_text = ""
                     # Start tracking a new web search
                     current_web_search = {
                         "id": event.get("id"),
@@ -156,56 +178,70 @@ async def stream_chat(request: ChatRequest):
                     if current_web_search:
                         current_web_search["query"] += event.get("partial_query", "")
                 elif event.get("type") == "web_search_result":
-                    # Web search completed - save results
+                    # Web search completed - add to content blocks
                     search_id = event.get("tool_use_id")
                     if current_web_search and current_web_search["id"] == search_id:
                         current_web_search["results"] = event.get("results", [])
-                        web_search_blocks.append(current_web_search)
+                        content_blocks.append({"type": "web_search", **current_web_search})
                         current_web_search = None
                     elif current_web_search:
                         # ID mismatch - save with the event's ID
                         current_web_search["id"] = search_id
                         current_web_search["results"] = event.get("results", [])
-                        web_search_blocks.append(current_web_search)
+                        content_blocks.append({"type": "web_search", **current_web_search})
                         current_web_search = None
 
                 # Update DB periodically (every 10 chunks) to avoid too many writes
                 update_counter += 1
                 if message_id and update_counter % 10 == 0:
-                    print(f"[STREAM] Updating message {message_id} with {len(text_content)} chars")
+                    # Build current content for progress update
+                    progress_content = list(content_blocks)
+                    if in_thinking and current_thinking:
+                        progress_content.append({"type": "thinking", "content": current_thinking})
+                    if current_text:
+                        progress_content.append({"type": "text", "text": current_text})
+                    # Use simple text if no thinking
+                    if len(progress_content) == 1 and progress_content[0].get("type") == "text":
+                        progress_content = progress_content[0]["text"]
+                    print(f"[STREAM] Updating message {message_id}")
                     await store.update_message_content(
                         conversation_id=conversation_id,
                         message_id=message_id,
-                        content=text_content,
-                        thinking=thinking_content if thinking_content else None,
+                        content=progress_content if progress_content else "",
                         branch=branch,
                         streaming=True
                     )
 
+            # Finalize any remaining content
+            if in_thinking and current_thinking:
+                content_blocks.append({"type": "thinking", "content": current_thinking})
+            if current_text:
+                content_blocks.append({"type": "text", "text": current_text})
+
             # Final update to DB with complete content
             if message_id:
-                # Include web search data if present
-                if web_search_blocks:
-                    final_content = {
-                        "text": text_content,
-                        "web_searches": web_search_blocks
-                    }
+                # Build final content
+                if len(content_blocks) == 0:
+                    final_content = ""
+                elif len(content_blocks) == 1 and content_blocks[0].get("type") == "text":
+                    # Just text, save as string for backward compatibility
+                    final_content = content_blocks[0]["text"]
                 else:
-                    final_content = text_content
+                    # Multiple blocks or has thinking - save as array
+                    final_content = content_blocks
 
-                print(f"[STREAM] Final update for message {message_id}: {len(text_content)} chars, {len(web_search_blocks)} web searches, streaming=False")
+                print(f"[STREAM] Final update for message {message_id}: {len(content_blocks)} blocks, streaming=False")
                 await store.update_message_content(
                     conversation_id=conversation_id,
                     message_id=message_id,
                     content=final_content,
-                    thinking=thinking_content if thinking_content else None,
                     branch=branch,
                     streaming=False
                 )
 
         finally:
             if conversation_id:
-                streaming_conversations.discard(conversation_id)
+                streaming_service.end_stream(conversation_id)
 
     return StreamingResponse(
         event_generator(),
@@ -218,13 +254,25 @@ async def stream_chat(request: ChatRequest):
     )
 
 
+@router.get("/streaming/all")
+async def get_all_streaming_conversations():
+    """Get status of all currently streaming conversations."""
+    streaming_service = get_streaming_service()
+    return streaming_service.get_all_streaming()
+
+
 @router.get("/streaming/{conversation_id}")
 async def is_conversation_streaming(conversation_id: str):
-    """Check if a conversation is currently streaming."""
-    return {"streaming": conversation_id in streaming_conversations}
+    """Check if a conversation is currently streaming.
+
+    Returns unified status for both normal and agent streams.
+    """
+    streaming_service = get_streaming_service()
+    return streaming_service.get_status(conversation_id)
 
 
 @router.get("/models")
 async def get_models():
     """Get available models and their configurations."""
+    client = get_anthropic_client()
     return {"models": client.get_available_models()}
