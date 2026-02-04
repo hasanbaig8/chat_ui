@@ -21,6 +21,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         await ProjectsManager.init();
         await ConversationsManager.init();
 
+        // Initialize notification and task managers
+        if (typeof NotificationManager !== 'undefined') {
+            NotificationManager.init();
+        }
+        if (typeof TaskManager !== 'undefined') {
+            TaskManager.init();
+        }
+        if (typeof SteeringInput !== 'undefined') {
+            SteeringInput.init();
+        }
+
         console.log('Claude Chat UI initialized successfully');
 
         // Set up help chat button

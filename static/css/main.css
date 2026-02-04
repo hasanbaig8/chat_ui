@@ -3534,6 +3534,190 @@ body.sidebar-resizing {
     background-color: var(--color-border-light);
 }
 
+/* Skills Management */
+.skills-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.skills-header label {
+    margin-bottom: 0;
+}
+
+.skills-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.skill-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: var(--color-border-light);
+    border-radius: 8px;
+    gap: 12px;
+}
+
+.skill-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.skill-item-name {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--color-text);
+}
+
+.skill-item-description {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.skill-item-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.skill-item-actions button {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.skill-edit-btn {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+}
+
+.skill-edit-btn:hover {
+    background: var(--color-primary-hover);
+}
+
+.skill-delete-btn {
+    background: transparent;
+    border: 1px solid var(--color-error);
+    color: var(--color-error);
+}
+
+.skill-delete-btn:hover {
+    background: var(--color-error);
+    color: white;
+}
+
+.skills-empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    background: var(--color-border-light);
+    border-radius: 8px;
+}
+
+[data-theme="dark"] .skill-item {
+    background: var(--color-border);
+}
+
+[data-theme="dark"] .skills-empty {
+    background: var(--color-border);
+}
+
+/* Skill Editor Modal */
+#skill-editor-modal {
+    z-index: 1200;  /* Above default settings */
+}
+
+.skill-editor-modal {
+    width: 600px;
+    max-width: 90vw;
+    max-height: 90vh;
+}
+
+.skill-editor-content {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.skill-editor-content textarea {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    min-height: 200px;
+    resize: vertical;
+}
+
+/* Project Skills Checkboxes */
+.skills-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: var(--color-border-light);
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.skill-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.skill-checkbox:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.skill-checkbox input[type="checkbox"] {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.skill-checkbox-info {
+    flex: 1;
+}
+
+.skill-checkbox-name {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.skill-checkbox-description {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+}
+
+.skills-empty-project {
+    padding: 16px;
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+}
+
+[data-theme="dark"] .skills-checkboxes {
+    background: var(--color-border);
+}
+
+[data-theme="dark"] .skill-checkbox:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
 /* Tool Badges (read-only display in conversation settings) */
 .tool-badges {
     display: flex;
@@ -3902,4 +4086,346 @@ body.sidebar-resizing {
 
 [data-theme="dark"] .folder-browser-item:hover {
     background: var(--color-border);
+}
+
+/* =========================================================================
+   Background Tasks Indicator
+   ========================================================================= */
+
+.background-tasks-indicator {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 12px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, rgba(193, 95, 60, 0.1), rgba(193, 95, 60, 0.05));
+    border: 1px solid rgba(193, 95, 60, 0.2);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--color-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.background-tasks-indicator:hover {
+    background: linear-gradient(135deg, rgba(193, 95, 60, 0.15), rgba(193, 95, 60, 0.1));
+    border-color: rgba(193, 95, 60, 0.3);
+}
+
+.background-tasks-indicator .task-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+.background-tasks-indicator .task-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(193, 95, 60, 0.3);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: task-spin 1s linear infinite;
+}
+
+@keyframes task-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================================================================
+   Notification Toasts
+   ========================================================================= */
+
+.notification-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 380px;
+    pointer-events: none;
+}
+
+.notification {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+}
+
+.notification.notification-enter {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification.notification-exit {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.notification-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.notification-task_complete .notification-icon {
+    background: rgba(74, 155, 127, 0.15);
+    color: var(--color-success);
+}
+
+.notification-error .notification-icon {
+    background: rgba(193, 95, 60, 0.15);
+    color: var(--color-error);
+}
+
+.notification-info .notification-icon {
+    background: rgba(177, 173, 161, 0.2);
+    color: var(--color-text-secondary);
+}
+
+.notification-success .notification-icon {
+    background: rgba(74, 155, 127, 0.15);
+    color: var(--color-success);
+}
+
+.notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-text);
+    margin-bottom: 2px;
+}
+
+.notification-message {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.notification-action {
+    padding: 6px 12px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.notification-action:hover {
+    background: var(--color-primary-hover);
+}
+
+.notification-close {
+    padding: 4px;
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+}
+
+.notification-close:hover {
+    opacity: 1;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .notification {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+}
+
+[data-theme="dark"] .background-tasks-indicator {
+    background: linear-gradient(135deg, rgba(217, 117, 85, 0.15), rgba(217, 117, 85, 0.08));
+    border-color: rgba(217, 117, 85, 0.25);
+}
+
+/* =========================================================================
+   Steering Input (Real-Time Agent Guidance)
+   ========================================================================= */
+
+.steering-input-container {
+    display: none;
+    background: linear-gradient(135deg, rgba(193, 95, 60, 0.08), rgba(193, 95, 60, 0.03));
+    border: 1px solid rgba(193, 95, 60, 0.2);
+    border-radius: 12px;
+    margin: 0 16px 12px;
+    padding: 12px;
+    animation: steering-slide-in 0.2s ease-out;
+}
+
+@keyframes steering-slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.steering-input-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.steering-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.steering-label::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    animation: steering-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes steering-pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(0.8);
+    }
+}
+
+.steering-close {
+    padding: 2px 6px;
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all var(--transition-fast);
+}
+
+.steering-close:hover {
+    background: rgba(193, 95, 60, 0.1);
+    color: var(--color-primary);
+}
+
+.steering-input-body {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.steering-textarea {
+    flex: 1;
+    padding: 10px 12px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-family: var(--font-family);
+    font-size: 13px;
+    color: var(--color-text);
+    resize: none;
+    outline: none;
+    transition: border-color var(--transition-fast);
+    min-height: 40px;
+    max-height: 120px;
+}
+
+.steering-textarea:focus {
+    border-color: var(--color-primary);
+}
+
+.steering-textarea::placeholder {
+    color: var(--color-text-secondary);
+}
+
+.steering-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--color-primary);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.steering-submit:hover {
+    background: var(--color-primary-hover);
+}
+
+.steering-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.steering-submit svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Dark mode */
+[data-theme="dark"] .steering-input-container {
+    background: linear-gradient(135deg, rgba(217, 117, 85, 0.12), rgba(217, 117, 85, 0.05));
+    border-color: rgba(217, 117, 85, 0.25);
+}
+
+[data-theme="dark"] .steering-textarea {
+    background: var(--color-background);
 }

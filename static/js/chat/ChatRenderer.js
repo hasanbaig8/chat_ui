@@ -16,6 +16,111 @@ const ChatRenderer = {
     init() {
         this.messagesContainer = document.getElementById('messages-container');
         this.welcomeMessage = document.getElementById('welcome-message');
+        this._bindSurfaceContentEvents();
+    },
+
+    /**
+     * Bind event delegation for surface content blocks
+     * @private
+     */
+    _bindSurfaceContentEvents() {
+        const container = document.getElementById('messages-container');
+        if (!container) return;
+
+        container.addEventListener('click', (e) => {
+            // Handle surface content toggle/expand clicks
+            const toggle = e.target.closest('.surface-toggle, .surface-header');
+            if (!toggle) return;
+
+            const block = toggle.closest('.surface-content-block');
+            if (!block) return;
+
+            e.stopPropagation();
+            this._handleSurfaceContentClick(block);
+        });
+    },
+
+    /**
+     * Handle click on surface content block - open modal
+     * @private
+     */
+    _handleSurfaceContentClick(block) {
+        const contentId = block.dataset.contentId;
+        const filename = block.querySelector('.surface-content-container')?.dataset.filename;
+        const titleEl = block.querySelector('.surface-title');
+        const title = titleEl ? titleEl.textContent : 'Content';
+
+        // If ChatManager has the openSurfaceModal method, delegate to it
+        // Otherwise, we need to load and display the content ourselves
+        if (typeof ChatManager !== 'undefined' && filename) {
+            this._loadAndOpenSurface(filename, title, contentId);
+        }
+    },
+
+    /**
+     * Load surface content from workspace and open in modal
+     * @private
+     */
+    async _loadAndOpenSurface(filename, title, contentId) {
+        const conversationId = typeof ChatManager !== 'undefined'
+            ? ChatManager.activeConversationId
+            : null;
+
+        if (!conversationId) return;
+
+        try {
+            const response = await fetch(`/api/agent-chat/workspace/${conversationId}/${filename}`);
+            if (response.ok) {
+                const content = await response.text();
+                // Determine content type from filename
+                const contentType = filename.endsWith('.html') ? 'html' : 'markdown';
+
+                // Use ChatManager's modal if available
+                if (typeof ChatManager !== 'undefined' && ChatManager.openSurfaceModal) {
+                    ChatManager.openSurfaceModal(content, contentType, title);
+                } else {
+                    this._openSurfaceModal(content, contentType, title);
+                }
+            }
+        } catch (e) {
+            console.error('Error loading surface content:', e);
+        }
+    },
+
+    /**
+     * Open surface content in a modal (fallback if ChatManager not available)
+     * @private
+     */
+    _openSurfaceModal(content, contentType, title) {
+        const modal = document.createElement('div');
+        modal.className = 'surface-modal';
+        modal.innerHTML = `
+            <div class="surface-modal-content">
+                <div class="surface-modal-header">
+                    <span>${this._escapeHtml(title || 'Content')}</span>
+                    <button class="surface-modal-close">×</button>
+                </div>
+                <div class="surface-modal-body"></div>
+            </div>
+        `;
+
+        const body = modal.querySelector('.surface-modal-body');
+        if (contentType === 'html') {
+            const iframe = document.createElement('iframe');
+            iframe.className = 'surface-modal-iframe';
+            iframe.sandbox = 'allow-scripts';
+            iframe.srcdoc = content;
+            body.appendChild(iframe);
+        } else {
+            body.innerHTML = this._renderMarkdown(content);
+        }
+
+        modal.querySelector('.surface-modal-close').onclick = () => modal.remove();
+        modal.onclick = (e) => {
+            if (e.target === modal) modal.remove();
+        };
+
+        document.body.appendChild(modal);
     },
 
     /**

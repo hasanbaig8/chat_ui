@@ -8,6 +8,7 @@ const DefaultSettingsManager = {
     isOpen: false,
     currentTab: 'normal',
     settings: null,
+    editingSkillId: null,  // Track which skill is being edited
 
     /**
      * Initialize default settings manager
@@ -66,7 +67,8 @@ const DefaultSettingsManager = {
             agent_system_prompt: '',
             agent_tools: null,
             agent_cwd: null,
-            agent_thinking_budget: 32000
+            agent_thinking_budget: 32000,
+            skills: []
         };
     },
 
@@ -216,6 +218,173 @@ const DefaultSettingsManager = {
             // Default to true (enabled) if not specified
             checkbox.checked = agentTools[checkbox.name] !== false;
         });
+
+        // Render skills list
+        this.renderSkillsList();
+    },
+
+    /**
+     * Render the skills list in the default settings
+     */
+    renderSkillsList() {
+        const container = document.getElementById('default-skills-list');
+        if (!container) return;
+
+        const skills = this.settings?.skills || [];
+
+        if (skills.length === 0) {
+            container.innerHTML = '<div class="skills-empty">No skills defined yet. Click "+ Add Skill" to create one.</div>';
+            return;
+        }
+
+        container.innerHTML = skills.map(skill => `
+            <div class="skill-item" data-skill-id="${skill.id}">
+                <div class="skill-item-info">
+                    <div class="skill-item-name">${this.escapeHtml(skill.name)}</div>
+                    ${skill.description ? `<div class="skill-item-description">${this.escapeHtml(skill.description)}</div>` : ''}
+                </div>
+                <div class="skill-item-actions">
+                    <button class="skill-edit-btn" data-skill-id="${skill.id}">Edit</button>
+                    <button class="skill-delete-btn" data-skill-id="${skill.id}">Delete</button>
+                </div>
+            </div>
+        `).join('');
+
+        // Bind edit/delete events
+        container.querySelectorAll('.skill-edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const skillId = e.target.dataset.skillId;
+                this.openSkillEditor(skillId);
+            });
+        });
+
+        container.querySelectorAll('.skill-delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const skillId = e.target.dataset.skillId;
+                this.deleteSkill(skillId);
+            });
+        });
+    },
+
+    /**
+     * Escape HTML to prevent XSS
+     */
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    },
+
+    /**
+     * Open the skill editor modal
+     * @param {string|null} skillId - Skill ID to edit, or null for new skill
+     */
+    openSkillEditor(skillId = null) {
+        this.editingSkillId = skillId;
+
+        const modal = document.getElementById('skill-editor-modal');
+        const titleEl = document.getElementById('skill-editor-title');
+        const nameInput = document.getElementById('skill-name');
+        const descInput = document.getElementById('skill-description');
+        const promptInput = document.getElementById('skill-prompt');
+
+        if (skillId) {
+            // Editing existing skill
+            const skill = (this.settings?.skills || []).find(s => s.id === skillId);
+            if (skill) {
+                titleEl.textContent = 'Edit Skill';
+                nameInput.value = skill.name;
+                descInput.value = skill.description || '';
+                promptInput.value = skill.prompt;
+            }
+        } else {
+            // New skill
+            titleEl.textContent = 'Add Skill';
+            nameInput.value = '';
+            descInput.value = '';
+            promptInput.value = '';
+        }
+
+        modal.classList.add('visible');
+    },
+
+    /**
+     * Close the skill editor modal
+     */
+    closeSkillEditor() {
+        const modal = document.getElementById('skill-editor-modal');
+        modal.classList.remove('visible');
+        this.editingSkillId = null;
+    },
+
+    /**
+     * Save the skill from the editor
+     */
+    saveSkill() {
+        const nameInput = document.getElementById('skill-name');
+        const descInput = document.getElementById('skill-description');
+        const promptInput = document.getElementById('skill-prompt');
+
+        const name = nameInput.value.trim();
+        const description = descInput.value.trim();
+        const prompt = promptInput.value.trim();
+
+        if (!name) {
+            alert('Please enter a skill name.');
+            nameInput.focus();
+            return;
+        }
+
+        if (!prompt) {
+            alert('Please enter a skill prompt.');
+            promptInput.focus();
+            return;
+        }
+
+        // Ensure skills array exists
+        if (!this.settings.skills) {
+            this.settings.skills = [];
+        }
+
+        if (this.editingSkillId) {
+            // Update existing skill
+            const index = this.settings.skills.findIndex(s => s.id === this.editingSkillId);
+            if (index !== -1) {
+                this.settings.skills[index] = {
+                    ...this.settings.skills[index],
+                    name,
+                    description,
+                    prompt
+                };
+            }
+        } else {
+            // Add new skill
+            const newSkill = {
+                id: 'skill_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                name,
+                description,
+                prompt
+            };
+            this.settings.skills.push(newSkill);
+        }
+
+        this.renderSkillsList();
+        this.closeSkillEditor();
+    },
+
+    /**
+     * Delete a skill
+     * @param {string} skillId - Skill ID to delete
+     */
+    deleteSkill(skillId) {
+        if (!confirm('Are you sure you want to delete this skill?')) {
+            return;
+        }
+
+        if (this.settings?.skills) {
+            this.settings.skills = this.settings.skills.filter(s => s.id !== skillId);
+            this.renderSkillsList();
+        }
     },
 
     /**
@@ -309,6 +478,38 @@ const DefaultSettingsManager = {
         if (webSearchToggle) {
             webSearchToggle.addEventListener('change', (e) => {
                 this.onWebSearchToggle(e.target.checked);
+            });
+        }
+
+        // Skills management
+        const addSkillBtn = document.getElementById('default-add-skill-btn');
+        if (addSkillBtn) {
+            addSkillBtn.addEventListener('click', () => this.openSkillEditor(null));
+        }
+
+        // Skill editor modal
+        const closeSkillEditorBtn = document.getElementById('close-skill-editor');
+        if (closeSkillEditorBtn) {
+            closeSkillEditorBtn.addEventListener('click', () => this.closeSkillEditor());
+        }
+
+        const cancelSkillBtn = document.getElementById('cancel-skill-editor');
+        if (cancelSkillBtn) {
+            cancelSkillBtn.addEventListener('click', () => this.closeSkillEditor());
+        }
+
+        const saveSkillBtn = document.getElementById('save-skill-editor');
+        if (saveSkillBtn) {
+            saveSkillBtn.addEventListener('click', () => this.saveSkill());
+        }
+
+        // Skill editor modal overlay click to close
+        const skillEditorModal = document.getElementById('skill-editor-modal');
+        if (skillEditorModal) {
+            skillEditorModal.addEventListener('click', (e) => {
+                if (e.target === skillEditorModal) {
+                    this.closeSkillEditor();
+                }
             });
         }
 
@@ -445,7 +646,10 @@ const DefaultSettingsManager = {
             agent_system_prompt: document.getElementById('default-agent-system-prompt')?.value || '',
             agent_cwd: document.getElementById('default-agent-cwd')?.value || null,
             agent_thinking_budget: parseInt(document.getElementById('default-agent-thinking-budget')?.value) || 8000,
-            agent_tools: this.getDefaultToolToggles()
+            agent_tools: this.getDefaultToolToggles(),
+
+            // Skills (already modified in memory by add/edit/delete)
+            skills: this.settings?.skills || []
         };
 
         try {

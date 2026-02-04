@@ -9,18 +9,20 @@ from services.file_conversation_store import FileConversationStore
 from services.project_store import ProjectStore
 from services.anthropic_client import AnthropicClient
 from services.agent_session_manager import AgentSessionManager, get_session_manager as _get_session_manager
+from services.agent_pool import AgentPool, get_agent_pool as _get_agent_pool
 
 # Singleton instances
 _store: FileConversationStore | None = None
 _project_store: ProjectStore | None = None
 _anthropic_client: AnthropicClient | None = None
 _session_manager: AgentSessionManager | None = None
+_agent_pool: AgentPool | None = None
 _initialized: bool = False
 
 
 async def initialize_all():
     """Initialize all stores and services. Called once at app startup."""
-    global _store, _project_store, _anthropic_client, _session_manager, _initialized
+    global _store, _project_store, _anthropic_client, _session_manager, _agent_pool, _initialized
 
     if _initialized:
         return
@@ -38,6 +40,9 @@ async def initialize_all():
 
     # Initialize agent session manager (singleton)
     _session_manager = _get_session_manager()
+
+    # Initialize agent pool (singleton)
+    _agent_pool = _get_agent_pool()
 
     _initialized = True
     print("[DEPS] All services initialized")
@@ -69,6 +74,13 @@ def get_session_manager() -> AgentSessionManager:
     if not _initialized or _session_manager is None:
         raise RuntimeError("Dependencies not initialized. Call initialize_all() first.")
     return _session_manager
+
+
+def get_agent_pool() -> AgentPool:
+    """Get the singleton AgentPool instance."""
+    if not _initialized or _agent_pool is None:
+        raise RuntimeError("Dependencies not initialized. Call initialize_all() first.")
+    return _agent_pool
 
 
 def is_initialized() -> bool:

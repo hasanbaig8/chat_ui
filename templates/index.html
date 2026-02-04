@@ -54,6 +54,11 @@
                         <span>+</span> New Project
                     </button>
                 </div>
+                <div class="background-tasks-indicator" id="background-tasks-indicator" style="display: none;">
+                    <div class="task-spinner"></div>
+                    <span class="task-count">0</span>
+                    <span class="task-text">tasks running</span>
+                </div>
                 <div class="search-container">
                     <input
                         type="text"
@@ -495,11 +500,50 @@
                         </div>
                         <span class="setting-description">Toggle tools on/off to control what the agent can use.</span>
                     </div>
+
+                    <div class="setting-group">
+                        <div class="skills-header">
+                            <label>Skills</label>
+                            <button class="btn-small" id="default-add-skill-btn">+ Add Skill</button>
+                        </div>
+                        <div id="default-skills-list" class="skills-list">
+                            <!-- Skills will be listed here -->
+                        </div>
+                        <span class="setting-description">Define reusable skill prompts that can be enabled per-project. Skills are appended to agent system prompts when enabled.</span>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn" id="cancel-default-settings">Cancel</button>
                 <button class="btn btn-primary" id="save-default-settings">Save Defaults</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skill Editor Modal -->
+    <div class="modal-overlay" id="skill-editor-modal">
+        <div class="modal-content skill-editor-modal">
+            <div class="modal-header">
+                <h3 id="skill-editor-title">Add Skill</h3>
+                <button class="icon-btn" id="close-skill-editor">&times;</button>
+            </div>
+            <div class="skill-editor-content">
+                <div class="setting-group">
+                    <label for="skill-name">Skill Name</label>
+                    <input type="text" id="skill-name" placeholder="e.g., Code Review, SQL Helper">
+                </div>
+                <div class="setting-group">
+                    <label for="skill-description">Description (optional)</label>
+                    <input type="text" id="skill-description" placeholder="Brief description of what this skill does">
+                </div>
+                <div class="setting-group">
+                    <label for="skill-prompt">Skill Prompt</label>
+                    <textarea id="skill-prompt" rows="10" placeholder="Enter the skill instructions/prompt that will be appended to the system prompt when this skill is enabled..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancel-skill-editor">Cancel</button>
+                <button class="btn btn-primary" id="save-skill-editor">Save Skill</button>
             </div>
         </div>
     </div>
@@ -573,6 +617,9 @@
     <script src="/static/js/core/apiClient.js"></script>
     <script src="/static/js/core/sseClient.js"></script>
     <script src="/static/js/core/backgroundStreamManager.js"></script>
+    <script src="/static/js/core/taskManager.js"></script>
+    <!-- UI modules -->
+    <script src="/static/js/ui/notificationManager.js"></script>
     <!-- Background streams -->
     <script src="/static/js/background-streams.js"></script>
     <script src="/static/js/projects.js"></script>
@@ -589,6 +636,7 @@
     <script src="/static/js/chat/ChatController.js"></script>
     <script src="/static/js/chat/ChatRenderer.js"></script>
     <script src="/static/js/chat/streamingDisplay.js"></script>
+    <script src="/static/js/chat/steeringInput.js"></script>
     <!-- Main chat (legacy, being gradually refactored) -->
     <script src="/static/js/chat.js?v=9"></script>
     <script src="/static/js/app.js"></script>

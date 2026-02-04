@@ -5,9 +5,11 @@ streams, whether they are normal chat or agent chat streams.
 """
 
 import asyncio
+import time
+import uuid
 from enum import Enum
-from typing import Dict, Optional
-from dataclasses import dataclass
+from typing import Dict, Optional, List, Any
+from dataclasses import dataclass, field
 
 
 class StreamType(Enum):
@@ -17,10 +19,25 @@ class StreamType(Enum):
 
 
 @dataclass
+class SteerContext:
+    """Context for steering an in-progress agent stream."""
+    guidance: str
+    partial_content: List[Dict[str, Any]]
+    created_at: float = field(default_factory=time.time)
+
+
+@dataclass
 class StreamState:
     """State of an active stream."""
     stream_type: StreamType
     stop_event: Optional[asyncio.Event] = None  # Only for AGENT streams
+    # Task tracking fields
+    task_id: Optional[str] = None
+    title: Optional[str] = None
+    conversation_id: Optional[str] = None
+    started_at: Optional[float] = None
+    # Steering context (for real-time guidance)
+    steer_context: Optional[SteerContext] = None
 
 
 class StreamingService:
@@ -28,17 +45,21 @@ class StreamingService:
 
     def __init__(self):
         self._streams: Dict[str, StreamState] = {}
+        # Store steer contexts separately so they survive stream end
+        self._steer_contexts: Dict[str, SteerContext] = {}
 
     def start_stream(
         self,
         conversation_id: str,
-        stream_type: StreamType
+        stream_type: StreamType,
+        title: Optional[str] = None
     ) -> Optional[asyncio.Event]:
         """Register a new stream.
 
         Args:
             conversation_id: The conversation being streamed
             stream_type: NORMAL or AGENT
+            title: Optional title for task tracking (first line of user message)
 
         Returns:
             Event for agent streams (used to signal stop), None for normal streams
@@ -47,9 +68,15 @@ class StreamingService:
         if stream_type == StreamType.AGENT:
             stop_event = asyncio.Event()
 
+        task_id = str(uuid.uuid4()) if stream_type == StreamType.AGENT else None
+
         self._streams[conversation_id] = StreamState(
             stream_type=stream_type,
-            stop_event=stop_event
+            stop_event=stop_event,
+            task_id=task_id,
+            title=title,
+            conversation_id=conversation_id,
+            started_at=time.time()
         )
 
         return stop_event
@@ -121,6 +148,72 @@ class StreamingService:
             conv_id: self.get_status(conv_id)
             for conv_id in self._streams
         }
+
+    def get_active_tasks(self) -> List[Dict[str, Any]]:
+        """Get all active agent tasks with metadata.
+
+        Returns:
+            List of task info dicts for background task tracking
+        """
+        tasks = []
+        for conv_id, state in self._streams.items():
+            if state.stream_type == StreamType.AGENT and state.task_id:
+                tasks.append({
+                    "task_id": state.task_id,
+                    "conversation_id": conv_id,
+                    "title": state.title,
+                    "started_at": state.started_at,
+                    "elapsed_seconds": time.time() - state.started_at if state.started_at else 0
+                })
+        return tasks
+
+    def set_steer_context(self, conversation_id: str, context: SteerContext) -> bool:
+        """Set steering context for a conversation.
+
+        Stores context separately from stream state so it survives stream end.
+
+        Args:
+            conversation_id: The conversation to steer
+            context: The steering context with guidance and partial content
+
+        Returns:
+            True (always succeeds)
+        """
+        print(f"[STREAMING_SERVICE] Setting steer context for: {conversation_id}")
+        print(f"[STREAMING_SERVICE] Current steer contexts: {list(self._steer_contexts.keys())}")
+        self._steer_contexts[conversation_id] = context
+        print(f"[STREAMING_SERVICE] After set, steer contexts: {list(self._steer_contexts.keys())}")
+        return True
+
+    def get_steer_context(self, conversation_id: str) -> Optional[SteerContext]:
+        """Get steering context for a conversation.
+
+        Args:
+            conversation_id: The conversation to check
+
+        Returns:
+            SteerContext if set, None otherwise
+        """
+        print(f"[STREAMING_SERVICE] Getting steer context for: {conversation_id}")
+        print(f"[STREAMING_SERVICE] Available steer contexts: {list(self._steer_contexts.keys())}")
+        result = self._steer_contexts.get(conversation_id)
+        print(f"[STREAMING_SERVICE] Found: {result is not None}")
+        return result
+
+    def clear_steer_context(self, conversation_id: str) -> bool:
+        """Clear steering context for a conversation.
+
+        Args:
+            conversation_id: The conversation to clear context for
+
+        Returns:
+            True if cleared, False if not found
+        """
+        print(f"[STREAMING_SERVICE] Clearing steer context for: {conversation_id}")
+        if conversation_id in self._steer_contexts:
+            del self._steer_contexts[conversation_id]
+            return True
+        return False
 
 
 # Singleton instance

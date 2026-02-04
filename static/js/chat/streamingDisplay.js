@@ -255,21 +255,27 @@ const StreamingDisplay = {
      * @private
      */
     _handleUpdate(updateType, event, stream) {
+        console.log('[StreamingDisplay] _handleUpdate called:', updateType);
+
         // Verify we're still displaying this conversation
         const currentConvId = Store.get('currentConversationId');
         if (currentConvId !== this._conversationId) {
             console.log('[StreamingDisplay] Ignoring update - different conversation active');
+            console.log('[StreamingDisplay] Store currentConversationId:', currentConvId);
+            console.log('[StreamingDisplay] This._conversationId:', this._conversationId);
             return;
         }
 
         // Make sure we have a content element
         if (!this._contentEl) {
+            console.log('[StreamingDisplay] No content element, trying to find it');
             // Try to find it
             if (stream.messageId) {
                 this._messageEl = document.querySelector(`.message[data-message-id="${stream.messageId}"]`);
                 if (this._messageEl) {
                     this._contentEl = this._messageEl.querySelector('.message-content');
                     this._indicator = this._contentEl.querySelector('.streaming-indicator');
+                    console.log('[StreamingDisplay] Found content element by messageId');
                 }
             }
 

@@ -434,6 +434,11 @@ const ConversationsManager = {
         const conversation = this.conversations.find(c => c.id === conversationId);
         const isAgent = conversation?.is_agent || false;
 
+        // Pre-warm agent session in the background (fire and forget)
+        if (isAgent && typeof ApiClient !== 'undefined') {
+            ApiClient.warmAgentSession(conversationId);
+        }
+
         // Immediately prepare ChatManager for the switch - clears UI and sets active ID
         if (typeof ChatManager !== 'undefined') {
             ChatManager.isAgentConversation = isAgent;  // Set this before preparing so welcome message is correct

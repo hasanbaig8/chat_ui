@@ -45,9 +45,10 @@ const BackgroundStreamManager = {
      * @param {string} conversationId - Conversation ID
      * @param {string} type - 'normal' or 'agent'
      * @param {number} position - Message position in conversation
+     * @param {string} title - Optional task title (for agent streams)
      * @returns {object} Stream state
      */
-    startStream(conversationId, type, position) {
+    startStream(conversationId, type, position, title = null) {
         console.log('[BackgroundStreamManager] Starting stream:', conversationId, type, position);
 
         const stream = {
@@ -66,6 +67,12 @@ const BackgroundStreamManager = {
         };
 
         this._streams.set(conversationId, stream);
+
+        // Create task for agent streams
+        if (type === 'agent' && typeof TaskManager !== 'undefined') {
+            TaskManager.createTask(conversationId, title || 'Agent Task');
+        }
+
         return stream;
     },
 
@@ -163,6 +170,7 @@ const BackgroundStreamManager = {
                 }
                 // Accumulate text
                 stream.currentText += event.content;
+                console.log('[BackgroundStreamManager] Accumulated text, currentText length:', stream.currentText.length);
                 break;
 
             case 'tool_use':
@@ -283,17 +291,23 @@ const BackgroundStreamManager = {
     /**
      * Mark a stream as complete
      * @param {string} conversationId - Conversation ID
+     * @param {string} status - 'completed' or 'error' (default: 'completed')
      */
-    endStream(conversationId) {
+    endStream(conversationId, status = 'completed') {
         const stream = this._streams.get(conversationId);
         if (!stream) return;
 
-        console.log('[BackgroundStreamManager] Ending stream:', conversationId);
+        console.log('[BackgroundStreamManager] Ending stream:', conversationId, status);
 
         // Finalize any remaining content
         this._finalizeCurrentContent(stream);
 
         stream.isComplete = true;
+
+        // Notify TaskManager if this was an agent stream
+        if (stream.type === 'agent' && typeof TaskManager !== 'undefined') {
+            TaskManager.completeTaskByConversation(conversationId, status);
+        }
 
         // Notify subscribers of completion
         this._notifySubscribers(stream, 'stream_complete', { type: 'stream_complete' });

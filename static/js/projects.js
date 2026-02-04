@@ -836,8 +836,8 @@ const ProjectsManager = {
 
                     // Update ChatManager
                     if (typeof ChatManager !== 'undefined') {
-                        ChatManager.isAgentConversation = isAgent;
                         ChatManager.clearChat();
+                        ChatManager.isAgentConversation = isAgent;  // Must be AFTER clearChat() which resets isAgent
                         ChatManager.activeConversationId = conversation.id;
                         ChatManager.currentBranch = [0];
                     }

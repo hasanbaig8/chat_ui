@@ -301,16 +301,32 @@ const ChatManager = {
         const hasContent = messageInput.value.trim().length > 0 ||
                           (typeof FilesManager !== 'undefined' && FilesManager.getContentBlocks().length > 0);
 
+        // Check if we're in steering mode (agent streaming)
+        const isSteeringMode = this.isStreaming && this.isAgentConversation;
+
         if (this.isStreaming) {
-            sendBtn.disabled = true;
+            if (isSteeringMode) {
+                // In steering mode: enable send button and change placeholder
+                sendBtn.disabled = !hasContent;
+                messageInput.placeholder = 'Steer Claude in real time...';
+            } else {
+                // Normal streaming: disable send button
+                sendBtn.disabled = true;
+            }
             if (stopBtn && this.isAgentConversation) {
                 stopBtn.style.display = 'block';
             }
         } else {
             sendBtn.disabled = !hasContent;
+            messageInput.placeholder = 'Type your message...';
             if (stopBtn) {
                 stopBtn.style.display = 'none';
             }
+        }
+
+        // Hide the separate steering input - we use the main input now
+        if (typeof SteeringInput !== 'undefined' && SteeringInput.isVisible()) {
+            SteeringInput.hide();
         }
     },
 
@@ -399,20 +415,15 @@ const ChatManager = {
         const msgs = conversation.messages || [];
         Store.set({ messages: msgs });
 
-        // Clear and render UI
-        this.clearMessagesUI();
-        const welcomeMessage = this.getWelcomeMessage();
-        if (welcomeMessage) {
-            welcomeMessage.style.display = msgs.length > 0 ? 'none' : 'block';
-        }
-
         // Check for active background stream FIRST (before rendering messages)
         const activeStream = typeof BackgroundStreamManager !== 'undefined'
             ? BackgroundStreamManager.getStream(conversation.id)
             : null;
 
-        // Check for any streaming messages and render
+        // Build all message elements in a fragment first (prevents flash during switch)
+        const fragment = document.createDocumentFragment();
         let lastStreamingMsg = null;
+
         for (const msg of msgs) {
             if (msg.streaming) {
                 lastStreamingMsg = msg;
@@ -422,7 +433,27 @@ const ChatManager = {
             if (activeStream && !activeStream.isComplete && msg.id === activeStream.messageId) {
                 continue;
             }
-            this.renderMessage(msg);
+            // Render message to fragment instead of directly to DOM
+            const msgEl = this.createMessageElementFromData(msg);
+            if (msgEl) {
+                fragment.appendChild(msgEl);
+            }
+        }
+
+        // Atomic swap: clear old messages and append new ones in one operation
+        const container = document.getElementById('messages-container');
+        const welcomeMessage = this.getWelcomeMessage();
+
+        // Remove only message elements, preserve welcome-message
+        const oldMessages = container.querySelectorAll('.message');
+        oldMessages.forEach(msg => msg.remove());
+
+        // Append all new messages at once
+        container.appendChild(fragment);
+
+        // Update welcome message visibility
+        if (welcomeMessage) {
+            welcomeMessage.style.display = msgs.length > 0 ? 'none' : 'block';
         }
 
         // Handle streaming state - check BackgroundStreamManager first
@@ -538,6 +569,8 @@ const ChatManager = {
         if (container) {
             // Remove only message elements, preserve welcome-message
             const messages = container.querySelectorAll('.message');
+            console.log('[ChatManager] clearMessagesUI - removing', messages.length, 'messages');
+            console.trace('[ChatManager] clearMessagesUI called from:');
             messages.forEach(msg => msg.remove());
         }
     },
@@ -602,6 +635,16 @@ const ChatManager = {
         const fileBlocks = typeof FilesManager !== 'undefined' ? FilesManager.getContentBlocks() : [];
 
         if (!text && fileBlocks.length === 0) return;
+
+        // If we're streaming an agent response, send steering guidance instead
+        if (this.isStreaming && this.isAgentConversation) {
+            await this.sendSteeringGuidance(text);
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            this.updateSendButton();
+            return;
+        }
+
         if (this.isStreaming) return;
 
         if (await this.handleSlashCommand(text)) {
@@ -662,6 +705,64 @@ const ChatManager = {
         this.renderMessage(userMsg, true);
 
         await this.streamResponse();
+    },
+
+    /**
+     * Send steering guidance to an in-progress agent stream
+     */
+    async sendSteeringGuidance(guidance) {
+        const conversationId = ConversationsManager.getCurrentConversationId();
+        if (!conversationId) {
+            console.warn('[ChatManager] Cannot steer - no conversation ID');
+            return;
+        }
+
+        console.log('[ChatManager] Sending steering guidance:', guidance.slice(0, 50));
+
+        try {
+            // Get accumulated content from BackgroundStreamManager
+            let accumulatedContent = [];
+            if (typeof BackgroundStreamManager !== 'undefined') {
+                const stream = BackgroundStreamManager.getStream(conversationId);
+                if (stream) {
+                    accumulatedContent = BackgroundStreamManager.buildFinalContent(stream);
+                }
+            }
+
+            // Call the steer API
+            const response = await fetch(`/api/agent-chat/steer/${conversationId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    guidance: guidance,
+                    accumulated_content: accumulatedContent
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                console.log('[ChatManager] Steering guidance sent successfully');
+
+                // Show notification
+                if (typeof NotificationManager !== 'undefined') {
+                    NotificationManager.showInfo('Steering guidance sent', 'Steering');
+                }
+
+                // Continue with the steered stream
+                await this.continueAfterSteering();
+            } else {
+                console.warn('[ChatManager] Failed to send steering guidance:', data.message);
+                if (typeof NotificationManager !== 'undefined') {
+                    NotificationManager.showError(data.message || 'Failed to send guidance');
+                }
+            }
+        } catch (error) {
+            console.error('[ChatManager] Error sending steering guidance:', error);
+            if (typeof NotificationManager !== 'undefined') {
+                NotificationManager.showError('Failed to send guidance: ' + error.message);
+            }
+        }
     },
 
     // =========================================================================
@@ -949,6 +1050,19 @@ const ChatManager = {
         this.updateSendButton();
 
         const conversationId = ConversationsManager.getCurrentConversationId();
+        const storeConversationId = Store.get('currentConversationId');
+        console.log('[ChatManager] streamAgentResponse - ConversationsManager ID:', conversationId);
+        console.log('[ChatManager] streamAgentResponse - Store ID:', storeConversationId);
+        if (conversationId !== storeConversationId) {
+            console.warn('[ChatManager] MISMATCH between ConversationsManager and Store conversation IDs!');
+        }
+
+        // Generate unique stream token to prevent race conditions
+        // when steering causes a new stream to start before the old one's finally block runs
+        const streamToken = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        this._currentStreamToken = streamToken;
+        console.log('[ChatManager] Starting stream with token:', streamToken);
+
         const settings = typeof SettingsManager !== 'undefined' ? SettingsManager.getSettings() : {};
 
         if (typeof StreamingTracker !== 'undefined') {
@@ -957,9 +1071,28 @@ const ChatManager = {
 
         const position = this.messages.length;
 
+        // Extract title from last user message for task tracking
+        let taskTitle = null;
+        for (let i = this.messages.length - 1; i >= 0; i--) {
+            if (this.messages[i].role === 'user') {
+                const content = this.messages[i].content;
+                if (typeof content === 'string') {
+                    taskTitle = content.split('\n')[0].slice(0, 100);
+                } else if (Array.isArray(content)) {
+                    const textBlock = content.find(b => b.type === 'text');
+                    if (textBlock) {
+                        taskTitle = (textBlock.text || '').split('\n')[0].slice(0, 100);
+                    }
+                }
+                break;
+            }
+        }
+
         // Initialize stream in BackgroundStreamManager
+        console.log('[ChatManager] Starting agent stream setup for:', conversationId, 'position:', position);
         if (typeof BackgroundStreamManager !== 'undefined') {
-            BackgroundStreamManager.startStream(conversationId, 'agent', position);
+            BackgroundStreamManager.startStream(conversationId, 'agent', position, taskTitle);
+            console.log('[ChatManager] BackgroundStreamManager.startStream done');
         }
 
         // Create message element
@@ -967,10 +1100,12 @@ const ChatManager = {
         const container = document.getElementById('messages-container');
         container.appendChild(messageEl);
         this.streamingMessageEl = messageEl;
+        console.log('[ChatManager] Message element created and appended');
 
         // Connect StreamingDisplay for rendering
         if (typeof StreamingDisplay !== 'undefined') {
             StreamingDisplay.connect(conversationId, messageEl);
+            console.log('[ChatManager] StreamingDisplay connected:', StreamingDisplay.isConnected());
         }
 
         this.scrollToBottom(true);
@@ -1012,6 +1147,12 @@ const ChatManager = {
             let buffer = '';
 
             while (true) {
+                // Exit early if a newer stream has started (e.g., due to steering)
+                if (this._currentStreamToken !== streamToken) {
+                    console.log('[ChatManager] Breaking out of read loop - newer stream has started');
+                    break;
+                }
+
                 const { done, value } = await reader.read();
                 if (done) break;
 
@@ -1020,9 +1161,16 @@ const ChatManager = {
                 buffer = lines.pop() || '';
 
                 for (const line of lines) {
+                    // Skip if a newer stream has started (e.g., due to steering)
+                    if (this._currentStreamToken !== streamToken) {
+                        console.log('[ChatManager] Skipping event - newer stream has started');
+                        continue;
+                    }
+
                     if (line.startsWith('data: ')) {
                         try {
                             const event = JSON.parse(line.slice(6));
+                            console.log('[ChatManager] Received event:', event.type, event.type === 'text' ? `(${event.content?.length || 0} chars)` : '');
 
                             // Route event through BackgroundStreamManager
                             // It handles accumulation and notifies StreamingDisplay
@@ -1156,29 +1304,38 @@ const ChatManager = {
                 }
             }
         } finally {
-            // Always clean up BackgroundStreamManager and StreamingTracker for this conversation
-            // These are per-conversation, so they should always be cleaned up when stream ends
-            if (typeof StreamingTracker !== 'undefined') {
-                StreamingTracker.setStreaming(conversationId, { streaming: false });
-            }
-            if (typeof BackgroundStreamManager !== 'undefined') {
-                BackgroundStreamManager.removeStream(conversationId);
-            }
+            // Only clean up if we're still the current stream
+            // This prevents race conditions when steering causes a new stream to start
+            // before this finally block runs
+            const isCurrentStream = this._currentStreamToken === streamToken;
+            console.log('[ChatManager] Finally block for token:', streamToken, 'isCurrentStream:', isCurrentStream);
 
-            // Only do UI updates if we're still on this conversation
-            if (this.activeConversationId === conversationId) {
-                Store.endStreaming();
-                this.abortController = null;
-                this.streamingMessageEl = null;
-                this.streamingMessageId = null;
-                this.updateSendButton();
-                this.updateContextStats();
-
-                // Disconnect StreamingDisplay if it's connected to this conversation
-                if (typeof StreamingDisplay !== 'undefined' &&
-                    StreamingDisplay.getConnectedConversationId() === conversationId) {
-                    StreamingDisplay.disconnect();
+            if (isCurrentStream) {
+                // Clean up BackgroundStreamManager and StreamingTracker
+                if (typeof StreamingTracker !== 'undefined') {
+                    StreamingTracker.setStreaming(conversationId, { streaming: false });
                 }
+                if (typeof BackgroundStreamManager !== 'undefined') {
+                    BackgroundStreamManager.removeStream(conversationId);
+                }
+
+                // Only do UI updates if we're still on this conversation
+                if (this.activeConversationId === conversationId) {
+                    Store.endStreaming();
+                    this.abortController = null;
+                    this.streamingMessageEl = null;
+                    this.streamingMessageId = null;
+                    this.updateSendButton();
+                    this.updateContextStats();
+
+                    // Disconnect StreamingDisplay if it's connected to this conversation
+                    if (typeof StreamingDisplay !== 'undefined' &&
+                        StreamingDisplay.getConnectedConversationId() === conversationId) {
+                        StreamingDisplay.disconnect();
+                    }
+                }
+            } else {
+                console.log('[ChatManager] Skipping cleanup - newer stream has started');
             }
         }
     },
@@ -1199,6 +1356,105 @@ const ChatManager = {
 
         Store.endStreaming();
         this.updateSendButton();
+    },
+
+    /**
+     * Continue agent stream after steering input
+     * Called by SteeringInput after successfully sending guidance
+     */
+    async continueAfterSteering() {
+        if (!this.isAgentConversation) {
+            console.warn('[ChatManager] continueAfterSteering called but not in agent mode');
+            return;
+        }
+
+        const conversationId = this.activeConversationId;
+        if (!conversationId) {
+            console.warn('[ChatManager] continueAfterSteering: no active conversation');
+            return;
+        }
+
+        console.log('[ChatManager] Continuing agent stream after steering');
+
+        // Don't abort the fetch - let the backend complete gracefully after receiving stop signal
+        // This ensures the partial content is saved to the database
+        // Just invalidate the stream token so events are ignored
+        this._currentStreamToken = null;
+        console.log('[ChatManager] Invalidated old stream token (letting backend save gracefully)');
+
+        // Wait for the backend to finish saving (it should be quick after stop signal)
+        // Poll until streaming status shows not streaming
+        let attempts = 0;
+        while (attempts < 30) {
+            try {
+                const status = await ApiClient.getStreamingStatus(conversationId);
+                if (!status.streaming) {
+                    console.log('[ChatManager] Server confirmed stream stopped and saved');
+                    break;
+                }
+            } catch (e) {
+                // Ignore errors
+            }
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+
+        // Now we can clean up the abort controller
+        this.abortController = null;
+
+        // Fully reset streaming state
+        if (typeof BackgroundStreamManager !== 'undefined') {
+            BackgroundStreamManager.removeStream(conversationId);
+        }
+        if (typeof StreamingDisplay !== 'undefined') {
+            StreamingDisplay.disconnect();
+        }
+        if (typeof StreamingTracker !== 'undefined') {
+            StreamingTracker.setStreaming(conversationId, { streaming: false });
+        }
+        Store.endStreaming();
+        this.streamingMessageEl = null;
+        this.streamingMessageId = null;
+
+        // Reload messages from server (simpler than full loadConversation)
+        try {
+            const response = await fetch(`/api/conversations/${conversationId}?branch=${encodeURIComponent(JSON.stringify(this.currentBranch))}`);
+            if (response.ok) {
+                const conversation = await response.json();
+                const msgs = conversation.messages || [];
+                console.log('[ChatManager] Loaded', msgs.length, 'messages after steering');
+
+                // Update Store
+                Store.set({ messages: msgs });
+
+                // Re-render messages directly
+                this.clearMessagesUI();
+                console.log('[ChatManager] Cleared messages UI');
+                for (const msg of msgs) {
+                    const msgEl = this.createMessageElementFromData(msg);
+                    if (msgEl) {
+                        document.getElementById('messages-container').appendChild(msgEl);
+                        console.log('[ChatManager] Rendered message:', msg.role, 'position:', msg.position, 'content length:',
+                            typeof msg.content === 'string' ? msg.content.length : JSON.stringify(msg.content).length);
+                    }
+                }
+                this.scrollToBottom(true);
+                console.log('[ChatManager] Messages container now has',
+                    document.getElementById('messages-container').querySelectorAll('.message').length, 'message elements');
+            }
+        } catch (e) {
+            console.warn('[ChatManager] Error reloading conversation after steer:', e);
+        }
+
+        // Ensure UI is settled before starting new stream
+        await new Promise(resolve => setTimeout(resolve, 150));
+
+        // Start a new stream - backend will pick up the steer context
+        console.log('[ChatManager] Starting continuation stream');
+        console.log('[ChatManager] Store.currentConversationId:', Store.get('currentConversationId'));
+        console.log('[ChatManager] ConversationsManager.currentConversationId:', ConversationsManager.getCurrentConversationId());
+        console.log('[ChatManager] this.activeConversationId:', this.activeConversationId);
+        await this.streamAgentResponse(false);
     },
 
     stopStreaming() {
@@ -1612,6 +1868,69 @@ const ChatManager = {
         if (forceScroll) {
             this.scrollToBottom(true);
         }
+    },
+
+    /**
+     * Create a message element from message data without appending to DOM
+     * Used for atomic DOM updates to prevent flash during conversation switch
+     */
+    createMessageElementFromData(msg) {
+        const messageEl = this.createMessageElement(
+            msg.role,
+            msg.position,
+            msg.current_version || msg.version || 1,
+            msg.total_versions || 1,
+            null,
+            msg.timestamp
+        );
+
+        if (msg.id) {
+            messageEl.dataset.messageId = msg.id;
+        }
+        if (msg.user_msg_index !== undefined) {
+            messageEl.dataset.userMsgIndex = msg.user_msg_index;
+        }
+
+        const contentEl = messageEl.querySelector('.message-content');
+
+        // Render content
+        this.renderContent(contentEl, msg.content, msg.role);
+
+        // Backwards compatibility: Render separate thinking field if present
+        if (msg.thinking && !this.contentHasThinkingBlocks(msg.content)) {
+            const thinkingSegments = msg.thinking.split('\n\n---\n\n');
+            for (let i = thinkingSegments.length - 1; i >= 0; i--) {
+                const segment = thinkingSegments[i];
+                if (segment.trim()) {
+                    const thinkingEl = this.createThinkingBlock(false);
+                    this.updateThinkingBlock(thinkingEl, segment);
+                    thinkingEl.classList.add('collapsed');
+                    contentEl.insertBefore(thinkingEl, contentEl.firstChild);
+                }
+            }
+        }
+
+        // Backwards compatibility: Apply tool results from separate field
+        if (msg.tool_results && Array.isArray(msg.tool_results) && !this.contentHasToolResultBlocks(msg.content)) {
+            for (const result of msg.tool_results) {
+                const toolBlock = contentEl.querySelector(`.tool-use-block[data-tool-use-id="${result.tool_use_id}"]`);
+                if (toolBlock) {
+                    this.applyToolResult(toolBlock, result.content, result.is_error);
+                }
+            }
+        }
+
+        // Add actions
+        if (!msg.streaming) {
+            const actionsDiv = this.createMessageActions(msg.role);
+            messageEl.appendChild(actionsDiv);
+        } else {
+            const indicator = document.createElement('span');
+            indicator.className = 'streaming-indicator';
+            contentEl.appendChild(indicator);
+        }
+
+        return messageEl;
     },
 
     renderContent(contentEl, content, role) {

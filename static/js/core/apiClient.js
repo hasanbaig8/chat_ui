@@ -243,6 +243,31 @@ const ApiClient = {
         return this.post(`/api/agent-chat/stop/${conversationId}`);
     },
 
+    /**
+     * Send steering guidance to an in-progress agent stream
+     * @param {string} conversationId - Conversation ID
+     * @param {string} guidance - User's guidance text
+     * @param {Array} accumulatedContent - Partial response content accumulated so far
+     */
+    async steerAgent(conversationId, guidance, accumulatedContent) {
+        return this.post(`/api/agent-chat/steer/${conversationId}`, {
+            guidance,
+            accumulated_content: accumulatedContent
+        });
+    },
+
+    /**
+     * Pre-warm an agent session for faster startup
+     * Fire-and-forget - don't await this in UI code
+     * @param {string} conversationId - Conversation ID
+     */
+    warmAgentSession(conversationId) {
+        // Fire and forget - don't await
+        this.post(`/api/agent-chat/warm/${conversationId}`).catch((e) => {
+            console.log('[ApiClient] Warm session failed (non-critical):', e.message);
+        });
+    },
+
     // =========================================================================
     // Models & Settings
     // =========================================================================

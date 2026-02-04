@@ -12,7 +12,9 @@ from services.agent_client import get_agent_client, is_sdk_available, get_sdk_im
 from services.settings_service import get_settings_service
 from services.streaming_service import get_streaming_service, StreamType
 from services.mock_streams import is_mock_mode, mock_agent_chat_stream
+from services.agent_pool import get_agent_pool
 from api.deps import get_store, get_project_store
+from api.settings import get_enabled_skills_prompt
 
 router = APIRouter(prefix="/api/agent-chat", tags=["agent-chat"])
 
@@ -53,10 +55,25 @@ async def stream_agent_chat(request: AgentChatRequest):
         conversation_id = request.conversation_id
         branch = request.branch or [0]
 
+        # Extract task title from first line of user message
+        task_title = None
+        if request.messages:
+            last_msg = request.messages[-1]
+            msg_content = last_msg.get("content", "")
+            if isinstance(msg_content, str):
+                task_title = msg_content.split('\n')[0][:100]  # First line, max 100 chars
+            elif isinstance(msg_content, list):
+                for block in msg_content:
+                    if block.get("type") == "text":
+                        task_title = block.get("text", "").split('\n')[0][:100]
+                        break
+
         # Register stream and get stop event
         stop_event = None
         if conversation_id:
-            stop_event = streaming_service.start_stream(conversation_id, StreamType.AGENT)
+            stop_event = streaming_service.start_stream(
+                conversation_id, StreamType.AGENT, title=task_title
+            )
 
         # Get workspace path, session_id, and memory path for this conversation
         workspace_path = None
@@ -67,8 +84,36 @@ async def stream_agent_chat(request: AgentChatRequest):
         custom_cwd = None
         project_id = None
         thinking_budget = None
+        warm_session = None
 
+        # Check for pre-warmed session first
         if conversation_id:
+            agent_pool = get_agent_pool()
+            warm_session = await agent_pool.get_warm_session(conversation_id)
+
+        if warm_session:
+            # Use pre-computed values from warm session
+            print(f"[AGENT] Using warm session for {conversation_id}")
+            workspace_path = warm_session.workspace_path
+            memory_path = warm_session.memory_path
+            options_kwargs = warm_session.options_kwargs
+            existing_session_id = options_kwargs.get("session_id")
+            enabled_tools = options_kwargs.get("enabled_tools")
+            thinking_budget = options_kwargs.get("thinking_budget")
+
+            # Still need to get the conversation for other purposes
+            try:
+                conv = await store.get_conversation(conversation_id)
+            except Exception:
+                conv = None
+
+            # Get project_id for warm session path too
+            try:
+                project_id = await project_store.get_project_for_conversation(conversation_id)
+            except Exception:
+                project_id = None
+
+        if not warm_session and conversation_id:
             workspace_path = store.get_workspace_path(conversation_id)
             # Create workspace if needed
             os.makedirs(workspace_path, exist_ok=True)
@@ -116,7 +161,8 @@ async def stream_agent_chat(request: AgentChatRequest):
             except Exception as e:
                 print(f"Warning: Could not load settings: {e}")
 
-            # Create assistant message record in DB first
+        # Create assistant message record in DB first (runs for both warm and regular paths)
+        if conversation_id:
             try:
                 msg_record = await store.add_message(
                     conversation_id=conversation_id,
@@ -145,6 +191,12 @@ async def stream_agent_chat(request: AgentChatRequest):
             if memory_path:
                 system_prompt = MEMORY_SYSTEM_PROMPT + "\n\n" + system_prompt
 
+            # Append enabled skills prompt if project has skills enabled
+            if project_id:
+                skills_prompt = get_enabled_skills_prompt(project_id)
+                if skills_prompt:
+                    system_prompt = system_prompt + "\n\n---\n\n# Enabled Skills\n\n" + skills_prompt
+
             # Get the user's latest message for multi-turn sessions
             user_message = ""
             if request.messages:
@@ -158,6 +210,40 @@ async def stream_agent_chat(request: AgentChatRequest):
                     ]
                     user_message = "\n".join(text_blocks)
 
+            # Check for steering context (real-time guidance from user)
+            print(f"[AGENT] Checking for steer context, conversation_id={conversation_id}")
+            steer_context = streaming_service.get_steer_context(conversation_id)
+            print(f"[AGENT] Steer context found: {steer_context is not None}")
+            if steer_context:
+                # Build continuation prompt with partial content and user guidance
+                partial_summary = ""
+                for block in steer_context.partial_content[:10]:  # Summarize first 10 blocks
+                    if block.get("type") == "text":
+                        text = block.get("text", "")[:200]
+                        partial_summary += f"[Text: {text}...]\n"
+                    elif block.get("type") == "tool_use":
+                        partial_summary += f"[Tool: {block.get('name', 'unknown')}]\n"
+                    elif block.get("type") == "thinking":
+                        partial_summary += "[Thinking...]\n"
+
+                user_message = f"""[STEERING GUIDANCE FROM USER]
+
+The user has provided real-time guidance while you were working. Please incorporate this guidance and continue.
+
+YOUR PARTIAL RESPONSE SO FAR:
+{partial_summary}
+
+USER'S GUIDANCE:
+{steer_context.guidance}
+
+Please acknowledge the guidance briefly and continue your work, incorporating the user's direction.
+"""
+                # Clear the steer context now that we've used it
+                streaming_service.clear_steer_context(conversation_id)
+
+                # Emit event to frontend about steering being applied
+                yield f"data: {json.dumps({'type': 'steering_applied', 'guidance': steer_context.guidance[:100]})}\n\n"
+
             # Use mock stream if MOCK_LLM=1
             if is_mock_mode():
                 event_stream = mock_agent_chat_stream(
@@ -168,34 +254,41 @@ async def stream_agent_chat(request: AgentChatRequest):
                 )
 
                 # Process mock events
-                async for event in event_stream:
-                    if stop_event and stop_event.is_set():
-                        stopped = True
-                        yield f"data: {json.dumps({'type': 'stopped', 'content': 'Stream stopped by user'})}\n\n"
-                        break
+                try:
+                    async for event in event_stream:
+                        if stop_event and stop_event.is_set():
+                            stopped = True
+                            yield f"data: {json.dumps({'type': 'stopped', 'content': 'Stream stopped by user'})}\n\n"
+                            break
 
-                    yield f"data: {json.dumps(event)}\n\n"
+                        yield f"data: {json.dumps(event)}\n\n"
 
-                    # Accumulate content for mock mode
-                    if event["type"] == "text":
-                        current_text += event.get("content", "")
-                    elif event["type"] == "tool_use":
-                        if current_text:
-                            accumulated_content.append({"type": "text", "text": current_text})
-                            current_text = ""
-                        accumulated_content.append({
-                            "type": "tool_use",
-                            "id": event["id"],
-                            "name": event["name"],
-                            "input": event["input"]
-                        })
-                    elif event["type"] == "tool_result":
-                        accumulated_content.append({
-                            "type": "tool_result",
-                            "tool_use_id": event["tool_use_id"],
-                            "content": event.get("content", ""),
-                            "is_error": event.get("is_error", False)
-                        })
+                        # Accumulate content for mock mode
+                        if event["type"] == "text":
+                            current_text += event.get("content", "")
+                        elif event["type"] == "tool_use":
+                            if current_text:
+                                accumulated_content.append({"type": "text", "text": current_text})
+                                current_text = ""
+                            accumulated_content.append({
+                                "type": "tool_use",
+                                "id": event["id"],
+                                "name": event["name"],
+                                "input": event["input"]
+                            })
+                        elif event["type"] == "tool_result":
+                            accumulated_content.append({
+                                "type": "tool_result",
+                                "tool_use_id": event["tool_use_id"],
+                                "content": event.get("content", ""),
+                                "is_error": event.get("is_error", False)
+                            })
+                finally:
+                    # Properly close the async generator
+                    try:
+                        await event_stream.aclose()
+                    except Exception:
+                        pass
 
             else:
                 # Use ClaudeSDKClient for agent streaming
@@ -211,107 +304,120 @@ async def stream_agent_chat(request: AgentChatRequest):
                     conversation_id=conversation_id
                 )
 
+                print(f"[AGENT] Starting SDK stream with session_id={existing_session_id}")
                 # Stream using ClaudeSDKClient
                 event_stream = agent_client.stream_with_options(
                     options=options,
                     prompt=user_message
                 )
 
-                async for event in event_stream:
-                    # Check if stop was requested
-                    if stop_event and stop_event.is_set():
-                        stopped = True
-                        yield f"data: {json.dumps({'type': 'stopped', 'content': 'Stream stopped by user'})}\n\n"
-                        break
+                try:
+                    async for event in event_stream:
+                        # Check if stop was requested
+                        if stop_event and stop_event.is_set():
+                            stopped = True
+                            yield f"data: {json.dumps({'type': 'stopped', 'content': 'Stream stopped by user'})}\n\n"
+                            break
 
-                    # Send event to client
-                    yield f"data: {json.dumps(event)}\n\n"
+                        # Send event to client
+                        yield f"data: {json.dumps(event)}\n\n"
 
-                    # Capture session_id from init message
-                    if event["type"] == "session_id":
-                        new_session_id = event["session_id"]
-                        if new_session_id:
-                            try:
-                                await store.update_conversation_session_id(
-                                    conversation_id=conversation_id,
-                                    session_id=new_session_id
-                                )
-                            except Exception as e:
-                                print(f"Failed to save session_id: {e}")
+                        # Capture session_id from init message
+                        if event["type"] == "session_id":
+                            new_session_id = event["session_id"]
+                            print(f"[AGENT] Received session_id event: {new_session_id}")
+                            if new_session_id:
+                                try:
+                                    await store.update_conversation_session_id(
+                                        conversation_id=conversation_id,
+                                        session_id=new_session_id
+                                    )
+                                    print(f"[AGENT] Saved session_id to conversation: {conversation_id}")
+                                except Exception as e:
+                                    print(f"[AGENT] Failed to save session_id: {e}")
 
-                    # Accumulate content for DB save
-                    elif event["type"] == "thinking":
-                        if not in_thinking:
+                        # Accumulate content for DB save
+                        elif event["type"] == "thinking":
+                            if not in_thinking:
+                                if current_text:
+                                    accumulated_content.append({"type": "text", "text": current_text})
+                                    current_text = ""
+                                in_thinking = True
+                            current_thinking += event.get("content", "")
+                        elif event["type"] == "text":
+                            if in_thinking:
+                                if current_thinking:
+                                    accumulated_content.append({"type": "thinking", "content": current_thinking})
+                                    current_thinking = ""
+                                in_thinking = False
+                            current_text += event.get("content", "")
+                        elif event["type"] == "tool_use":
+                            if in_thinking:
+                                if current_thinking:
+                                    accumulated_content.append({"type": "thinking", "content": current_thinking})
+                                    current_thinking = ""
+                                in_thinking = False
                             if current_text:
                                 accumulated_content.append({"type": "text", "text": current_text})
                                 current_text = ""
-                            in_thinking = True
-                        current_thinking += event.get("content", "")
-                    elif event["type"] == "text":
-                        if in_thinking:
-                            if current_thinking:
-                                accumulated_content.append({"type": "thinking", "content": current_thinking})
-                                current_thinking = ""
-                            in_thinking = False
-                        current_text += event.get("content", "")
-                    elif event["type"] == "tool_use":
-                        if in_thinking:
-                            if current_thinking:
-                                accumulated_content.append({"type": "thinking", "content": current_thinking})
-                                current_thinking = ""
-                            in_thinking = False
-                        if current_text:
-                            accumulated_content.append({"type": "text", "text": current_text})
-                            current_text = ""
-                        accumulated_content.append({
-                            "type": "tool_use",
-                            "id": event["id"],
-                            "name": event["name"],
-                            "input": event["input"]
-                        })
-                    elif event["type"] == "tool_result":
-                        accumulated_content.append({
-                            "type": "tool_result",
-                            "tool_use_id": event["tool_use_id"],
-                            "content": event.get("content", ""),
-                            "is_error": event.get("is_error", False)
-                        })
-                    elif event["type"] == "surface_content":
-                        if in_thinking:
-                            if current_thinking:
-                                accumulated_content.append({"type": "thinking", "content": current_thinking})
-                                current_thinking = ""
-                            in_thinking = False
-                        if current_text:
-                            accumulated_content.append({"type": "text", "text": current_text})
-                            current_text = ""
+                            accumulated_content.append({
+                                "type": "tool_use",
+                                "id": event["id"],
+                                "name": event["name"],
+                                "input": event["input"]
+                            })
+                        elif event["type"] == "tool_result":
+                            accumulated_content.append({
+                                "type": "tool_result",
+                                "tool_use_id": event["tool_use_id"],
+                                "content": event.get("content", ""),
+                                "is_error": event.get("is_error", False)
+                            })
+                        elif event["type"] == "surface_content":
+                            if in_thinking:
+                                if current_thinking:
+                                    accumulated_content.append({"type": "thinking", "content": current_thinking})
+                                    current_thinking = ""
+                                in_thinking = False
+                            if current_text:
+                                accumulated_content.append({"type": "text", "text": current_text})
+                                current_text = ""
 
-                        content_id = event.get("content_id", "")
-                        content_type = event.get("content_type", "html")
-                        content = event.get("content", "")
-                        title = event.get("title")
+                            content_id = event.get("content_id", "")
+                            content_type = event.get("content_type", "html")
+                            content = event.get("content", "")
+                            title = event.get("title")
 
-                        # Save surface content to file if we have a conversation
-                        if conversation_id:
-                            save_path = store.get_workspace_path(conversation_id)
-                            ext = ".html" if content_type == "html" else ".md"
-                            filename = f"surface_{content_id}{ext}"
-                            filepath = os.path.join(save_path, filename)
+                            # Save surface content to file if we have a conversation
+                            if conversation_id:
+                                save_path = store.get_workspace_path(conversation_id)
+                                ext = ".html" if content_type == "html" else ".md"
+                                filename = f"surface_{content_id}{ext}"
+                                filepath = os.path.join(save_path, filename)
 
-                            try:
-                                os.makedirs(save_path, exist_ok=True)
-                                with open(filepath, 'w', encoding='utf-8') as f:
-                                    f.write(content)
-                                print(f"Saved surface content to: {filepath}")
-                                accumulated_content.append({
-                                    "type": "surface_content",
-                                    "content_id": content_id,
-                                    "content_type": content_type,
-                                    "title": title,
-                                    "filename": filename
-                                })
-                            except Exception as e:
-                                print(f"Failed to save surface content to {filepath}: {e}")
+                                try:
+                                    os.makedirs(save_path, exist_ok=True)
+                                    with open(filepath, 'w', encoding='utf-8') as f:
+                                        f.write(content)
+                                    print(f"Saved surface content to: {filepath}")
+                                    accumulated_content.append({
+                                        "type": "surface_content",
+                                        "content_id": content_id,
+                                        "content_type": content_type,
+                                        "title": title,
+                                        "filename": filename
+                                    })
+                                except Exception as e:
+                                    print(f"Failed to save surface content to {filepath}: {e}")
+                                    accumulated_content.append({
+                                        "type": "surface_content",
+                                        "content_id": content_id,
+                                        "content_type": content_type,
+                                        "title": title,
+                                        "content": content
+                                    })
+                            else:
+                                # No conversation - store inline
                                 accumulated_content.append({
                                     "type": "surface_content",
                                     "content_id": content_id,
@@ -319,15 +425,12 @@ async def stream_agent_chat(request: AgentChatRequest):
                                     "title": title,
                                     "content": content
                                 })
-                        else:
-                            # No conversation - store inline
-                            accumulated_content.append({
-                                "type": "surface_content",
-                                "content_id": content_id,
-                                "content_type": content_type,
-                                "title": title,
-                                "content": content
-                            })
+                finally:
+                    # Properly close the async generator to avoid "ignored GeneratorExit" errors
+                    try:
+                        await event_stream.aclose()
+                    except Exception:
+                        pass  # Ignore errors during cleanup
 
             # Finalize any remaining thinking block
             if in_thinking and current_thinking:
@@ -356,6 +459,8 @@ async def stream_agent_chat(request: AgentChatRequest):
                 )
                 final_content = accumulated_content if len(accumulated_content) > 1 or has_special_blocks \
                     else (accumulated_content[0].get("text", "") if accumulated_content else "")
+
+                print(f"[AGENT] Saving message - stopped: {stopped}, accumulated_blocks: {len(accumulated_content)}, final_content_type: {type(final_content).__name__}, content_preview: {str(final_content)[:100]}")
 
                 await store.update_message_content(
                     conversation_id=conversation_id,
@@ -413,6 +518,175 @@ async def get_agent_status():
         "message": "Claude Code SDK is ready" if is_sdk_available() else "Claude Code SDK not installed",
         "error": error
     }
+
+
+@router.get("/tasks/active")
+async def get_active_tasks():
+    """Get all active background agent tasks with metadata.
+
+    Returns list of tasks with:
+    - task_id: Unique task identifier
+    - conversation_id: Associated conversation
+    - title: First line of user message (task description)
+    - started_at: Unix timestamp when task started
+    - elapsed_seconds: How long the task has been running
+    """
+    streaming_service = get_streaming_service()
+    return {"tasks": streaming_service.get_active_tasks()}
+
+
+class SteerRequest(BaseModel):
+    """Request to steer an in-progress agent stream."""
+    guidance: str
+    accumulated_content: List[dict]
+
+
+@router.post("/steer/{conversation_id}")
+async def steer_agent(conversation_id: str, request: SteerRequest):
+    """Steer an in-progress agent stream with new guidance.
+
+    This stops the current stream and stores context so the next stream
+    can continue with the user's guidance incorporated.
+
+    Args:
+        conversation_id: The conversation to steer
+        request: Contains guidance text and accumulated content so far
+
+    Returns:
+        success: True if steering was initiated
+    """
+    from services.streaming_service import SteerContext
+    import time
+
+    streaming_service = get_streaming_service()
+    store = get_store()
+
+    print(f"[STEER] Received steer request for conversation: {conversation_id}")
+    print(f"[STEER] Guidance: {request.guidance[:100]}...")
+
+    # Check if there's an active stream
+    status = streaming_service.get_status(conversation_id)
+    print(f"[STEER] Stream status: {status}")
+    if not status.get("streaming"):
+        return {"success": False, "message": "No active stream to steer"}
+
+    # Stop the current stream
+    streaming_service.stop_stream(conversation_id)
+    print(f"[STEER] Stream stopped")
+
+    # Save the steering guidance as a user message so it shows in the UI
+    try:
+        # Get current branch from conversation
+        conv = await store.get_conversation(conversation_id)
+        branch = conv.get("current_branch", [0]) if conv else [0]
+
+        # Add the steering message as a user message
+        steering_msg = await store.add_message(
+            conversation_id=conversation_id,
+            role="user",
+            content=f"[Steering guidance]: {request.guidance}",
+            branch=branch
+        )
+        print(f"[STEER] Saved steering message: {steering_msg.get('id')}")
+    except Exception as e:
+        print(f"[STEER] Warning: Could not save steering message: {e}")
+
+    # Store the steering context for the next stream
+    steer_context = SteerContext(
+        guidance=request.guidance,
+        partial_content=request.accumulated_content,
+        created_at=time.time()
+    )
+    streaming_service.set_steer_context(conversation_id, steer_context)
+    print(f"[STEER] Steer context stored for conversation: {conversation_id}")
+
+    return {"success": True, "message": "Steering context set, stream will continue with guidance"}
+
+
+@router.post("/warm/{conversation_id}")
+async def warm_agent_session(conversation_id: str):
+    """Pre-warm an agent session for faster startup.
+
+    Pre-computes options and validates paths to reduce latency
+    when the conversation actually starts streaming.
+
+    Args:
+        conversation_id: Conversation to pre-warm
+
+    Returns:
+        success: True if session was warmed
+    """
+    store = get_store()
+    project_store = get_project_store()
+    agent_pool = get_agent_pool()
+
+    try:
+        # Get workspace path
+        workspace_path = store.get_workspace_path(conversation_id)
+        os.makedirs(workspace_path, exist_ok=True)
+
+        # Get conversation settings
+        conv = await store.get_conversation(conversation_id)
+        if not conv:
+            return {"success": False, "message": "Conversation not found"}
+
+        existing_session_id = conv.get("session_id")
+
+        # Determine memory path
+        memory_path = None
+        project_id = await project_store.get_project_for_conversation(conversation_id)
+        if project_id:
+            memory_path = project_store.get_project_memory_path(project_id)
+        else:
+            memory_path = project_store.get_conversation_memory_path(conversation_id)
+
+        # Get settings
+        from services.settings_service import get_settings_service
+        settings_service = get_settings_service()
+        conv_settings = conv.get("settings", {})
+        agent_settings = settings_service.resolve_agent_settings(
+            project_id=project_id,
+            conversation_settings=conv_settings
+        )
+
+        enabled_tools = agent_settings.get("tools")
+        thinking_budget = agent_settings.get("thinking_budget")
+        custom_cwd = agent_settings.get("cwd")
+
+        if custom_cwd and os.path.isdir(custom_cwd):
+            workspace_path = custom_cwd
+
+        # Build system prompt with skills
+        system_prompt = conv.get("system_prompt") or ""
+        if project_id:
+            skills_prompt = get_enabled_skills_prompt(project_id)
+            if skills_prompt:
+                system_prompt = system_prompt + "\n\n---\n\n# Enabled Skills\n\n" + skills_prompt
+
+        # Warm the session
+        await agent_pool.warm_for_conversation(
+            conversation_id=conversation_id,
+            workspace_path=workspace_path,
+            memory_path=memory_path,
+            system_prompt=system_prompt if system_prompt.strip() else None,
+            model=conv.get("model"),
+            session_id=existing_session_id,
+            enabled_tools=enabled_tools,
+            thinking_budget=thinking_budget
+        )
+
+        return {"success": True, "message": "Session pre-warmed"}
+
+    except Exception as e:
+        print(f"[WARM] Error warming session: {e}")
+        return {"success": False, "message": str(e)}
+
+
+@router.get("/pool/stats")
+async def get_pool_stats():
+    """Get agent pool statistics."""
+    agent_pool = get_agent_pool()
+    return agent_pool.get_stats()
 
 
 @router.get("/surface-content/{conversation_id}/{filename}")

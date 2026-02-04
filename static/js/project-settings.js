@@ -8,6 +8,7 @@ const ProjectSettingsManager = {
     currentProject: null,
     settings: null,
     models: [],
+    availableSkills: [],  // Skills loaded from default settings
 
     /**
      * Initialize the manager
@@ -116,6 +117,13 @@ const ProjectSettingsManager = {
                                 <label class="tool-toggle"><input type="checkbox" name="Memory" checked> Memory</label>
                             </div>
                             <span class="setting-description">Toggle tools on/off to control what the agent can use.</span>
+                        </div>
+                        <div class="setting-group">
+                            <label>Enabled Skills</label>
+                            <div class="skills-checkboxes" id="project-skills-checkboxes">
+                                <!-- Skills will be populated here -->
+                            </div>
+                            <span class="setting-description">Enable skills for this project. Skills add specialized prompts to the agent's system prompt.</span>
                         </div>
                     </div>
                 </div>
@@ -246,23 +254,66 @@ const ProjectSettingsManager = {
         this.currentProjectId = project.id;
         this.currentProject = project;
 
-        // Fetch project settings
+        // Fetch project settings and default settings (for skills) in parallel
         try {
-            const response = await fetch(`/api/settings/project/${project.id}`);
-            const data = await response.json();
-            this.settings = data.settings || {};
+            const [projectResponse, defaultsResponse] = await Promise.all([
+                fetch(`/api/settings/project/${project.id}`),
+                fetch('/api/settings/defaults')
+            ]);
+
+            const projectData = await projectResponse.json();
+            this.settings = projectData.settings || {};
+
+            const defaultsData = await defaultsResponse.json();
+            this.availableSkills = defaultsData.skills || [];
         } catch (error) {
-            console.error('Failed to load project settings:', error);
+            console.error('Failed to load settings:', error);
             this.settings = {};
+            this.availableSkills = [];
         }
 
         this.populateModels();
         this.loadSettingsIntoForm();
+        this.renderSkillsCheckboxes();
 
         const modal = document.getElementById('project-settings-modal');
         modal.querySelector('.project-settings-name').textContent = project.name;
         modal.classList.add('open');
         this.isOpen = true;
+    },
+
+    /**
+     * Render skills checkboxes based on available skills from default settings
+     */
+    renderSkillsCheckboxes() {
+        const container = document.getElementById('project-skills-checkboxes');
+        if (!container) return;
+
+        if (this.availableSkills.length === 0) {
+            container.innerHTML = '<div class="skills-empty-project">No skills defined. Add skills in Default Settings.</div>';
+            return;
+        }
+
+        const enabledSkills = this.settings?.enabled_skills || [];
+
+        container.innerHTML = this.availableSkills.map(skill => `
+            <label class="skill-checkbox">
+                <input type="checkbox" name="${skill.id}" ${enabledSkills.includes(skill.id) ? 'checked' : ''}>
+                <div class="skill-checkbox-info">
+                    <div class="skill-checkbox-name">${this.escapeHtml(skill.name)}</div>
+                    ${skill.description ? `<div class="skill-checkbox-description">${this.escapeHtml(skill.description)}</div>` : ''}
+                </div>
+            </label>
+        `).join('');
+    },
+
+    /**
+     * Escape HTML to prevent XSS
+     */
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     },
 
     /**
@@ -339,7 +390,10 @@ const ProjectSettingsManager = {
             agent_system_prompt: modal.querySelector('#project-agent-system-prompt').value || null,
             agent_cwd: modal.querySelector('#project-agent-cwd').value || null,
             agent_thinking_budget: parseInt(modal.querySelector('#project-agent-thinking-budget')?.value) || 8000,
-            agent_tools: this.getToolToggles()
+            agent_tools: this.getToolToggles(),
+
+            // Enabled skills
+            enabled_skills: this.getEnabledSkills()
         };
 
         try {
@@ -371,6 +425,15 @@ const ProjectSettingsManager = {
             tools[checkbox.name] = checkbox.checked;
         });
         return tools;
+    },
+
+    /**
+     * Get enabled skills as array of skill IDs
+     */
+    getEnabledSkills() {
+        const modal = document.getElementById('project-settings-modal');
+        const skillCheckboxes = modal.querySelectorAll('#project-skills-checkboxes input[type="checkbox"]:checked');
+        return Array.from(skillCheckboxes).map(checkbox => checkbox.name);
     },
 
     /**

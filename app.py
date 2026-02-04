@@ -1,5 +1,6 @@
 """FastAPI application entry point for Claude Chat UI."""
 
+import asyncio
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -10,10 +11,23 @@ from fastapi.requests import Request
 from dotenv import load_dotenv
 
 from api import chat_router, conversations_router, files_router, agent_chat_router, settings_router, projects_router, docs_router, dev_router
-from api.deps import initialize_all
+from api.deps import initialize_all, get_agent_pool
 
 # Load environment variables
 load_dotenv()
+
+
+async def periodic_pool_cleanup():
+    """Background task to clean up stale agent pool sessions."""
+    while True:
+        try:
+            await asyncio.sleep(60)  # Run every minute
+            agent_pool = get_agent_pool()
+            await agent_pool.cleanup_stale()
+        except asyncio.CancelledError:
+            break
+        except Exception as e:
+            print(f"[CLEANUP] Error during pool cleanup: {e}")
 
 
 @asynccontextmanager
@@ -21,8 +35,18 @@ async def lifespan(app: FastAPI):
     """Application lifespan handler."""
     # Startup: Initialize all services via DI
     await initialize_all()
+
+    # Start background cleanup task
+    cleanup_task = asyncio.create_task(periodic_pool_cleanup())
+
     yield
-    # Shutdown: Nothing to clean up
+
+    # Shutdown: Cancel cleanup task
+    cleanup_task.cancel()
+    try:
+        await cleanup_task
+    except asyncio.CancelledError:
+        pass
 
 
 # Create FastAPI app

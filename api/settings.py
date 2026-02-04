@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
@@ -11,6 +11,14 @@ router = APIRouter(prefix="/api/settings", tags=["settings"])
 # Path to settings files
 DEFAULT_SETTINGS_PATH = Path("data/default_settings.json")
 PROJECT_SETTINGS_PATH = Path("data/project_settings.json")
+
+
+class Skill(BaseModel):
+    """A skill definition with name, description, and prompt."""
+    id: str  # Unique identifier
+    name: str  # Display name
+    description: Optional[str] = None  # Brief description
+    prompt: str  # The actual skill prompt/instructions
 
 
 class DefaultSettings(BaseModel):
@@ -34,6 +42,9 @@ class DefaultSettings(BaseModel):
     agent_tools: Optional[dict] = None  # e.g., {"Read": True, "Write": True, ...}
     agent_cwd: Optional[str] = None  # Custom working directory for agent
     agent_thinking_budget: Optional[int] = 32000  # Thinking budget for agent extended thinking
+
+    # Skills - available across projects
+    skills: Optional[List[dict]] = None  # List of skill definitions
 
 
 def load_default_settings() -> dict:
@@ -139,6 +150,9 @@ class ProjectSettings(BaseModel):
     agent_tools: Optional[dict] = None  # e.g., {"Read": True, "Write": True, ...}
     agent_cwd: Optional[str] = None  # Custom working directory for agent
 
+    # Enabled skills for this project (list of skill IDs)
+    enabled_skills: Optional[List[str]] = None
+
 
 @router.get("/project/{project_id}")
 async def get_project_settings_endpoint(project_id: str):
@@ -179,3 +193,104 @@ async def delete_project_settings(project_id: str):
         del all_settings[project_id]
         save_all_project_settings(all_settings)
     return {"success": True}
+
+
+# ==================== Skills Helper Functions ====================
+
+@router.get("/skills")
+async def get_all_skills():
+    """Get all defined skills."""
+    defaults = load_default_settings()
+    return {"skills": defaults.get("skills", [])}
+
+
+@router.post("/skills")
+async def create_skill(skill: Skill):
+    """Create a new skill."""
+    defaults = load_default_settings()
+    skills = defaults.get("skills", [])
+
+    # Check for duplicate ID
+    if any(s.get("id") == skill.id for s in skills):
+        raise HTTPException(status_code=400, detail=f"Skill with ID '{skill.id}' already exists")
+
+    skills.append(skill.model_dump())
+    defaults["skills"] = skills
+
+    if save_default_settings(defaults):
+        return {"success": True, "skill": skill.model_dump()}
+    raise HTTPException(status_code=500, detail="Failed to save skill")
+
+
+@router.put("/skills/{skill_id}")
+async def update_skill(skill_id: str, skill: Skill):
+    """Update an existing skill."""
+    defaults = load_default_settings()
+    skills = defaults.get("skills", [])
+
+    # Find and update the skill
+    for i, s in enumerate(skills):
+        if s.get("id") == skill_id:
+            skills[i] = skill.model_dump()
+            defaults["skills"] = skills
+            if save_default_settings(defaults):
+                return {"success": True, "skill": skill.model_dump()}
+            raise HTTPException(status_code=500, detail="Failed to save skill")
+
+    raise HTTPException(status_code=404, detail=f"Skill '{skill_id}' not found")
+
+
+@router.delete("/skills/{skill_id}")
+async def delete_skill(skill_id: str):
+    """Delete a skill."""
+    defaults = load_default_settings()
+    skills = defaults.get("skills", [])
+
+    original_count = len(skills)
+    skills = [s for s in skills if s.get("id") != skill_id]
+
+    if len(skills) == original_count:
+        raise HTTPException(status_code=404, detail=f"Skill '{skill_id}' not found")
+
+    defaults["skills"] = skills
+    if save_default_settings(defaults):
+        return {"success": True}
+    raise HTTPException(status_code=500, detail="Failed to delete skill")
+
+
+def get_enabled_skills_prompt(project_id: str) -> str:
+    """Get the combined prompt from all enabled skills for a project.
+
+    Args:
+        project_id: The project ID
+
+    Returns:
+        Combined skill prompts as a string, or empty string if no skills enabled
+    """
+    # Get project settings
+    project_settings = get_project_settings(project_id)
+    enabled_skill_ids = project_settings.get('enabled_skills', [])
+
+    if not enabled_skill_ids:
+        return ""
+
+    # Get default settings which contain the skill definitions
+    defaults = load_default_settings()
+    skills = defaults.get('skills', [])
+
+    if not skills:
+        return ""
+
+    # Build combined prompt from enabled skills
+    skill_prompts = []
+    for skill in skills:
+        if skill.get('id') in enabled_skill_ids:
+            skill_name = skill.get('name', 'Unnamed Skill')
+            skill_prompt = skill.get('prompt', '')
+            if skill_prompt:
+                skill_prompts.append(f"## Skill: {skill_name}\n\n{skill_prompt}")
+
+    if not skill_prompts:
+        return ""
+
+    return "\n\n---\n\n".join(skill_prompts)

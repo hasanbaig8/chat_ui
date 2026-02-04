@@ -13,6 +13,9 @@ const StreamingTracker = {
      * Mark a conversation as streaming with type info
      */
     setStreaming(conversationId, status) {
+        const wasStreaming = this.streamingStates.has(conversationId);
+        const wasAgent = wasStreaming && this.streamingStates.get(conversationId).type === 'agent';
+
         if (status && status.streaming) {
             this.streamingStates.set(conversationId, {
                 streaming: true,
@@ -21,6 +24,11 @@ const StreamingTracker = {
             });
         } else {
             this.streamingStates.delete(conversationId);
+
+            // Notify TaskManager when an agent stream ends
+            if (wasAgent && typeof TaskManager !== 'undefined') {
+                TaskManager.completeTaskByConversation(conversationId, 'completed');
+            }
         }
         this.updateStreamingIndicators();
     },
